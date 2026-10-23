@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/localization/locale_provider.dart';
@@ -38,46 +39,6 @@ class DashboardScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 0,
-        onDestinationSelected: (index) {
-          switch (index) {
-            case 0:
-              // Already on dashboard
-              break;
-            case 1:
-              // Navigate to trips
-              break;
-            case 2:
-              // Navigate to money
-              break;
-            case 3:
-              // Navigate to more
-              break;
-          }
-        },
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.dashboard_outlined),
-            selectedIcon: const Icon(Icons.dashboard),
-            label: l10n.homeTab,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.list_alt_outlined),
-            selectedIcon: const Icon(Icons.list_alt),
-            label: l10n.tripsTab,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: const Icon(Icons.account_balance_wallet),
-            label: l10n.moneyTab,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.more_horiz),
-            label: l10n.moreTab,
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Show quick actions menu
@@ -93,42 +54,44 @@ class DashboardScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.local_shipping),
-            title: Text(l10n.addTripTitle),
-            onTap: () {
-              Navigator.pop(context);
-              // Navigate to add trip
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.receipt_long),
-            title: Text(l10n.addExpenseTitle),
-            onTap: () {
-              Navigator.pop(context);
-              // Navigate to add expense
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.local_gas_station),
-            title: Text(l10n.addFuelTitle),
-            onTap: () {
-              Navigator.pop(context);
-              // Navigate to add fuel
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.attach_money),
-            title: Text(l10n.receivePaymentAction),
-            onTap: () {
-              Navigator.pop(context);
-              // Navigate to receive payment
-            },
-          ),
-        ],
+      builder: (bottomSheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.local_shipping),
+              title: Text(l10n.addTripTitle),
+              onTap: () {
+                Navigator.pop(bottomSheetContext);
+                context.push('/trips/add');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.receipt_long),
+              title: Text(l10n.addExpenseTitle),
+              onTap: () {
+                Navigator.pop(bottomSheetContext);
+                context.push('/expenses/add');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.local_gas_station),
+              title: Text(l10n.addFuelTitle),
+              onTap: () {
+                Navigator.pop(bottomSheetContext);
+                context.push('/fuel/add');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.people_outline),
+              title: Text(l10n.customersNavLabel),
+              onTap: () {
+                Navigator.pop(bottomSheetContext);
+                context.push('/customers');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

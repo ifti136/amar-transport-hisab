@@ -6,39 +6,132 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/localization/locale_provider.dart';
+import 'core/services/app_lock_service.dart';
+import 'features/dashboard/dashboard_screen.dart';
+import 'features/trips/trips_screen.dart';
+import 'features/trips/trip_form.dart';
+import 'features/money/expenses_screen.dart';
+import 'features/money/expense_form.dart';
+import 'features/money/fuel_form.dart';
+import 'features/vehicles/vehicles_screen.dart';
+import 'features/vehicles/all_loans_screen.dart';
+import 'features/drivers/drivers_screen.dart';
+import 'features/customers/customers_screen.dart';
+import 'features/reports/reports_screen.dart';
+import 'features/settings/settings_screen.dart';
+import 'features/settings/opening_balances_screen.dart';
+import 'features/backup/backup_screen.dart';
 
-/// Router provider
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
+/// Router provider with persistent bottom navigation shell and root sub-routes
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     routes: [
-      GoRoute(
-        path: '/',
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return ScaffoldWithNestedNavigation(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                name: 'dashboard',
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/trips',
+                name: 'trips',
+                builder: (context, state) => const TripsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/money',
+                name: 'money',
+                builder: (context, state) => const ExpensesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                name: 'settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/trips',
-        name: 'trips',
-        builder: (context, state) => const TripsScreen(),
-      ),
-      GoRoute(
-        path: '/money',
-        name: 'money',
-        builder: (context, state) => const MoneyScreen(),
-      ),
+      // Legacy /more redirect
       GoRoute(
         path: '/more',
-        name: 'more',
-        builder: (context, state) => const MoreScreen(),
+        redirect: (context, state) => '/settings',
+      ),
+      // Sub-routes pushed on top of root navigator with top back button
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/trips/add',
+        builder: (context, state) => const TripForm(),
       ),
       GoRoute(
-        path: '/settings',
-        name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/expenses/add',
+        builder: (context, state) => const ExpenseForm(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/fuel/add',
+        builder: (context, state) => const FuelForm(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/vehicles',
+        builder: (context, state) => const VehiclesScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/drivers',
+        builder: (context, state) => const DriversScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/customers',
+        builder: (context, state) => const CustomersScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/loans',
+        builder: (context, state) => const AllLoansScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/reports',
+        builder: (context, state) => const ReportsScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/settings/opening-balances',
+        builder: (context, state) => const OpeningBalancesScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/settings/backup',
+        builder: (context, state) => const BackupScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: const Text('Amar Transport Hisab')), // i18n-ignore
       body: Center(
         child: Text(AppLocalizations.of(context)!.pageNotFound(state.error.toString())),
       ),
@@ -46,7 +139,58 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// App wrapper that provides theme based on themeModeProvider
+/// Persistent shell bottom navigation
+class ScaffoldWithNestedNavigation extends StatelessWidget {
+  const ScaffoldWithNestedNavigation({
+    super.key,
+    required this.navigationShell,
+  });
+
+  final StatefulNavigationShell navigationShell;
+
+  void _goBranch(int index) {
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      body: navigationShell,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: _goBranch,
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.dashboard_outlined),
+            selectedIcon: const Icon(Icons.dashboard),
+            label: l10n.homeTab,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.local_shipping_outlined),
+            selectedIcon: const Icon(Icons.local_shipping),
+            label: l10n.tripsTab,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: const Icon(Icons.account_balance_wallet),
+            label: l10n.moneyTab,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.settings_outlined),
+            selectedIcon: const Icon(Icons.settings),
+            label: l10n.settingsTitle,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// App wrapper with theme, localization and AppLockOverlay
 class AmarTransportHisabApp extends ConsumerWidget {
   const AmarTransportHisabApp({super.key});
 
@@ -67,319 +211,125 @@ class AmarTransportHisabApp extends ConsumerWidget {
       darkTheme: darkTheme(isBn),
       themeMode: themeMode,
       routerConfig: router,
+      builder: (context, child) {
+        return AppLockOverlay(child: child ?? const SizedBox.shrink());
+      },
     );
   }
 }
 
-/// Placeholder screens for M0/M0b
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+/// Overlay that guards the app behind biometrics/PIN when app lock is active
+class AppLockOverlay extends ConsumerStatefulWidget {
+  final Widget child;
+
+  const AppLockOverlay({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppLockOverlay> createState() => _AppLockOverlayState();
+}
+
+class _AppLockOverlayState extends ConsumerState<AppLockOverlay> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndPromptAuth();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      final isLockEnabled = ref.read(appLockEnabledProvider);
+      if (isLockEnabled) {
+        _checkAndPromptAuth();
+      }
+    }
+  }
+
+  Future<void> _checkAndPromptAuth() async {
+    final isLockEnabled = ref.read(appLockEnabledProvider);
+    final isUnlocked = ref.read(appUnlockedProvider);
+
+    if (isLockEnabled && !isUnlocked) {
+      final auth = ref.read(appLockServiceProvider);
+      final success = await auth.authenticate();
+      if (success && mounted) {
+        ref.read(appUnlockedProvider.notifier).state = true;
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLockEnabled = ref.watch(appLockEnabledProvider);
+    final isUnlocked = ref.watch(appUnlockedProvider);
+
+    if (!isLockEnabled || isUnlocked) {
+      return widget.child;
+    }
+
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.appTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.language),
-            onPressed: () {
-              ref.read(localeProvider.notifier).toggle();
-            },
-            tooltip: l10n.languageToggle,
+    final title = l10n.appTitle;
+    final lockedText = l10n.appLocked;
+    final buttonText = l10n.authenticateButton;
+
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.lock,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  lockedText,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                FilledButton.icon(
+                  onPressed: _checkAndPromptAuth,
+                  icon: const Icon(Icons.fingerprint),
+                  label: Text(buttonText),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(200, 50),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(l10n.appTitle, style: Theme.of(context).textTheme.headlineLarge),
-            const SizedBox(height: 16),
-            Text(l10n.scaffoldHome),
-            const SizedBox(height: 8),
-            Text(l10n.currentLocale(Localizations.localeOf(context).languageCode)),
-          ],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 0,
-        onDestinationSelected: (index) {
-          switch (index) {
-            case 0:
-              context.go('/');
-              break;
-            case 1:
-              context.go('/trips');
-              break;
-            case 2:
-              context.go('/money');
-              break;
-            case 3:
-              context.go('/more');
-              break;
-          }
-        },
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.dashboard_outlined),
-            selectedIcon: const Icon(Icons.dashboard),
-            label: l10n.homeTab,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.list_alt_outlined),
-            selectedIcon: const Icon(Icons.list_alt),
-            label: l10n.tripsTab,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: const Icon(Icons.account_balance_wallet),
-            label: l10n.moneyTab,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.more_horiz),
-            label: l10n.moreTab,
-          ),
-        ],
-      ),
     );
-  }
-}
-
-class TripsScreen extends ConsumerWidget {
-  const TripsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.tripsTab)),
-      body: Center(child: Text(l10n.scaffoldTrips)),
-    );
-  }
-}
-
-class MoneyScreen extends ConsumerWidget {
-  const MoneyScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.moneyTab)),
-      body: Center(child: Text(l10n.scaffoldMoney)),
-    );
-  }
-}
-
-class MoreScreen extends ConsumerWidget {
-  const MoreScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final themeMode = ref.watch(themeModeProvider);
-
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.moreTab)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Theme Toggle
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.palette_outlined),
-              title: Text(l10n.themeLabel),
-              subtitle: Text(_themeModeLabel(l10n, themeMode)),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go('/settings'),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Language Toggle
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.language_outlined),
-              title: Text(l10n.languageLabel),
-              subtitle: Text(Localizations.localeOf(context).languageCode == 'bn' ? 'বাংলা' : 'English'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                ref.read(localeProvider.notifier).toggle();
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Placeholder for other settings
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.account_balance_wallet_outlined),
-              title: Text(l10n.openingBalancesLabel),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                // TODO: Navigate to opening balances
-              },
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.backup_outlined),
-              title: Text(l10n.backupTitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                // TODO: Navigate to backup
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _themeModeLabel(AppLocalizations l10n, ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.light:
-        return l10n.themeLight;
-      case ThemeMode.dark:
-        return l10n.themeDark;
-      case ThemeMode.system:
-        return l10n.themeSystem;
-    }
-  }
-}
-
-class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final themeMode = ref.watch(themeModeProvider);
-
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsTitle)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Theme Section
-          Text(l10n.themeLabel, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          ...ThemeMode.values.map((mode) {
-            return RadioListTile<ThemeMode>(
-              title: Text(_themeModeLabel(l10n, mode)),
-              value: mode,
-              groupValue: themeMode,
-              onChanged: (value) {
-                if (value != null) {
-                  ref.read(themeModeProvider.notifier).setThemeMode(value);
-                }
-              },
-            );
-          }),
-          const Divider(height: 32),
-          // Language Section
-          Text(l10n.languageLabel, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: const Icon(Icons.language_outlined),
-            title: Text(Localizations.localeOf(context).languageCode == 'bn' ? 'বাংলা' : 'English'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              ref.read(localeProvider.notifier).toggle();
-            },
-          ),
-          const Divider(height: 32),
-          // Opening Balances
-          Text(l10n.openingBalancesLabel, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: const Icon(Icons.account_balance_wallet_outlined),
-            title: Text(l10n.openingCashLabel),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // TODO: Navigate to opening cash
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.people_outlined),
-            title: Text(l10n.customerOpeningLabel),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // TODO: Navigate to customer opening balances
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.directions_car_outlined),
-            title: Text(l10n.driverOpeningLabel),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // TODO: Navigate to driver opening balances
-            },
-          ),
-          const Divider(height: 32),
-          // Backup Section
-          Text(l10n.backupTitle, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: const Icon(Icons.backup_outlined),
-            title: Text(l10n.createBackup),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // TODO: Navigate to backup
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.restore_outlined),
-            title: Text(l10n.restoreTitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // TODO: Navigate to restore
-            },
-          ),
-          const Divider(height: 32),
-          // App Lock (Could - off by default)
-          SwitchListTile(
-            secondary: const Icon(Icons.lock_outline),
-            title: Text(l10n.appLockLabel),
-            subtitle: Text(l10n.appLockDesc),
-            value: false, // TODO: Read from settings
-            onChanged: (value) {
-              // TODO: Implement app lock
-            },
-          ),
-          // Notifications (Could - off by default)
-          SwitchListTile(
-            secondary: const Icon(Icons.notifications_outlined),
-            title: Text(l10n.notificationsLabel),
-            subtitle: Text(l10n.notificationsDesc),
-            value: false, // TODO: Read from settings
-            onChanged: (value) {
-              // TODO: Implement notifications
-            },
-          ),
-          // Cloud Backup (Could - off by default)
-          SwitchListTile(
-            secondary: const Icon(Icons.cloud_upload_outlined),
-            title: Text(l10n.cloudBackupLabel),
-            subtitle: Text(l10n.cloudBackupDesc),
-            value: false, // TODO: Read from settings
-            onChanged: (value) {
-              // TODO: Implement cloud backup
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _themeModeLabel(AppLocalizations l10n, ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.light:
-        return l10n.themeLight;
-      case ThemeMode.dark:
-        return l10n.themeDark;
-      case ThemeMode.system:
-        return l10n.themeSystem;
-    }
   }
 }
