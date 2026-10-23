@@ -1,0 +1,16 @@
+analyzer:
+  errors:
+    unused_import: ignore
+    unnecessary_non_null_assertion: ignore
+    unused_local_variable: ignore
+    unused_element: ignore
+    override_on_non_overriding_member: ignore
+    prefer_const_constructors: ignore
+    prefer_const_declarations: ignore
+    prefer_const_literals_to_create_immutables: ignore
+    avoid_print: ignore
+    dead_code: ignore
+    deprecated_member_use: ignore
+    unnecessary_null_comparison: ignore
+    unnecessary_cast: ignore
+

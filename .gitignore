@@ -1,0 +1,69 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Binaries & Releases
+*.apk
+*.aab
+
+# IDEs & System files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/*
+!.vscode/settings.json
+.DS_Store
+.metadata
+
+# Android
+android/.gradle/
+android/captures/
+android/local.properties
+android/app/debug
+android/app/profile
+android/app/release
+
+# Signing secrets: NEVER commit
+android/key.properties
+*.jks
+*.keystore
+
+# Secrets / env
+.env
+*.env
+google-services.json
+
+# Local demo / test databases and backups
+*.sqlite
+*.sqlite-journal
+*.db
+*.hisabbackup
+backups/
+
+# Internal planning, docs, kits, tests & workflows
+docs/
+amar-transport-hisab-kit/
+test/
+scripts/
+00-README.md
+WORKFLOW_STATE.md
+project.md
+AGENTS.md
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
