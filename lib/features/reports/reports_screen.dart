@@ -76,7 +76,7 @@ class ReportsScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.moreTab)), // Reuse "More" as "Reports"
+      appBar: AppBar(title: Text(l10n.reportsNavLabel)),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: reports.length,

@@ -4,8 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/features/settings/opening_balances_provider.dart';
-import 'package:transport_hisab/core/db/tables/customers.dart';
-import 'package:transport_hisab/core/db/tables/drivers.dart';
+import 'package:transport_hisab/features/customers/customer_provider.dart';
+import 'package:transport_hisab/features/drivers/driver_provider.dart';
 
 class OpeningBalancesScreen extends ConsumerWidget {
   const OpeningBalancesScreen({super.key});
@@ -14,19 +14,20 @@ class OpeningBalancesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final allBalancesAsync = ref.watch(allOpeningBalancesProvider);
+    final customersAsync = ref.watch(activeCustomersProvider);
+    final driversAsync = ref.watch(activeDriversProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.openingBalancesLabel)),
       body: allBalancesAsync.when(
         data: (balances) {
-          final cash = balances['cash'] as int;
-          final customers = balances['customers'] as Map<int, int>;
-          final drivers = balances['drivers'] as Map<int, int>;
+          final cash = balances['cash'] as int? ?? 0;
+          final driverBalances = (balances['drivers'] as Map<int, int>?) ?? <int, int>{};
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // Opening Cash
+              // Opening Cash Card
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -38,12 +39,14 @@ class OpeningBalancesScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            formatMoney(Money.paisa(cash), context: context),
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: cash >= 0
-                                  ? Theme.of(context).extension<AppSemanticColors>()!.success
-                                  : Theme.of(context).extension<AppSemanticColors>()!.danger,
+                          Expanded(
+                            child: Text(
+                              formatMoney(Money.paisa(cash), context: context),
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: cash >= 0
+                                        ? Theme.of(context).extension<AppSemanticColors>()?.success
+                                        : Theme.of(context).extension<AppSemanticColors>()?.danger,
+                                  ),
                             ),
                           ),
                           FilledButton.icon(
@@ -57,41 +60,148 @@ class OpeningBalancesScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
 
-              // Customer Opening Balances
-              Text(l10n.customerOpeningLabel, style: Theme.of(context).textTheme.titleMedium),
+              // Customer Opening Balances Header
+              Text(
+                l10n.customerOpeningLabel,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
-              if (customers.isEmpty)
-                Card(
+              customersAsync.when(
+                data: (customers) {
+                  if (customers.isEmpty) {
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(l10n.noCustomerOpeningBalances, style: Theme.of(context).textTheme.bodyMedium),
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: customers.map((customer) {
+                      final amount = customer.openingBalancePaisa;
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.person_outline),
+                          ),
+                          title: Text(customer.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text(customer.phone ?? ''),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                formatMoney(Money.paisa(amount), context: context),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: amount > 0
+                                      ? Theme.of(context).extension<AppSemanticColors>()?.danger
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                tooltip: l10n.edit,
+                                onPressed: () => _editCustomerOpeningBalance(
+                                  context,
+                                  ref,
+                                  customer.id,
+                                  customer.name,
+                                  amount,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+                loading: () => const Center(child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                )),
+                error: (e, _) => Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(l10n.noCustomerOpeningBalances, style: Theme.of(context).textTheme.bodyMedium),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(e.toString()),
                   ),
-                )
-              else
-                ...customers.entries.map((entry) => _CustomerOpeningBalanceTile(
-                      customerId: entry.key,
-                      amount: entry.value,
-                    )),
+                ),
+              ),
+              const SizedBox(height: 24),
 
-              const SizedBox(height: 16),
-
-              // Driver Opening Balances
-              Text(l10n.driverOpeningLabel, style: Theme.of(context).textTheme.titleMedium),
+              // Driver Opening Balances Header
+              Text(
+                l10n.driverOpeningLabel,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
-              if (drivers.isEmpty)
-                Card(
+              driversAsync.when(
+                data: (drivers) {
+                  if (drivers.isEmpty) {
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(l10n.noDriverOpeningBalances, style: Theme.of(context).textTheme.bodyMedium),
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: drivers.map((driver) {
+                      final amount = driverBalances[driver.id] ?? 0;
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.directions_car_outlined),
+                          ),
+                          title: Text(driver.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text(driver.phone ?? ''),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                formatMoney(Money.paisa(amount), context: context),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: amount > 0
+                                      ? Theme.of(context).extension<AppSemanticColors>()?.warning
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                tooltip: l10n.edit,
+                                onPressed: () => _editDriverOpeningBalance(
+                                  context,
+                                  ref,
+                                  driver.id,
+                                  driver.name,
+                                  amount,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+                loading: () => const Center(child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                )),
+                error: (e, _) => Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(l10n.noDriverOpeningBalances, style: Theme.of(context).textTheme.bodyMedium),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(e.toString()),
                   ),
-                )
-              else
-                ...drivers.entries.map((entry) => _DriverOpeningBalanceTile(
-                      driverId: entry.key,
-                      amount: entry.value,
-                    )),
+                ),
+              ),
             ],
           );
         },
@@ -103,62 +213,54 @@ class OpeningBalancesScreen extends ConsumerWidget {
 
   void _editOpeningCash(BuildContext context, WidgetRef ref, int currentAmount) {
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: (currentAmount / 100).toStringAsFixed(2));
+    final controller = TextEditingController(
+      text: currentAmount == 0 ? '' : (currentAmount / 100).toStringAsFixed(2),
+    );
+    String? errorText;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.openingCashLabel),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n.openingCashLabel,
-            prefixText: '৳ ',
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (dialogCtx, setState) => AlertDialog(
+          title: Text(l10n.openingCashLabel),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: l10n.openingCashLabel,
+              prefixText: '৳ ',
+              errorText: errorText,
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () async {
-              final dao = ref.read(openingBalancesDaoProvider);
-              final amount = (double.parse(controller.text) * 100).round();
-              await dao.setOpeningCash(amount);
-              if (context.mounted) {
-                Navigator.pop(context);
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final text = controller.text.trim();
+                int paisa = 0;
+                if (text.isNotEmpty) {
+                  final parsed = parseMoneyInput(text);
+                  switch (parsed) {
+                    case Success(:final value):
+                      paisa = value.paisa;
+                    case Failure(:final error):
+                      setState(() => errorText = error);
+                      return;
+                  }
+                }
+                final dao = ref.read(openingBalancesDaoProvider);
+                await dao.setOpeningCash(paisa);
                 ref.invalidate(allOpeningBalancesProvider);
-              }
-            },
-            child: Text(l10n.save),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CustomerOpeningBalanceTile extends ConsumerWidget {
-  final int customerId;
-  final int amount;
-
-  const _CustomerOpeningBalanceTile({required this.customerId, required this.amount});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: const Icon(Icons.person_outline),
-        title: Text(l10n.customerIdLabel(customerId)),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(formatMoney(Money.paisa(amount), context: context)),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => _editCustomerOpeningBalance(context, ref),
+                ref.invalidate(openingCashProvider);
+                if (dialogCtx.mounted) {
+                  Navigator.pop(dialogCtx);
+                }
+              },
+              child: Text(l10n.save),
             ),
           ],
         ),
@@ -166,61 +268,63 @@ class _CustomerOpeningBalanceTile extends ConsumerWidget {
     );
   }
 
-  void _editCustomerOpeningBalance(BuildContext context, WidgetRef ref) {
+  void _editCustomerOpeningBalance(
+    BuildContext context,
+    WidgetRef ref,
+    int customerId,
+    String customerName,
+    int currentAmount,
+  ) {
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: (amount / 100).toStringAsFixed(2));
+    final controller = TextEditingController(
+      text: currentAmount == 0 ? '' : (currentAmount / 100).toStringAsFixed(2),
+    );
+    String? errorText;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.customerOpeningLabel),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: l10n.customerOpeningLabel, prefixText: '৳ '),
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () async {
-              final dao = ref.read(openingBalancesDaoProvider);
-              final newAmount = (double.parse(controller.text) * 100).round();
-              await dao.setCustomerOpeningBalance(customerId, newAmount);
-              if (context.mounted) {
-                Navigator.pop(context);
-                ref.invalidate(allOpeningBalancesProvider);
-              }
-            },
-            child: Text(l10n.save),
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (dialogCtx, setState) => AlertDialog(
+          title: Text('${l10n.customerOpeningLabel}: $customerName'), // i18n-ignore
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: l10n.customerOpeningLabel,
+              prefixText: '৳ ',
+              errorText: errorText,
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DriverOpeningBalanceTile extends ConsumerWidget {
-  final int driverId;
-  final int amount;
-
-  const _DriverOpeningBalanceTile({required this.driverId, required this.amount});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: const Icon(Icons.directions_car_outlined),
-        title: Text(l10n.driverIdLabel(driverId)),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(formatMoney(Money.paisa(amount), context: context)),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => _editDriverOpeningBalance(context, ref),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final text = controller.text.trim();
+                int paisa = 0;
+                if (text.isNotEmpty) {
+                  final parsed = parseMoneyInput(text);
+                  switch (parsed) {
+                    case Success(:final value):
+                      paisa = value.paisa;
+                    case Failure(:final error):
+                      setState(() => errorText = error);
+                      return;
+                  }
+                }
+                final dao = ref.read(openingBalancesDaoProvider);
+                await dao.setCustomerOpeningBalance(customerId, paisa);
+                ref.invalidate(allOpeningBalancesProvider);
+                ref.invalidate(customerOpeningBalancesProvider);
+                ref.invalidate(activeCustomersProvider);
+                if (dialogCtx.mounted) {
+                  Navigator.pop(dialogCtx);
+                }
+              },
+              child: Text(l10n.save),
             ),
           ],
         ),
@@ -228,34 +332,66 @@ class _DriverOpeningBalanceTile extends ConsumerWidget {
     );
   }
 
-  void _editDriverOpeningBalance(BuildContext context, WidgetRef ref) {
+  void _editDriverOpeningBalance(
+    BuildContext context,
+    WidgetRef ref,
+    int driverId,
+    String driverName,
+    int currentAmount,
+  ) {
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: (amount / 100).toStringAsFixed(2));
+    final controller = TextEditingController(
+      text: currentAmount == 0 ? '' : (currentAmount / 100).toStringAsFixed(2),
+    );
+    String? errorText;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.driverOpeningLabel),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: l10n.driverOpeningLabel, prefixText: '৳ '),
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () async {
-              final dao = ref.read(openingBalancesDaoProvider);
-              final newAmount = (double.parse(controller.text) * 100).round();
-              await dao.setDriverOpeningBalance(driverId, newAmount);
-              if (context.mounted) {
-                Navigator.pop(context);
-                ref.invalidate(allOpeningBalancesProvider);
-              }
-            },
-            child: Text(l10n.save),
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (dialogCtx, setState) => AlertDialog(
+          title: Text('${l10n.driverOpeningLabel}: $driverName'), // i18n-ignore
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: l10n.driverOpeningLabel,
+              prefixText: '৳ ',
+              errorText: errorText,
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final text = controller.text.trim();
+                int paisa = 0;
+                if (text.isNotEmpty) {
+                  final parsed = parseMoneyInput(text);
+                  switch (parsed) {
+                    case Success(:final value):
+                      paisa = value.paisa;
+                    case Failure(:final error):
+                      setState(() => errorText = error);
+                      return;
+                  }
+                }
+                final dao = ref.read(openingBalancesDaoProvider);
+                await dao.setDriverOpeningBalance(driverId, paisa);
+                ref.invalidate(allOpeningBalancesProvider);
+                ref.invalidate(driverOpeningBalancesProvider);
+                ref.invalidate(activeDriversProvider);
+                if (dialogCtx.mounted) {
+                  Navigator.pop(dialogCtx);
+                }
+              },
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
       ),
     );
   }

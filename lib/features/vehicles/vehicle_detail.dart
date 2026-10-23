@@ -6,6 +6,8 @@ import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_form.dart';
+import 'package:transport_hisab/features/vehicles/vehicle_loans_screen.dart';
+import 'package:transport_hisab/features/reports/vehicle_pnl_report.dart';
 
 class VehicleDetail extends ConsumerWidget {
   final Vehicle vehicle;
@@ -108,7 +110,12 @@ class VehicleDetail extends ConsumerWidget {
                   title: Text(l10n.loanOutstanding),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // TODO: Navigate to vehicle loans
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => VehicleLoansScreen(vehicle: vehicle),
+                      ),
+                    );
                   },
                 ),
                 const Divider(height: 1),
@@ -117,7 +124,12 @@ class VehicleDetail extends ConsumerWidget {
                   title: Text(l10n.reportVehiclePL),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // TODO: Navigate to vehicle P&L
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const VehiclePnLReport(),
+                      ),
+                    );
                   },
                 ),
               ],
