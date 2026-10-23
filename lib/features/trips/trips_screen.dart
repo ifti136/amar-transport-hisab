@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:collection/collection.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/db/daos/trip_dao.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
@@ -9,6 +10,7 @@ import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/trips/trip_form.dart';
 import 'package:transport_hisab/features/trips/trip_detail.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
+import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 
 class TripsScreen extends ConsumerStatefulWidget {
   const TripsScreen({super.key});
@@ -151,6 +153,12 @@ class _TripCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final semantic = theme.extension<AppSemanticColors>()!;
+    final vehicles = ref.watch(activeVehiclesProvider).asData?.value;
+    final customers = ref.watch(activeCustomersProvider).asData?.value;
+    final vehicle = vehicles?.firstWhereOrNull((v) => v.id == trip.vehicleId);
+    final customer = customers?.firstWhereOrNull((c) => c.id == trip.customerId);
+    final customerDisplay = customer?.name ?? 'Customer #${trip.customerId}';
+    final vehicleDisplay = vehicle?.regNo ?? 'Vehicle #${trip.vehicleId}';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -199,14 +207,14 @@ class _TripCard extends ConsumerWidget {
                     child: _InfoItem(
                       icon: Icons.person,
                       label: l10n.customerLabel,
-                      value: 'Customer #${trip.customerId}', // TODO: Get customer name
+                      value: customerDisplay,
                     ),
                   ),
                   Expanded(
                     child: _InfoItem(
                       icon: Icons.directions_bus,
                       label: l10n.vehicleLabel,
-                      value: 'Vehicle #${trip.vehicleId}', // TODO: Get vehicle reg no
+                      value: vehicleDisplay,
                     ),
                   ),
                   Expanded(
@@ -422,10 +430,44 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
             // Vehicle Filter
             ListTile(
               title: Text(l10n.vehicleFilterLabel),
-              subtitle: Text(_vehicleId != null ? 'Vehicle #$_vehicleId' : l10n.allVehicles),
+              subtitle: Builder(
+                builder: (context) {
+                  if (_vehicleId == null) return Text(l10n.allVehicles);
+                  final vehicles = ref.read(activeVehiclesProvider).asData?.value ?? [];
+                  final v = vehicles.firstWhereOrNull((v) => v.id == _vehicleId);
+                  return Text(v?.regNo ?? 'Vehicle #$_vehicleId');
+                },
+              ),
               trailing: const Icon(Icons.directions_bus),
               onTap: () {
-                // TODO: Show vehicle picker
+                final vehicles = ref.read(activeVehiclesProvider).asData?.value ?? [];
+                showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) => SafeArea(
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        ListTile(
+                          title: Text(l10n.allVehicles),
+                          selected: _vehicleId == null,
+                          onTap: () {
+                            setState(() => _vehicleId = null);
+                            Navigator.pop(ctx);
+                          },
+                        ),
+                        ...vehicles.map((v) => ListTile(
+                          title: Text(v.regNo),
+                          subtitle: Text(v.type),
+                          selected: _vehicleId == v.id,
+                          onTap: () {
+                            setState(() => _vehicleId = v.id);
+                            Navigator.pop(ctx);
+                          },
+                        )),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
             // Status Filter

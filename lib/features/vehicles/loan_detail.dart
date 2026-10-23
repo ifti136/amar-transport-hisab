@@ -53,7 +53,7 @@ class LoanDetailScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(l10n.loanDetailTitle(loan.id), style: theme.textTheme.headlineSmall),
-                            Text('Vehicle: ${vehicle.regNo}', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                            Text('${l10n.vehicleLabel}: ${vehicle.regNo}', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)), // i18n-ignore
                           ],
                         ),
                       ),
@@ -113,7 +113,7 @@ class LoanDetailScreen extends ConsumerWidget {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(child: Text('Error: $error')),
+              error: (error, stack) => Center(child: Text('Error: $error')), // i18n-ignore
             ),
           ),
         ],

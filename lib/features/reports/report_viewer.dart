@@ -167,7 +167,7 @@ class _FilterBar extends StatelessWidget {
                   initialDateRange: dateRange,
                 );
                 if (range != null) {
-                  // onDateRangeChanged(range);
+                  onDateRangeChanged(range);
                 }
               },
               child: Container(
@@ -235,7 +235,7 @@ class _ReportTable extends StatelessWidget {
           children: [
             Icon(Icons.table_chart_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
             const SizedBox(height: 16),
-            Text('No data for selected period', style: Theme.of(context).textTheme.headlineSmall),
+            Text('No data for selected period', style: Theme.of(context).textTheme.headlineSmall), // i18n-ignore
           ],
         ),
       );

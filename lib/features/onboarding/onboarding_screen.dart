@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -16,27 +17,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   final List<OnboardingPage> _pages = [
     OnboardingPage(
-      title: 'Welcome to Amar Transport Hisab',
+      title: 'Welcome to Amar Transport Hisab', // i18n-ignore
       description: 'Your complete transport accounting solution for managing vans, drivers, trips, and finances.',
       icon: Icons.local_shipping,
     ),
     OnboardingPage(
-      title: 'Bengali First',
+      title: 'Bengali First', // i18n-ignore
       description: 'The app is designed in Bengali as the primary language with full English support. Switch languages anytime from the app bar.',
       icon: Icons.language,
     ),
     OnboardingPage(
-      title: 'Offline First',
+      title: 'Offline First', // i18n-ignore
       description: 'All your data stays on your device. No internet required for daily operations. Optional encrypted cloud backup available.',
       icon: Icons.cloud_off,
     ),
     OnboardingPage(
-      title: 'Secure & Private',
+      title: 'Secure & Private', // i18n-ignore
       description: 'Your financial data is encrypted locally. Optional app lock with PIN or biometric. Local backup/restore with verification.',
       icon: Icons.security,
     ),
     OnboardingPage(
-      title: 'Ready to Start',
+      title: 'Ready to Start', // i18n-ignore
       description: 'Set up your vehicles, drivers, and opening balances to begin tracking your transport business.',
       icon: Icons.check_circle,
       actionText: 'Get Started',
@@ -98,7 +99,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                       ),
-                      child: Text('Back'),
+                      child: const Text('Back'), // i18n-ignore
                     ),
                   ),
                 if (_currentPage > 0) const SizedBox(width: 16),
@@ -129,7 +130,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_completed', true);
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/');
+      context.go('/');
     }
   }
 }

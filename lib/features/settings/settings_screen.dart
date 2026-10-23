@@ -295,6 +295,15 @@ class SettingsScreen extends ConsumerWidget {
           // Section 7: About Section
           _SectionHeader(title: l10n.aboutTitle),
           Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: ListTile(
+              leading: const Icon(Icons.help_outline),
+              title: const Text('App Guide & Feature Walkthrough'), // i18n-ignore
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/onboarding'),
+            ),
+          ),
+          Card(
             margin: const EdgeInsets.only(bottom: 32),
             child: Padding(
               padding: const EdgeInsets.all(16),

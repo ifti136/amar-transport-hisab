@@ -32,6 +32,8 @@ class _DriverLoanSheetState extends ConsumerState<DriverLoanSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final loanBalanceAsync = ref.watch(driverLoanBalanceProvider(widget.driver.id));
+    final loanBalancePaisa = loanBalanceAsync.asData?.value ?? 0;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -65,7 +67,10 @@ class _DriverLoanSheetState extends ConsumerState<DriverLoanSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(widget.driver.name, style: theme.textTheme.titleMedium),
-                          Text(l10n.loanBalanceLabel(formatMoney(Money.paisa(0), context: context)), style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)), // TODO: Load actual balance
+                          Text(
+                            l10n.loanBalanceLabel(formatMoney(Money.paisa(loanBalancePaisa), context: context)),
+                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                          ),
                         ],
                       ),
                     ),

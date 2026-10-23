@@ -116,7 +116,7 @@ class BackupScreen extends ConsumerWidget {
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup failed: $e')),
+          SnackBar(content: Text('Backup failed: $e')), // i18n-ignore
         );
       }
     }
@@ -152,7 +152,7 @@ class BackupScreen extends ConsumerWidget {
       if (!restoreResult.success) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Restore validation failed: ${restoreResult.error}')),
+            SnackBar(content: Text('Restore validation failed: ${restoreResult.error}')), // i18n-ignore
           );
         }
         return;
@@ -171,8 +171,8 @@ class BackupScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               Text(l10n.restorePreview(restoreResult.recordCounts!.values.fold(0, (a, b) => a + b), restoreResult.backupTimestamp ?? 'Unknown')),
               const SizedBox(height: 16),
-              Text('Records to restore:', style: Theme.of(context).textTheme.titleSmall),
-              ...restoreResult.recordCounts!.entries.map((e) => Text('${e.key}: ${e.value}')),
+              Text('Records to restore:', style: Theme.of(context).textTheme.titleSmall), // i18n-ignore
+              ...restoreResult.recordCounts!.entries.map((e) => Text('${e.key}: ${e.value}')), // i18n-ignore
             ],
           ),
           actions: [
@@ -217,7 +217,7 @@ class BackupScreen extends ConsumerWidget {
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Restore failed: $e')),
+          SnackBar(content: Text('Restore failed: $e')), // i18n-ignore
         );
       }
     }

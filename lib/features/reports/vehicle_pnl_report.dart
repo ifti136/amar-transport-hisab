@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/features/reports/report_viewer.dart';
+import 'package:transport_hisab/features/reports/report_export_helper.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 
 class VehiclePnLReport extends ConsumerWidget {
   const VehiclePnLReport({super.key});
@@ -8,9 +12,58 @@ class VehiclePnLReport extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.reportVehiclePL)),
-      body: Center(child: Text('Vehicle P&L Report - TODO')),
+    final dashboardAsync = ref.watch(dashboardProvider);
+
+    return dashboardAsync.when(
+      data: (dashboard) {
+        final headers = [
+          l10n.vehicleLabel,
+          l10n.tripsTab,
+          l10n.profit,
+        ];
+
+        int totalTrips = 0;
+        int totalProfit = 0;
+        final rows = <List<String>>[];
+
+        for (final van in dashboard.vanSummaries) {
+          totalTrips += van.tripCount;
+          totalProfit += van.profitPaisa;
+
+          rows.add([
+            van.regNo,
+            '${van.tripCount}',
+            formatMoney(Money.paisa(van.profitPaisa), context: context),
+          ]);
+        }
+
+        final totals = [
+          '${l10n.vehicleLabel}: ${dashboard.vanSummaries.length}',
+          '$totalTrips',
+          formatMoney(Money.paisa(totalProfit), context: context),
+        ];
+
+        return ReportViewer(
+          title: l10n.reportVehiclePL,
+          headers: headers,
+          rows: rows,
+          totals: totals,
+          onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
+            title: l10n.reportVehiclePL,
+            headers: headers,
+            rows: rows,
+            totals: totals,
+          ),
+          onExportPdf: (range, vehicleId) => ReportExportHelper.exportAndSharePdf(
+            title: l10n.reportVehiclePL,
+            headers: headers,
+            rows: rows,
+            totals: totals,
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text(e.toString())),
     );
   }
 }

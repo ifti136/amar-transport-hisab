@@ -110,6 +110,14 @@ final outstandingAdvanceProvider = FutureProvider.family<int, OutstandingAdvance
   return dao.getOutstandingAdvance(filter.driverId, filter.upTo);
 });
 
+/// Provider for driver loan balance
+final driverLoanBalanceProvider = FutureProvider.family<int, int>((ref, driverId) async {
+  final dao = ref.watch(driverTransactionDaoProvider);
+  final given = await dao.getTotalLoansGiven(driverId, DateTime.now());
+  final repaid = await dao.getTotalLoansRepaid(driverId, DateTime.now());
+  return given - repaid;
+});
+
 class OutstandingAdvanceFilter {
   final int driverId;
   final DateTime upTo;

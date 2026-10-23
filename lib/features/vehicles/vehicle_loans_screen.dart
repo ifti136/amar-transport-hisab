@@ -203,10 +203,16 @@ class _LoanCard extends ConsumerWidget {
               Row(
                 children: [
                   Expanded(
-                    child: _InfoItem(
-                      icon: Icons.account_balance_wallet,
-                      label: l10n.loanOutstanding,
-                      value: '৳0', // TODO: Load actual outstanding
+                    child: FutureBuilder<int>(
+                      future: ref.read(vehicleLoanDaoProvider).getLoanOutstanding(loan.id, DateTime.now()),
+                      builder: (context, snapshot) {
+                        final outstanding = snapshot.data ?? 0;
+                        return _InfoItem(
+                          icon: Icons.account_balance_wallet,
+                          label: l10n.loanOutstanding,
+                          value: formatMoney(Money.paisa(outstanding), context: context),
+                        );
+                      },
                     ),
                   ),
                   Expanded(

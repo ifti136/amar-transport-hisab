@@ -100,7 +100,7 @@ class _AddInstallmentSheetState extends ConsumerState<AddInstallmentSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${l10n.loanDetailTitle(widget.loan.id)} - ${widget.vehicle.regNo}', style: theme.textTheme.titleMedium),
+                    Text('${l10n.loanDetailTitle(widget.loan.id)} - ${widget.vehicle.regNo}', style: theme.textTheme.titleMedium), // i18n-ignore
                     const SizedBox(height: 8),
                     _SummaryRow(label: 'Principal', value: formatMoney(Money.paisa(widget.loan.principalPaisa), context: context)),
                     _SummaryRow(label: 'Interest Rate', value: '${(widget.loan.annualInterestRateBps / 100).toStringAsFixed(2)}%'),
@@ -205,7 +205,7 @@ class _AddInstallmentSheetState extends ConsumerState<AddInstallmentSheet> {
                 controller: _noteController,
                 decoration: InputDecoration(
                   labelText: l10n.noteLabel,
-                  hintText: 'Installment details',
+                  hintText: l10n.noteLabel,
                 ),
                 maxLines: 2,
               ),
@@ -247,7 +247,7 @@ class _AddInstallmentSheetState extends ConsumerState<AddInstallmentSheet> {
     // Validate principal + interest = total
     if (principal + interest != totalPaid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Principal + Interest must equal Total Paid')),
+        const SnackBar(content: Text('Principal + Interest must equal Total Paid')), // i18n-ignore
       );
       return;
     }

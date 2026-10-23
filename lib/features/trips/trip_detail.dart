@@ -8,6 +8,8 @@ import 'package:transport_hisab/core/db/daos/trip_dao.dart';
 import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/trips/trip_form.dart';
 import 'package:transport_hisab/features/trips/receive_payment.dart';
+import 'package:transport_hisab/features/customers/customer_provider.dart';
+import 'package:transport_hisab/features/money/money_provider.dart';
 
 class TripDetailScreen extends ConsumerWidget {
   final Trip trip;
@@ -104,14 +106,14 @@ class TripDetailScreen extends ConsumerWidget {
   }
 }
 
-class _TripDetailContent extends StatelessWidget {
+class _TripDetailContent extends ConsumerWidget {
   final Trip trip;
   final TripWithOutstanding tripData;
 
   const _TripDetailContent({required this.trip, required this.tripData});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final semantic = theme.extension<AppSemanticColors>()!;
@@ -212,9 +214,7 @@ class _TripDetailContent extends StatelessWidget {
                   title: Text(l10n.reportCustomerLedger),
                   subtitle: Text(tripData.totalPaid > 0 ? l10n.paidAmount(formatMoney(Money.paisa(tripData.totalPaid), context: context)) : l10n.noPaymentsYet),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Show payment history
-                  },
+                  onTap: () => _showPaymentHistory(context, ref),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -238,15 +238,133 @@ class _TripDetailContent extends StatelessWidget {
                   title: Text(l10n.reportExpenseRegister),
                   subtitle: Text(l10n.viewTripExpensesAction),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Show trip expenses
-                  },
+                  onTap: () => _showTripExpenses(context, ref),
                 ),
               ],
             ),
           ),
         ],
       );
+  }
+
+  void _showPaymentHistory(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final dao = ref.read(customerPaymentDaoProvider);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.reportCustomerLedger,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              FutureBuilder<List<CustomerPayment>>(
+                future: dao.getPaymentsForTrip(trip.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  final list = snapshot.data ?? [];
+                  if (list.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(l10n.noPaymentsYet),
+                    );
+                  }
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: list.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (context, idx) {
+                      final item = list[idx];
+                      return ListTile(
+                        leading: const CircleAvatar(child: Icon(Icons.payment)),
+                        title: Text(formatMoney(Money.paisa(item.amountPaisa), context: context)),
+                        subtitle: Text(
+                          '${formatDate(item.paymentDate, context: context)}${item.note != null && item.note!.isNotEmpty ? ' • ${item.note}' : ''}',
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showTripExpenses(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final dao = ref.read(expenseDaoProvider);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.reportExpenseRegister,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              FutureBuilder<List<Expense>>(
+                future: dao.getExpensesForTrip(trip.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  final list = snapshot.data ?? [];
+                  if (list.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text('No expenses recorded for this trip'), // i18n-ignore
+                    );
+                  }
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: list.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (context, idx) {
+                      final item = list[idx];
+                      return ListTile(
+                        leading: const CircleAvatar(child: Icon(Icons.receipt_long)),
+                        title: Text('${item.category}: ${formatMoney(Money.paisa(item.amountPaisa), context: context)}'), // i18n-ignore
+                        subtitle: Text(formatDate(item.expenseDate, context: context)),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _showReceivePayment(BuildContext context) {

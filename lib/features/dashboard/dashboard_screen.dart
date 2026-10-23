@@ -37,7 +37,7 @@ class DashboardScreen extends ConsumerWidget {
       body: dashboardAsync.when(
         data: (dashboard) => _DashboardContent(dashboard: dashboard),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(child: Text('Error: $error')), // i18n-ignore
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -308,6 +309,9 @@ class _ExpenseCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final vehicles = ref.watch(activeVehiclesProvider).asData?.value;
+    final vehicle = vehicles?.firstWhereOrNull((v) => v.id == expense.vehicleId);
+    final vehicleDisplay = vehicle?.regNo ?? 'Vehicle #${expense.vehicleId}';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -354,7 +358,7 @@ class _ExpenseCard extends ConsumerWidget {
                     child: _InfoItem(
                       icon: Icons.directions_bus,
                       label: l10n.vehicleLabel,
-                      value: 'Vehicle #${expense.vehicleId}',
+                      value: vehicleDisplay,
                     ),
                   ),
                   if (expense.tripId != null)
@@ -404,6 +408,9 @@ class _FuelCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final vehicles = ref.watch(activeVehiclesProvider).asData?.value;
+    final vehicle = vehicles?.firstWhereOrNull((v) => v.id == record.vehicleId);
+    final vehicleDisplay = vehicle?.regNo ?? 'Vehicle #${record.vehicleId}';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -484,7 +491,7 @@ class _FuelCard extends ConsumerWidget {
                     child: _InfoItem(
                       icon: Icons.directions_bus,
                       label: l10n.vehicleLabel,
-                      value: 'Vehicle #${record.vehicleId}',
+                      value: vehicleDisplay,
                     ),
                   ),
                 ],

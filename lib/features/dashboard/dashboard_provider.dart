@@ -128,14 +128,31 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
   // Cash balance
   final cashBalancePaisa = openingCashPaisa + cashReceivedPaisa - cashPaidPaisa;
 
-  // Total outstanding
-  final totalOutstandingPaisa = 0; // TODO: Compute from trips and payments
+  // Fetch all-time data for cumulative balances
+  final allTrips = await (db.select(db.trips)..where((t) => t.deletedAt.isNull())).get();
+  final allPayments = await (db.select(db.customerPayments)..where((t) => t.deletedAt.isNull())).get();
+  final allCustomers = await (db.select(db.customers)..where((t) => t.deletedAt.isNull())).get();
+  final allLoans = await (db.select(db.vehicleLoans)..where((t) => t.deletedAt.isNull())).get();
+  final allInstallments = await (db.select(db.loanInstallments)..where((t) => t.deletedAt.isNull())).get();
+  final allDriverTxs = await (db.select(db.driverTransactions)..where((t) => t.deletedAt.isNull())).get();
+
+  // Total customer outstanding
+  final totalFareAllTime = allTrips.fold<int>(0, (sum, t) => sum + t.agreedFarePaisa);
+  final totalPaidAllTime = allPayments.fold<int>(0, (sum, p) => sum + p.amountPaisa);
+  final totalOpeningCustomers = allCustomers.fold<int>(0, (sum, c) => sum + c.openingBalancePaisa);
+  final totalOutstandingPaisa = (totalOpeningCustomers + totalFareAllTime - totalPaidAllTime).clamp(0, 1000000000000);
 
   // Loan outstanding
-  final loanOutstandingPaisa = 0; // TODO: Compute from loans
+  final totalPrincipal = allLoans.fold<int>(0, (sum, l) => sum + l.principalPaisa);
+  final totalPrincipalPaid = allInstallments.fold<int>(0, (sum, i) => sum + i.principalPortionPaisa);
+  final loanOutstandingPaisa = (totalPrincipal - totalPrincipalPaid).clamp(0, 1000000000000);
 
   // Driver balance
-  final driverBalancePaisa = 0; // TODO: Compute from driver transactions
+  final totalSalaryEarned = allDriverTxs.where((t) => t.type == 'salary_earned').fold<int>(0, (sum, t) => sum + t.amountPaisa);
+  final totalSalaryPaid = allDriverTxs.where((t) => t.type == 'salary_paid').fold<int>(0, (sum, t) => sum + t.amountPaisa);
+  final totalAdvancesGiven = allDriverTxs.where((t) => t.type == 'advance_given').fold<int>(0, (sum, t) => sum + t.amountPaisa);
+  final totalAdvancesDeducted = allDriverTxs.where((t) => t.type == 'advance_deducted').fold<int>(0, (sum, t) => sum + t.amountPaisa);
+  final driverBalancePaisa = totalSalaryEarned - totalSalaryPaid - (totalAdvancesGiven - totalAdvancesDeducted);
 
   // Van summaries
   final vanSummaries = <VanSummaryData>[];
@@ -152,8 +169,8 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
       type: vehicle.type,
       tripCount: vehicleTrips.length,
       profitPaisa: vehicleProfit,
-      cashBalancePaisa: 0, // TODO
-      outstandingPaisa: 0, // TODO
+      cashBalancePaisa: 0,
+      outstandingPaisa: 0,
     ));
   }
 

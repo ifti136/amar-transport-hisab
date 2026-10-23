@@ -6,6 +6,9 @@ import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/drivers/driver_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_form.dart';
+import 'package:transport_hisab/features/drivers/driver_ledger.dart';
+import 'package:transport_hisab/features/drivers/pay_salary.dart';
+import 'package:transport_hisab/features/drivers/give_advance.dart';
 
 class DriverDetail extends ConsumerWidget {
   final Driver driver;
@@ -100,7 +103,10 @@ class DriverDetail extends ConsumerWidget {
                   title: Text(l10n.reportDriverLedger),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // TODO: Navigate to driver ledger
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => DriverLedgerScreen(driver: driver)),
+                    );
                   },
                 ),
                 const Divider(height: 1),
@@ -109,7 +115,11 @@ class DriverDetail extends ConsumerWidget {
                   title: Text(l10n.paySalaryTitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // TODO: Navigate to pay salary
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => PaySalarySheet(driver: driver),
+                    );
                   },
                 ),
                 const Divider(height: 1),
@@ -118,7 +128,11 @@ class DriverDetail extends ConsumerWidget {
                   title: Text(l10n.giveAdvanceTitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    // TODO: Navigate to give advance
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => GiveAdvanceSheet(driver: driver),
+                    );
                   },
                 ),
               ],

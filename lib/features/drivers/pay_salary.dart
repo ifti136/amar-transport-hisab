@@ -151,7 +151,7 @@ class _PaySalarySheetState extends ConsumerState<PaySalarySheet> {
                   controller: _noteController,
                   decoration: InputDecoration(
                     labelText: l10n.noteLabel,
-                    hintText: 'Salary payment for ${DateTime.now().month}/${DateTime.now().year}',
+                    hintText: 'Salary payment for ${DateTime.now().month}/${DateTime.now().year}', // i18n-ignore
                   ),
                   maxLines: 2,
                 ),

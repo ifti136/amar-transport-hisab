@@ -101,7 +101,7 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
                   validator: (id) => id == null ? l10n.errorRequired : null,
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, s) => Text('Error loading customers: $e'),
+                error: (e, s) => Text('Error loading customers: $e'), // i18n-ignore
               ),
               const SizedBox(height: 16),
             ]

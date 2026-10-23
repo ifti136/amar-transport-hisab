@@ -11,6 +11,10 @@
 
 ## 🚀 What's New in v1.1.0 (ভার্সন ১.১.০ প্যাচ আপডেট ও ফিক্স)
 
+- 📊 **Complete Financial Reports Suite (পূর্ণাঙ্গ রিপোর্ট ও স্টেটমেন্ট):** Full implementations for Trip Register, Expense Register, Fuel Register, Vehicle P&L, Cash Flow, Customer Ledger, Driver Ledger, Loan Schedule, and Expiry Alerts with PDF and Excel export capabilities.
+- 🚚 **Dynamic Vehicle & Customer Identifiers (সঠিক পরিচিতি):** Replaced static ID tags across trip and expense logs with live vehicle registration numbers and customer names.
+- 👥 **Driver Transactions & Advance Sheets (ড্রাইভার খাতা ও কিস্তি):** Interactive driver action sheets (Pay Salary, Give Advance, Driver Loan) with live balance validation and ledger views.
+- 📈 **Automated Balance Tracking (স্বয়ংক্রিয় ব্যালেন্স হিসাব):** Real-time customer receivables, fleet vehicle loans outstanding, and driver balance calculations on the main dashboard.
 - 📱 **Resolved Placeholder Screens (পূর্ণাঙ্গ ফিচার পর্দা):** Replaced temporary M0 scaffold placeholders with complete feature implementations (Interactive Dashboard with P&L metrics, Trips ledger, and Money/Fuel registers).
 - 🧭 **Persistent Bottom Navigation (স্থায়ী নেভিগেশন বার):** Implemented `StatefulShellRoute.indexedStack` bottom navigation bar that remains smoothly persistent across all primary tabs (Dashboard, Trips, Money, Settings).
 - 🔙 **Universal Top Back Button (ব্যাক বাটন সুবিধা):** Child screens and sub-routes now register on the root navigator key, ensuring standard top app bar back buttons on every child screen.
@@ -69,21 +73,21 @@
 2. **Opening Balances:** If migrating mid-business, enter opening cash, customer receivables, driver advances, and bank loan balances.
 3. **Add Vehicles:** Register your covered vans (Registration Number, model, purchase date, insurance/fitness expiry dates).
 4. **Add Drivers:** Register regular drivers and set monthly salaries or trip allowance rates.
-5. **Create Initial Backup:** Go to `More (আরও) → Backup (ব্যাকআপ)` and create a safety backup to Google Drive or your SD card.
+5. **Create Initial Backup:** Go to `Settings (সেটিংস) → Backup & Restore (ব্যাকআপ ও রিস্টোর)` and create a safety backup.
 
 ---
 
 ## 💾 Backup & Restore (ব্যাকআপ ও রিস্টোর)
 
 ### 📤 How to Backup
-1. Go to **More (আরও) → Backup (ব্যাকআপ)**.
+1. Go to **Settings (সেটিংস) → Backup & Restore (ব্যাকআপ ও রিস্টোর)**.
 2. Tap **"Create Backup" (ব্যাকআপ তৈরি করুন)**.
 3. (Optional) Enter a passphrase to encrypt your backup file.
 4. Save/Share the `.hisabbackup` file outside the phone (Google Drive, Email, or Computer).
 
 ### 📥 How to Restore
 1. Install the app on your new or reset phone.
-2. Go to **More (আরও) → Restore (রিস্টোর)**.
+2. Go to **Settings (সেটিংস) → Backup & Restore (ব্যাকআপ ও রিস্টোর)**.
 3. Select your `.hisabbackup` file and enter your encryption passphrase if set.
 4. Confirm restore. The app will replace existing records and reload your complete accounting ledger.
 

@@ -31,6 +31,8 @@ class _GiveAdvanceSheetState extends ConsumerState<GiveAdvanceSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final advanceAsync = ref.watch(outstandingAdvanceProvider(OutstandingAdvanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
+    final advancePaisa = advanceAsync.asData?.value ?? 0;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -64,7 +66,10 @@ class _GiveAdvanceSheetState extends ConsumerState<GiveAdvanceSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(widget.driver.name, style: theme.textTheme.titleMedium),
-                          Text(l10n.outstandingAdvanceLabel(formatMoney(Money.paisa(0), context: context)), style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)), // TODO: Load actual outstanding
+                          Text(
+                            l10n.outstandingAdvanceLabel(formatMoney(Money.paisa(advancePaisa), context: context)),
+                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                          ),
                         ],
                       ),
                     ),

@@ -21,6 +21,7 @@ import 'features/reports/reports_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/settings/opening_balances_screen.dart';
 import 'features/backup/backup_screen.dart';
+import 'features/onboarding/onboarding_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -128,6 +129,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         path: '/settings/backup',
         builder: (context, state) => const BackupScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

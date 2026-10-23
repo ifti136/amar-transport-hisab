@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:collection/collection.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_form.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_detail.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 
 class VehiclesScreen extends ConsumerWidget {
   const VehiclesScreen({super.key});
@@ -128,6 +130,10 @@ class _VehicleCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final expiryAsync = ref.watch(vehicleExpiryProvider(vehicle.id));
+    final dashboard = ref.watch(dashboardProvider).asData?.value;
+    final vanSummary = dashboard?.vanSummaries.firstWhereOrNull((s) => s.vehicleId == vehicle.id);
+    final tripsCount = vanSummary?.tripCount ?? 0;
+    final profitPaisa = vanSummary?.profitPaisa ?? 0;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -172,22 +178,22 @@ class _VehicleCard extends ConsumerWidget {
                   Expanded(
                     child: _InfoChip(
                       icon: Icons.route,
-                      label: l10n.vanTrips(0), // TODO: Get actual trip count
-                      value: '0',
+                      label: l10n.vanTrips(tripsCount),
+                      value: '$tripsCount',
                     ),
                   ),
                   Expanded(
                     child: _InfoChip(
                       icon: Icons.trending_up,
                       label: l10n.profit,
-                      value: '৳0', // TODO: Get actual profit
+                      value: formatMoney(Money.paisa(profitPaisa), context: context),
                     ),
                   ),
                   Expanded(
                     child: _InfoChip(
-                      icon: Icons.account_balance_wallet,
-                      label: l10n.cashBalance,
-                      value: '৳0', // TODO: Get actual cash
+                      icon: Icons.assignment_outlined,
+                      label: l10n.vehicleTypeLabel,
+                      value: vehicle.type,
                     ),
                   ),
                 ],
