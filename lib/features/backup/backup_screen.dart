@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/features/backup/backup_service.dart';
 import 'package:transport_hisab/features/backup/restore_service.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
+import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
+import 'package:transport_hisab/features/drivers/driver_provider.dart';
+import 'package:transport_hisab/features/customers/customer_provider.dart';
+import 'package:transport_hisab/features/settings/opening_balances_provider.dart';
 
 class BackupScreen extends ConsumerWidget {
   const BackupScreen({super.key});
@@ -98,6 +104,12 @@ class BackupScreen extends ConsumerWidget {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.backupSuccess(file.path))),
+        );
+        // Prompt user to share or save outside device
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          subject: 'Amar Transport Hisab Backup',
+          text: 'Backup file for Amar Transport Hisab',
         );
       }
     } catch (e) {
@@ -192,10 +204,14 @@ class BackupScreen extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
+        ref.invalidate(dashboardProvider);
+        ref.invalidate(allOpeningBalancesProvider);
+        ref.invalidate(activeVehiclesProvider);
+        ref.invalidate(activeDriversProvider);
+        ref.invalidate(activeCustomersProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.restoreSuccess)),
         );
-        // Restart app or navigate to home
       }
     } catch (e) {
       if (context.mounted) {

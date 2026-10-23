@@ -11,12 +11,14 @@ class BackupService {
   /// Create a backup of all data
   static Future<File> createBackup(AppDatabase db) async {
     final dir = await getApplicationDocumentsDirectory();
-    final downloadsDir = Directory('/storage/emulated/0/Download');
-    final targetDir = await downloadsDir.exists() ? downloadsDir : dir;
+    final backupsDir = Directory('${dir.path}/backups');
+    if (!await backupsDir.exists()) {
+      await backupsDir.create(recursive: true);
+    }
     
     final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').replaceAll('.', '-');
     final fileName = '$_backupPrefix$timestamp.json';
-    final file = File('${targetDir.path}/$fileName');
+    final file = File('${backupsDir.path}/$fileName');
 
     // Fetch all data
     final vehicles = await db.select(db.vehicles).get();
