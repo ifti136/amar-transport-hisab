@@ -1,0 +1,347 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:transport_hisab/core/db/database.dart';
+import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/db/daos/trip_dao.dart';
+import 'package:transport_hisab/features/trips/trip_provider.dart';
+import 'package:transport_hisab/features/trips/trip_form.dart';
+import 'package:transport_hisab/features/trips/receive_payment.dart';
+
+class TripDetailScreen extends ConsumerWidget {
+  final Trip trip;
+
+  const TripDetailScreen({super.key, required this.trip});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final tripWithOutstandingAsync = ref.watch(tripWithOutstandingProvider(trip.id));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.tripDetailTitle(trip.id)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => _showEditForm(context),
+            tooltip: l10n.edit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () => _confirmDelete(context, ref),
+            tooltip: l10n.delete,
+          ),
+        ],
+      ),
+      body: tripWithOutstandingAsync.when(
+        data: (tripData) {
+          if (tripData == null) return _notFound(context, l10n);
+          return _TripDetailContent(trip: tripData.trip, tripData: tripData);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text(l10n.errorLoadingTrip(error.toString()))),
+      ),
+    );
+  }
+
+  Widget _notFound(BuildContext context, AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
+          const SizedBox(height: 16),
+          Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 16),
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => TripForm(trip: trip),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.delete),
+        content: Text(l10n.confirmDeleteTrip),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final dao = ref.read(tripDaoProvider);
+              await dao.softDeleteWithAudit(trip.id, userNote: 'Trip deleted');
+              if (context.mounted) {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                ref.invalidate(tripsProvider(const TripFilter()));
+              }
+            },
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TripDetailContent extends StatelessWidget {
+  final Trip trip;
+  final TripWithOutstanding tripData;
+
+  const _TripDetailContent({required this.trip, required this.tripData});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final semantic = theme.extension<AppSemanticColors>()!;
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Trip Info Card
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      child: Icon(Icons.local_shipping, color: theme.colorScheme.primary),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.tripDetailHeader(trip.id), style: theme.textTheme.headlineSmall),
+                          Text(
+                            formatDate(trip.tripDate, context: context),
+                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _TripStatusBadge(status: trip.status),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _DetailRow(label: l10n.customerLabel, value: 'Customer #${trip.customerId}'),
+                _DetailRow(label: l10n.vehicleLabel, value: 'Vehicle #${trip.vehicleId}'),
+                _DetailRow(label: l10n.driverLabel, value: 'Driver #${trip.driverId}'),
+                _DetailRow(label: l10n.fareLabel, value: formatMoney(Money.paisa(trip.agreedFarePaisa), context: context)),
+                _DetailRow(label: l10n.advanceLabel, value: formatMoney(Money.paisa(trip.advancePaisa), context: context)),
+                _DetailRow(label: l10n.startOdoLabel, value: trip.startOdo.toString()),
+                _DetailRow(label: l10n.endOdoLabel, value: trip.endOdo?.toString() ?? '—'),
+                _DetailRow(label: l10n.outstandingLabel, value: formatMoney(Money.paisa(tripData.outstanding), context: context)),
+                _DetailRow(label: l10n.statusLabel, value: trip.status),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+          // Financial Summary
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.reportTripRegister, style: theme.textTheme.titleMedium),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _SummaryItem(
+                          label: l10n.fareLabel,
+                          value: formatMoney(Money.paisa(trip.agreedFarePaisa), context: context),
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      Expanded(
+                        child: _SummaryItem(
+                          label: l10n.advanceLabel,
+                          value: formatMoney(Money.paisa(trip.advancePaisa), context: context),
+                          color: theme.extension<AppSemanticColors>()!.success,
+                        ),
+                      ),
+                      Expanded(
+                        child: _SummaryItem(
+                          label: l10n.outstandingLabel,
+                          value: formatMoney(Money.paisa(tripData.outstanding), context: context),
+                          color: theme.extension<AppSemanticColors>()!.danger,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Payments
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text(l10n.reportCustomerLedger),
+                  subtitle: Text(tripData.totalPaid > 0 ? l10n.paidAmount(formatMoney(Money.paisa(tripData.totalPaid), context: context)) : l10n.noPaymentsYet),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    // TODO: Show payment history
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.add_circle_outline),
+                  title: Text(l10n.add),
+                  subtitle: Text(l10n.receivePaymentAction),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showReceivePayment(context),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Expenses
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.receipt_long),
+                  title: Text(l10n.reportExpenseRegister),
+                  subtitle: Text(l10n.viewTripExpensesAction),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    // TODO: Show trip expenses
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+  }
+
+  void _showReceivePayment(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => ReceivePaymentSheet(trip: trip),
+    );
+  }
+}
+
+class _TripStatusBadge extends StatelessWidget {
+  final String status;
+
+  const _TripStatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final semantic = theme.extension<AppSemanticColors>()!;
+
+    Color color;
+    String label;
+    switch (status) {
+      case 'completed':
+        color = semantic.success;
+        label = l10n.statusCompleted;
+        break;
+      case 'cancelled':
+        color = semantic.danger;
+        label = l10n.statusCancelled;
+        break;
+      default:
+        color = theme.colorScheme.onSurfaceVariant;
+        label = status;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _DetailRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ),
+          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _SummaryItem({required this.label, required this.value, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        const SizedBox(height: 4),
+        Text(value, style: theme.textTheme.titleMedium?.copyWith(color: color, fontWeight: FontWeight.w500)),
+      ],
+    );
+  }
+}
