@@ -1487,5 +1487,81 @@
   "loanRepaidAction": "Loan Repaid",
   "@loanRepaidAction": {
     "description": "Loan repaid action"
+  },
+  "aboutTitle": "About Amar Transport Hisab",
+  "@aboutTitle": {
+    "description": "About section title"
+  },
+  "appAboutDesc": "Offline-first transport accounting & fleet management app designed for covered van fleet owners in Bangladesh.",
+  "@appAboutDesc": {
+    "description": "About app description"
+  },
+  "developerLabel": "Developer",
+  "@developerLabel": {
+    "description": "Developer label"
+  },
+  "developerName": "Iftekharul Islam (ifti136)",
+  "@developerName": {
+    "description": "Developer name"
+  },
+  "patchUpdatesLabel": "Patch Updates & Fixes (v1.1.0)",
+  "@patchUpdatesLabel": {
+    "description": "Patch updates section title"
+  },
+  "appVersionLabel": "Version",
+  "@appVersionLabel": {
+    "description": "Version label"
+  },
+  "vehiclesNavLabel": "Vehicles & Vans",
+  "@vehiclesNavLabel": {
+    "description": "Vehicles navigation item"
+  },
+  "driversNavLabel": "Drivers Ledger",
+  "@driversNavLabel": {
+    "description": "Drivers navigation item"
+  },
+  "customersNavLabel": "Customers & Dues",
+  "@customersNavLabel": {
+    "description": "Customers navigation item"
+  },
+  "loansNavLabel": "Vehicle Loans & EMI",
+  "@loansNavLabel": {
+    "description": "Loans navigation item"
+  },
+  "reportsNavLabel": "Reports & Statements",
+  "@reportsNavLabel": {
+    "description": "Reports navigation item"
+  },
+  "unlockApp": "Unlock App",
+  "@unlockApp": {
+    "description": "Unlock app title"
+  },
+  "unlockReason": "Please authenticate to open Amar Transport Hisab",
+  "@unlockReason": {
+    "description": "Biometric unlock reason prompt"
+  },
+  "appLocked": "App is Locked",
+  "@appLocked": {
+    "description": "App locked title"
+  },
+  "authenticateButton": "Unlock Now",
+  "@authenticateButton": {
+    "description": "Unlock now button"
+  },
+  "expiryAlertsTitle": "Document Expiry Alerts",
+  "@expiryAlertsTitle": {
+    "description": "Expiry alerts title"
+  },
+  "expiryAlertsDesc": "Show warnings when vehicle documents expire soon",
+  "@expiryAlertsDesc": {
+    "description": "Expiry alerts description"
+  },
+  "cloudBackupExport": "Export to Cloud",
+  "@cloudBackupExport": {
+    "description": "Export to cloud button"
+  },
+  "cloudBackupStatus": "Client-side encrypted backup ready to sync",
+  "@cloudBackupStatus": {
+    "description": "Cloud backup status description"
   }
 }

@@ -1479,5 +1479,81 @@
   "recordRepaymentButton": "ফেরত রেকর্ড করুন",
   "@recordRepaymentButton": {
     "description": "Record repayment button"
+  },
+  "aboutTitle": "আমার ট্রান্সপোর্ট হিসাব সম্পর্কে",
+  "@aboutTitle": {
+    "description": "About section title"
+  },
+  "appAboutDesc": "বাংলাদেশের কাভার্ড ভ্যান ও ট্রান্সপোর্ট ব্যবসার জন্য সম্পূর্ণ অফলাইন হিসাব ও ব্যবস্থাপনা অ্যাপ।",
+  "@appAboutDesc": {
+    "description": "About app description"
+  },
+  "developerLabel": "ডেভেলপার",
+  "@developerLabel": {
+    "description": "Developer label"
+  },
+  "developerName": "ইফতেখারুল ইসলাম (ifti136)",
+  "@developerName": {
+    "description": "Developer name"
+  },
+  "patchUpdatesLabel": "প্যাচ আপডেট ও ফিক্স (ভার্সন ১.১.০)",
+  "@patchUpdatesLabel": {
+    "description": "Patch updates section title"
+  },
+  "appVersionLabel": "ভার্সন",
+  "@appVersionLabel": {
+    "description": "Version label"
+  },
+  "vehiclesNavLabel": "কাভার্ড ভ্যান ও গাড়ি",
+  "@vehiclesNavLabel": {
+    "description": "Vehicles navigation item"
+  },
+  "driversNavLabel": "ড্রাইভার খাতা ও হিসাব",
+  "@driversNavLabel": {
+    "description": "Drivers navigation item"
+  },
+  "customersNavLabel": "কাস্টমার ও বাকি খাতা",
+  "@customersNavLabel": {
+    "description": "Customers navigation item"
+  },
+  "loansNavLabel": "গাড়ির ঋণ ও কিস্তি",
+  "@loansNavLabel": {
+    "description": "Loans navigation item"
+  },
+  "reportsNavLabel": "রিপোর্ট ও বিবরণী",
+  "@reportsNavLabel": {
+    "description": "Reports navigation item"
+  },
+  "unlockApp": "অ্যাপ আনলক করুন",
+  "@unlockApp": {
+    "description": "Unlock app title"
+  },
+  "unlockReason": "অ্যাপটি খুলতে আপনার বায়োমেট্রিক বা পিন দিন",
+  "@unlockReason": {
+    "description": "Biometric unlock reason prompt"
+  },
+  "appLocked": "অ্যাপটি লক করা আছে",
+  "@appLocked": {
+    "description": "App locked title"
+  },
+  "authenticateButton": "লক খুলুন",
+  "@authenticateButton": {
+    "description": "Unlock now button"
+  },
+  "expiryAlertsTitle": "কাগজপত্রের মেয়াদ সতর্কতা",
+  "@expiryAlertsTitle": {
+    "description": "Expiry alerts title"
+  },
+  "expiryAlertsDesc": "কাগজপত্রের মেয়াদ শেষের সতর্কতা নোটিফিকেশন",
+  "@expiryAlertsDesc": {
+    "description": "Expiry alerts description"
+  },
+  "cloudBackupExport": "ক্লাউডে সেভ করুন",
+  "@cloudBackupExport": {
+    "description": "Export to cloud button"
+  },
+  "cloudBackupStatus": "ফোনে এনক্রিপ্ট করা ব্যাকআপ যা ক্লাউডে রাখা নিরাপদ",
+  "@cloudBackupStatus": {
+    "description": "Cloud backup status description"
   }
 }
