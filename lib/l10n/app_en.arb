@@ -1,0 +1,1491 @@
+{
+  "@@locale": "en",
+  "appTitle": "Amar Transport Hisab",
+  "@appTitle": {
+    "description": "App title shown in Home app bar"
+  },
+  "homeTab": "Home",
+  "@homeTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "tripsTab": "Trips",
+  "@tripsTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "moneyTab": "Money",
+  "@moneyTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "moreTab": "More",
+  "@moreTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "languageToggle": "Language",
+  "@languageToggle": {
+    "description": "Language toggle button tooltip"
+  },
+  "themeToggle": "Theme",
+  "@themeToggle": {
+    "description": "Theme toggle button tooltip"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Primary action button"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Secondary action button"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Destructive action button"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit action button"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Add new item button"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search hint/icon"
+  },
+  "filter": "Filter",
+  "@filter": {
+    "description": "Filter button"
+  },
+  "export": "Export",
+  "@export": {
+    "description": "Export button"
+  },
+  "backup": "Backup",
+  "@backup": {
+    "description": "Backup button"
+  },
+  "restore": "Restore",
+  "@restore": {
+    "description": "Restore button"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm dialog button"
+  },
+  "discard": "Discard",
+  "@discard": {
+    "description": "Discard changes button"
+  },
+  "errorRequired": "This field is required",
+  "@errorRequired": {
+    "description": "Validation error for required field"
+  },
+  "errorPositiveAmount": "Amount must be greater than 0",
+  "@errorPositiveAmount": {
+    "description": "Validation error for amount <= 0"
+  },
+  "errorAdvanceExceedsFare": "Advance cannot exceed fare",
+  "@errorAdvanceExceedsFare": {
+    "description": "Validation error when advance > fare"
+  },
+  "errorOdometerDecreased": "Odometer cannot decrease",
+  "@errorOdometerDecreased": {
+    "description": "Validation error when odometer decreases"
+  },
+  "errorInvalidNumber": "Enter a valid number",
+  "@errorInvalidNumber": {
+    "description": "Validation error for invalid number input"
+  },
+  "errorMaxTwoDecimals": "Maximum 2 decimal places",
+  "@errorMaxTwoDecimals": {
+    "description": "Validation error for >2 decimal places"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today label"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday label"
+  },
+  "thisMonth": "This Month",
+  "@thisMonth": {
+    "description": "This month label"
+  },
+  "lastMonth": "Last Month",
+  "@lastMonth": {
+    "description": "Last month label"
+  },
+  "addTripTitle": "New Trip",
+  "@addTripTitle": {
+    "description": "Add Trip screen title"
+  },
+  "customerLabel": "Customer",
+  "@customerLabel": {
+    "description": "Customer field label"
+  },
+  "vehicleLabel": "Vehicle",
+  "@vehicleLabel": {
+    "description": "Vehicle field label"
+  },
+  "driverLabel": "Driver",
+  "@driverLabel": {
+    "description": "Driver field label"
+  },
+  "dateLabel": "Date",
+  "@dateLabel": {
+    "description": "Date field label"
+  },
+  "fareLabel": "Fare",
+  "@fareLabel": {
+    "description": "Fare field label"
+  },
+  "advanceLabel": "Advance",
+  "@advanceLabel": {
+    "description": "Advance field label"
+  },
+  "startOdoLabel": "Start Odometer",
+  "@startOdoLabel": {
+    "description": "Start odometer field label"
+  },
+  "endOdoLabel": "End Odometer",
+  "@endOdoLabel": {
+    "description": "End odometer field label"
+  },
+  "outstandingLabel": "Outstanding",
+  "@outstandingLabel": {
+    "description": "Outstanding fare label"
+  },
+  "outstandingValue": "{amount}",
+  "@outstandingValue": {
+    "description": "Outstanding fare value (formatted via formatters)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string from formatMoney()"
+      }
+    }
+  },
+  "addExpenseTitle": "New Expense",
+  "@addExpenseTitle": {
+    "description": "Add Expense screen title"
+  },
+  "addFuelTitle": "New Fuel",
+  "@addFuelTitle": {
+    "description": "Add Fuel screen title"
+  },
+  "categoryLabel": "Category",
+  "@categoryLabel": {
+    "description": "Expense category field label"
+  },
+  "amountLabel": "Amount",
+  "@amountLabel": {
+    "description": "Amount field label"
+  },
+  "litresLabel": "Litres",
+  "@litresLabel": {
+    "description": "Litres field label"
+  },
+  "rateLabel": "Rate (per litre)",
+  "@rateLabel": {
+    "description": "Rate per litre field label"
+  },
+  "totalLabel": "Total",
+  "@totalLabel": {
+    "description": "Total field label"
+  },
+  "odometerLabel": "Odometer",
+  "@odometerLabel": {
+    "description": "Odometer field label"
+  },
+  "tripLabel": "Trip (optional)",
+  "@tripLabel": {
+    "description": "Optional trip field label"
+  },
+  "noteLabel": "Note",
+  "@noteLabel": {
+    "description": "Note field label"
+  },
+  "receiptPhotoLabel": "Receipt Photo",
+  "@receiptPhotoLabel": {
+    "description": "Receipt photo field label"
+  },
+  "category_diesel": "Diesel",
+  "@category_diesel": {
+    "description": "Expense category: Diesel"
+  },
+  "category_toll": "Toll",
+  "@category_toll": {
+    "description": "Expense category: Toll"
+  },
+  "category_repair": "Repair",
+  "@category_repair": {
+    "description": "Expense category: Repair"
+  },
+  "category_maintenance": "Maintenance",
+  "@category_maintenance": {
+    "description": "Expense category: Maintenance"
+  },
+  "category_insurance": "Insurance",
+  "@category_insurance": {
+    "description": "Expense category: Insurance"
+  },
+  "category_fitness": "Fitness",
+  "@category_fitness": {
+    "description": "Expense category: Fitness"
+  },
+  "category_tax_token": "Tax Token",
+  "@category_tax_token": {
+    "description": "Expense category: Tax Token"
+  },
+  "category_other": "Other",
+  "@category_other": {
+    "description": "Expense category: Other"
+  },
+  "totalRevenue": "Total Revenue",
+  "@totalRevenue": {
+    "description": "Dashboard figure: Total Revenue"
+  },
+  "totalExpense": "Total Expense",
+  "@totalExpense": {
+    "description": "Dashboard figure: Total Expense"
+  },
+  "profit": "Profit",
+  "@profit": {
+    "description": "Dashboard figure: Profit (positive)"
+  },
+  "loss": "Loss",
+  "@loss": {
+    "description": "Dashboard figure: Loss (negative profit)"
+  },
+  "cashReceived": "Cash Received",
+  "@cashReceived": {
+    "description": "Dashboard figure: Cash Received"
+  },
+  "cashPaid": "Cash Paid",
+  "@cashPaid": {
+    "description": "Dashboard figure: Cash Paid"
+  },
+  "cashBalance": "Cash Balance",
+  "@cashBalance": {
+    "description": "Dashboard figure: Cash Balance"
+  },
+  "totalOutstanding": "Total Outstanding",
+  "@totalOutstanding": {
+    "description": "Dashboard figure: Total Outstanding"
+  },
+  "loanOutstanding": "Loan Outstanding",
+  "@loanOutstanding": {
+    "description": "Dashboard figure: Loan Outstanding"
+  },
+  "driverBalance": "Driver Balance",
+  "@driverBalance": {
+    "description": "Dashboard figure: Driver Balance"
+  },
+  "vanSummaryTitle": "Vehicle Summary",
+  "@vanSummaryTitle": {
+    "description": "Dashboard section title for vehicle summaries"
+  },
+  "vanCardTitle": "Vehicle {regNo}",
+  "@vanCardTitle": {
+    "description": "Van summary card title",
+    "placeholders": {
+      "regNo": {
+        "type": "String",
+        "description": "Vehicle registration number"
+      }
+    }
+  },
+  "vanTrips": "Trips: {count}",
+  "@vanTrips": {
+    "description": "Van card: trip count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of trips"
+      }
+    }
+  },
+  "vanProfit": "Profit: {amount}",
+  "@vanProfit": {
+    "description": "Van card: profit",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string"
+      }
+    }
+  },
+  "vanCash": "Cash: {amount}",
+  "@vanCash": {
+    "description": "Van card: cash balance",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string"
+      }
+    }
+  },
+  "vanOutstanding": "Outstanding: {amount}",
+  "@vanOutstanding": {
+    "description": "Van card: outstanding",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string"
+      }
+    }
+  },
+  "expiryInsurance": "Insurance: {days} days",
+  "@expiryInsurance": {
+    "description": "Expiry badge: insurance",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "expiryFitness": "Fitness: {days} days",
+  "@expiryFitness": {
+    "description": "Expiry badge: fitness",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "expiryTax": "Tax: {days} days",
+  "@expiryTax": {
+    "description": "Expiry badge: tax token",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "reportTripRegister": "Trip Register",
+  "@reportTripRegister": {
+    "description": "Report name"
+  },
+  "reportCustomerLedger": "Customer Ledger",
+  "@reportCustomerLedger": {
+    "description": "Report name"
+  },
+  "reportDriverLedger": "Driver Ledger",
+  "@reportDriverLedger": {
+    "description": "Report name"
+  },
+  "reportExpenseRegister": "Expense Register",
+  "@reportExpenseRegister": {
+    "description": "Report name"
+  },
+  "reportFuelRegister": "Fuel Register",
+  "@reportFuelRegister": {
+    "description": "Report name"
+  },
+  "reportVehiclePL": "Vehicle P&L",
+  "@reportVehiclePL": {
+    "description": "Report name"
+  },
+  "reportCashFlow": "Cash Flow",
+  "@reportCashFlow": {
+    "description": "Report name"
+  },
+  "reportLoanSchedule": "Loan Schedule",
+  "@reportLoanSchedule": {
+    "description": "Report name"
+  },
+  "reportExpiryAlerts": "Expiry Alerts",
+  "@reportExpiryAlerts": {
+    "description": "Report name"
+  },
+  "dateRangeLabel": "Date Range",
+  "@dateRangeLabel": {
+    "description": "Date range picker label"
+  },
+  "vehicleFilterLabel": "Vehicle Filter",
+  "@vehicleFilterLabel": {
+    "description": "Vehicle filter label"
+  },
+  "allVehicles": "All Vehicles",
+  "@allVehicles": {
+    "description": "Vehicle filter: all vehicles option"
+  },
+  "exportExcel": "Export Excel",
+  "@exportExcel": {
+    "description": "Export to Excel button"
+  },
+  "exportPdf": "Export PDF",
+  "@exportPdf": {
+    "description": "Export to PDF button"
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings screen title"
+  },
+  "languageLabel": "Language",
+  "@languageLabel": {
+    "description": "Language setting label"
+  },
+  "themeLabel": "Theme",
+  "@themeLabel": {
+    "description": "Theme setting label"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System theme option"
+  },
+  "appLockLabel": "App Lock",
+  "@appLockLabel": {
+    "description": "App lock setting label"
+  },
+  "appLockDesc": "Lock app with PIN or biometric",
+  "@appLockDesc": {
+    "description": "App lock setting description"
+  },
+  "notificationsLabel": "Expiry Notifications",
+  "@notificationsLabel": {
+    "description": "Expiry notifications setting label"
+  },
+  "notificationsDesc": "Get alerts for insurance, fitness, tax expiry",
+  "@notificationsDesc": {
+    "description": "Expiry notifications setting description"
+  },
+  "cloudBackupLabel": "Cloud Backup",
+  "@cloudBackupLabel": {
+    "description": "Cloud backup setting label"
+  },
+  "cloudBackupDesc": "Upload encrypted backup to cloud",
+  "@cloudBackupDesc": {
+    "description": "Cloud backup setting description"
+  },
+  "openingBalancesLabel": "Opening Balances",
+  "@openingBalancesLabel": {
+    "description": "Opening balances section label"
+  },
+  "openingCashLabel": "Opening Cash",
+  "@openingCashLabel": {
+    "description": "Opening cash field label"
+  },
+  "customerOpeningLabel": "Customer Opening Balance",
+  "@customerOpeningLabel": {
+    "description": "Customer opening balance field label"
+  },
+  "driverOpeningLabel": "Driver Opening Balance",
+  "@driverOpeningLabel": {
+    "description": "Driver opening balance field label"
+  },
+  "backupTitle": "Local Backup",
+  "@backupTitle": {
+    "description": "Backup screen title"
+  },
+  "createBackup": "Create Backup",
+  "@createBackup": {
+    "description": "Create backup button"
+  },
+  "backupSuccess": "Backup successful: {path}",
+  "@backupSuccess": {
+    "description": "Backup success toast",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "description": "Backup file path"
+      }
+    }
+  },
+  "restoreTitle": "Restore",
+  "@restoreTitle": {
+    "description": "Restore screen title"
+  },
+  "selectBackupFile": "Select backup file",
+  "@selectBackupFile": {
+    "description": "File picker prompt"
+  },
+  "restorePreview": "Preview: {count} records, {date}",
+  "@restorePreview": {
+    "description": "Restore preview dialog",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of records"
+      },
+      "date": {
+        "type": "String",
+        "description": "Backup date"
+      }
+    }
+  },
+  "restoreConfirm": "⚠️ This will replace ALL your data. A backup of current data will be created first.",
+  "@restoreConfirm": {
+    "description": "Restore confirmation dialog (2-step)"
+  },
+  "restoreButton": "I understand, Restore",
+  "@restoreButton": {
+    "description": "Restore confirmation button"
+  },
+  "restoreSuccess": "Restore successful. App will restart.",
+  "@restoreSuccess": {
+    "description": "Restore success message"
+  },
+  "auditLogTitle": "Audit Log",
+  "@auditLogTitle": {
+    "description": "Audit log screen title"
+  },
+  "auditField": "Field",
+  "@auditField": {
+    "description": "Audit log column: field name"
+  },
+  "auditOldValue": "Old Value",
+  "@auditOldValue": {
+    "description": "Audit log column: old value"
+  },
+  "auditNewValue": "New Value",
+  "@auditNewValue": {
+    "description": "Audit log column: new value"
+  },
+  "auditAction": "Action",
+  "@auditAction": {
+    "description": "Audit log column: action"
+  },
+  "auditTime": "Time",
+  "@auditTime": {
+    "description": "Audit log column: timestamp"
+  },
+  "actionInsert": "Insert",
+  "@actionInsert": {
+    "description": "Audit action: insert"
+  },
+  "actionUpdate": "Update",
+  "@actionUpdate": {
+    "description": "Audit action: update"
+  },
+  "actionDelete": "Delete",
+  "@actionDelete": {
+    "description": "Audit action: delete"
+  },
+  "expiryExpired": "Expired",
+  "@expiryExpired": {
+    "description": "Expiry status: expired"
+  },
+  "expiryDaysLeft": "{days} days left",
+  "@expiryDaysLeft": {
+    "description": "Expiry status: days left",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "expiryToday": "Expires today",
+  "@expiryToday": {
+    "description": "Expiry status: expires today"
+  },
+  "pageNotFound": "Page not found: {error}",
+  "@pageNotFound": {
+    "description": "Error page message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error description"
+      }
+    }
+  },
+  "scaffoldHome": "M0 Scaffold - Home Screen",
+  "@scaffoldHome": {
+    "description": "M0 scaffold home screen placeholder"
+  },
+  "scaffoldTrips": "M0 Scaffold - Trips Screen",
+  "@scaffoldTrips": {
+    "description": "M0 scaffold trips screen placeholder"
+  },
+  "scaffoldMoney": "M0 Scaffold - Money Screen",
+  "@scaffoldMoney": {
+    "description": "M0 scaffold money screen placeholder"
+  },
+  "scaffoldMore": "M0 Scaffold - More Screen",
+  "@scaffoldMore": {
+    "description": "M0 scaffold more screen placeholder"
+  },
+  "currentLocale": "Current Locale: {locale}",
+  "@currentLocale": {
+    "description": "Current locale display",
+    "placeholders": {
+      "locale": {
+        "type": "String",
+        "description": "Locale code"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings screen title"
+  },
+  "themeLabel": "Theme",
+  "@themeLabel": {
+    "description": "Theme setting label"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System theme option"
+  },
+  "languageLabel": "Language",
+  "@languageLabel": {
+    "description": "Language setting label"
+  },
+  "openingBalancesLabel": "Opening Balances",
+  "@openingBalancesLabel": {
+    "description": "Opening balances section label"
+  },
+  "openingCashLabel": "Opening Cash",
+  "@openingCashLabel": {
+    "description": "Opening cash field label"
+  },
+  "customerOpeningLabel": "Customer Opening Balance",
+  "@customerOpeningLabel": {
+    "description": "Customer opening balance field label"
+  },
+  "driverOpeningLabel": "Driver Opening Balance",
+  "@driverOpeningLabel": {
+    "description": "Driver opening balance field label"
+  },
+  "createBackup": "Create Backup",
+  "@createBackup": {
+    "description": "Create backup button"
+  },
+  "restoreTitle": "Restore",
+  "@restoreTitle": {
+    "description": "Restore screen title"
+  },
+  "appLockLabel": "App Lock",
+  "@appLockLabel": {
+    "description": "App lock setting label"
+  },
+  "appLockDesc": "Lock app with PIN or biometric",
+  "@appLockDesc": {
+    "description": "App lock setting description"
+  },
+  "notificationsLabel": "Expiry Notifications",
+  "@notificationsLabel": {
+    "description": "Expiry notifications setting label"
+  },
+  "notificationsDesc": "Get alerts for insurance, fitness, tax expiry",
+  "@notificationsDesc": {
+    "description": "Expiry notifications setting description"
+  },
+  "cloudBackupLabel": "Cloud Backup",
+  "@cloudBackupLabel": {
+    "description": "Cloud backup setting label"
+  },
+  "cloudBackupDesc": "Upload encrypted backup to cloud",
+  "@cloudBackupDesc": {
+    "description": "Cloud backup setting description"
+  },
+  "vehicleTypeLabel": "Type",
+  "@vehicleTypeLabel": {
+    "description": "Vehicle type field label"
+  },
+  "vehicleTypeHint": "Covered Van",
+  "@vehicleTypeHint": {
+    "description": "Vehicle type hint"
+  },
+  "vehicleRegNoHint": "WB-1234",
+  "@vehicleRegNoHint": {
+    "description": "Vehicle registration number hint"
+  },
+  "statusLabel": "Status",
+  "@statusLabel": {
+    "description": "Status field label"
+  },
+  "statusActive": "Active",
+  "@statusActive": {
+    "description": "Status: Active"
+  },
+  "statusSold": "Sold",
+  "@statusSold": {
+    "description": "Status: Sold"
+  },
+  "statusRetired": "Retired",
+  "@statusRetired": {
+    "description": "Status: Retired"
+  },
+  "expiryDatesTitle": "Expiry Dates",
+  "@expiryDatesTitle": {
+    "description": "Expiry dates section title"
+  },
+  "errorLoadingExpiry": "Error loading expiry dates",
+  "@errorLoadingExpiry": {
+    "description": "Error loading expiry dates"
+  },
+  "phoneLabel": "Phone",
+  "@phoneLabel": {
+    "description": "Phone field label"
+  },
+  "phoneHint": "01XXXXXXXXX",
+  "@phoneHint": {
+    "description": "Phone hint"
+  },
+  "monthlySalaryLabel": "Monthly Salary (৳)",
+  "@monthlySalaryLabel": {
+    "description": "Monthly salary field label"
+  },
+  "monthlySalaryHint": "12000",
+  "@monthlySalaryHint": {
+    "description": "Monthly salary hint"
+  },
+  "joinedDateLabel": "Joined Date",
+  "@joinedDateLabel": {
+    "description": "Joined date field label"
+  },
+  "driverStatusLabel": "Status",
+  "@driverStatusLabel": {
+    "description": "Driver status field label"
+  },
+  "driverStatusActive": "Active",
+  "@driverStatusActive": {
+    "description": "Driver status: Active"
+  },
+  "driverStatusInactive": "Inactive",
+  "@driverStatusInactive": {
+    "description": "Driver status: Inactive"
+  },
+  "paySalaryTitle": "Pay Salary",
+  "@paySalaryTitle": {
+    "description": "Pay salary action"
+  },
+  "giveAdvanceTitle": "Give Advance",
+  "@giveAdvanceTitle": {
+    "description": "Give advance action"
+  },
+  "confirmDeleteDriver": "Are you sure you want to delete this driver?",
+  "@confirmDeleteDriver": {
+    "description": "Confirm delete driver dialog"
+  },
+  "noCustomerOpeningBalances": "No customer opening balances set",
+  "@noCustomerOpeningBalances": {
+    "description": "No customer opening balances message"
+  },
+  "noDriverOpeningBalances": "No driver opening balances set",
+  "@noDriverOpeningBalances": {
+    "description": "No driver opening balances message"
+  },
+  "errorLoadingBalances": "Error: {error}",
+  "@errorLoadingBalances": {
+    "description": "Error loading balances",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error message"
+      }
+    }
+  },
+  "customerIdLabel": "Customer #{customerId}",
+  "@customerIdLabel": {
+    "description": "Customer ID label",
+    "placeholders": {
+      "customerId": {
+        "type": "int",
+        "description": "Customer ID"
+      }
+    }
+  },
+  "driverIdLabel": "Driver #{driverId}",
+  "@driverIdLabel": {
+    "description": "Driver ID label",
+    "placeholders": {
+      "driverId": {
+        "type": "int",
+        "description": "Driver ID"
+      }
+    }
+  },
+  "confirmDeleteVehicle": "Are you sure you want to delete this vehicle?",
+  "@confirmDeleteVehicle": {
+    "description": "Confirm delete vehicle dialog"
+  },
+  "driverNameHint": "Driver name",
+  "@driverNameHint": {
+    "description": "Driver name hint"
+  },
+  "newDriverTitle": "New Driver",
+  "@newDriverTitle": {
+    "description": "New driver form title"
+  },
+  "customerNameHint": "Customer name",
+  "@customerNameHint": {
+    "description": "Customer name hint"
+  },
+  "openingBalanceHint": "0.00",
+  "@openingBalanceHint": {
+    "description": "Opening balance hint"
+  },
+  "errorLoadingLedger": "Error loading ledger",
+  "@errorLoadingLedger": {
+    "description": "Error loading ledger"
+  },
+  "dateRangePickerComingSoon": "Date range picker coming soon",
+  "@dateRangePickerComingSoon": {
+    "description": "Date range picker coming soon"
+  },
+  "statusFilterTitle": "Status",
+  "@statusFilterTitle": {
+    "description": "Status filter title"
+  },
+  "statusAll": "All",
+  "@statusAll": {
+    "description": "Status: All"
+  },
+  "statusCompleted": "Completed",
+  "@statusCompleted": {
+    "description": "Status: Completed"
+  },
+  "statusCancelled": "Cancelled",
+  "@statusCancelled": {
+    "description": "Status: Cancelled"
+  },
+  "fareHint": "10000.00",
+  "@fareHint": {
+    "description": "Fare hint"
+  },
+  "advanceHint": "0.00",
+  "@advanceHint": {
+    "description": "Advance hint"
+  },
+  "startOdoHint": "10000",
+  "@startOdoHint": {
+    "description": "Start odometer hint"
+  },
+  "endOdoHint": "10500",
+  "@endOdoHint": {
+    "description": "End odometer hint"
+  },
+  "noItemsAvailable": "No {label} available. Add one first.",
+  "@noItemsAvailable": {
+    "description": "No items available message",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "errorLoadingItems": "Error loading {label}",
+  "@errorLoadingItems": {
+    "description": "Error loading items",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "tripDetailTitle": "Trip #{tripId}",
+  "@tripDetailTitle": {
+    "description": "Trip detail screen title",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "errorLoadingTrip": "Error: {error}",
+  "@errorLoadingTrip": {
+    "description": "Error loading trip",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error message"
+      }
+    }
+  },
+  "confirmDeleteTrip": "Are you sure you want to delete this trip?",
+  "@confirmDeleteTrip": {
+    "description": "Confirm delete trip dialog"
+  },
+  "tripDetailHeader": "Trip #{tripId}",
+  "@tripDetailHeader": {
+    "description": "Trip detail header",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "noPaymentsYet": "No payments yet",
+  "@noPaymentsYet": {
+    "description": "No payments yet message"
+  },
+  "receivePaymentAction": "Receive Payment",
+  "@receivePaymentAction": {
+    "description": "Receive payment action"
+  },
+  "viewTripExpensesAction": "View Trip Expenses",
+  "@viewTripExpensesAction": {
+    "description": "View trip expenses action"
+  },
+  "noOutstandingTrips": "No outstanding trips for this customer",
+  "@noOutstandingTrips": {
+    "description": "No outstanding trips message"
+  },
+  "tripOutstandingLabel": "Trip #{tripId} - {amount} outstanding",
+  "@tripOutstandingLabel": {
+    "description": "Trip outstanding label",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      },
+      "amount": {
+        "type": "String",
+        "description": "Outstanding amount"
+      }
+    }
+  },
+  "paymentAmountHint": "5000.00",
+  "@paymentAmountHint": {
+    "description": "Payment amount hint"
+  },
+  "selectTripError": "Select a trip",
+  "@selectTripError": {
+    "description": "Select trip error"
+  },
+  "paymentExceedsWarning": "Warning",
+  "@paymentExceedsWarning": {
+    "description": "Payment exceeds warning title"
+  },
+  "paymentExceedsMessage": "Payment exceeds outstanding amount. Continue?",
+  "@paymentExceedsMessage": {
+    "description": "Payment exceeds message"
+  },
+  "cancelButton": "Cancel",
+  "@cancelButton": {
+    "description": "Cancel button"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Continue button"
+  },
+  "tripOutstandingPreview": "Trip #{tripId}",
+  "@tripOutstandingPreview": {
+    "description": "Trip outstanding preview",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "newCustomerTitle": "New Customer",
+  "@newCustomerTitle": {
+    "description": "New customer form title"
+  },
+  "customerNameHint": "Customer name",
+  "@customerNameHint": {
+    "description": "Customer name hint"
+  },
+  "openingBalanceHint": "0.00",
+  "@openingBalanceHint": {
+    "description": "Opening balance hint"
+  },
+  "errorLoadingLedger": "Error loading ledger",
+  "@errorLoadingLedger": {
+    "description": "Error loading ledger"
+  },
+  "dateRangePickerComingSoon": "Date range picker coming soon",
+  "@dateRangePickerComingSoon": {
+    "description": "Date range picker coming soon"
+  },
+  "statusFilterTitle": "Status",
+  "@statusFilterTitle": {
+    "description": "Status filter title"
+  },
+  "statusAll": "All",
+  "@statusAll": {
+    "description": "Status: All"
+  },
+  "statusCompleted": "Completed",
+  "@statusCompleted": {
+    "description": "Status: Completed"
+  },
+  "statusCancelled": "Cancelled",
+  "@statusCancelled": {
+    "description": "Status: Cancelled"
+  },
+  "fareHint": "10000.00",
+  "@fareHint": {
+    "description": "Fare hint"
+  },
+  "advanceHint": "0.00",
+  "@advanceHint": {
+    "description": "Advance hint"
+  },
+  "startOdoHint": "10000",
+  "@startOdoHint": {
+    "description": "Start odometer hint"
+  },
+  "endOdoHint": "10500",
+  "@endOdoHint": {
+    "description": "End odometer hint"
+  },
+  "noItemsAvailable": "No {label} available. Add one first.",
+  "@noItemsAvailable": {
+    "description": "No items available message",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "errorLoadingItems": "Error loading {label}",
+  "@errorLoadingItems": {
+    "description": "Error loading items",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "tripDetailTitle": "Trip #{tripId}",
+  "@tripDetailTitle": {
+    "description": "Trip detail screen title",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "errorLoadingTrip": "Error: {error}",
+  "@errorLoadingTrip": {
+    "description": "Error loading trip",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error message"
+      }
+    }
+  },
+  "confirmDeleteTrip": "Are you sure you want to delete this trip?",
+  "@confirmDeleteTrip": {
+    "description": "Confirm delete trip dialog"
+  },
+  "tripDetailHeader": "Trip #{tripId}",
+  "@tripDetailHeader": {
+    "description": "Trip detail header",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "noPaymentsYet": "No payments yet",
+  "@noPaymentsYet": {
+    "description": "No payments yet message"
+  },
+  "receivePaymentAction": "Receive Payment",
+  "@receivePaymentAction": {
+    "description": "Receive payment action"
+  },
+  "viewTripExpensesAction": "View Trip Expenses",
+  "@viewTripExpensesAction": {
+    "description": "View trip expenses action"
+  },
+  "noOutstandingTrips": "No outstanding trips for this customer",
+  "@noOutstandingTrips": {
+    "description": "No outstanding trips message"
+  },
+  "tripOutstandingLabel": "Trip #{tripId} - {amount} outstanding",
+  "@tripOutstandingLabel": {
+    "description": "Trip outstanding label",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      },
+      "amount": {
+        "type": "String",
+        "description": "Outstanding amount"
+      }
+    }
+  },
+  "paymentAmountHint": "5000.00",
+  "@paymentAmountHint": {
+    "description": "Payment amount hint"
+  },
+  "selectTripError": "Select a trip",
+  "@selectTripError": {
+    "description": "Select trip error"
+  },
+  "paymentExceedsWarning": "Warning",
+  "@paymentExceedsWarning": {
+    "description": "Payment exceeds warning title"
+  },
+  "paymentExceedsMessage": "Payment exceeds outstanding amount. Continue?",
+  "@paymentExceedsMessage": {
+    "description": "Payment exceeds message"
+  },
+  "cancelButton": "Cancel",
+  "@cancelButton": {
+    "description": "Cancel button"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Continue button"
+  },
+  "tripOutstandingPreview": "Trip #{tripId}",
+  "@tripOutstandingPreview": {
+    "description": "Trip outstanding preview",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "noTransactionsYet": "No transactions yet",
+  "@noTransactionsYet": {
+    "description": "No transactions yet message"
+  },
+  "addTripOrPaymentToSeeLedger": "Add a trip or receive a payment to see ledger entries",
+  "@addTripOrPaymentToSeeLedger": {
+    "description": "Add trip or payment to see ledger message"
+  },
+  "totalFares": "Total Fares",
+  "@totalFares": {
+    "description": "Total fares label"
+  },
+  "totalPayments": "Total Payments",
+  "@totalPayments": {
+    "description": "Total payments label"
+  },
+  "paidAmount": "Paid: {amount}",
+  "@paidAmount": {
+    "description": "Paid amount format",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Formatted money amount"
+      }
+    }
+  },
+  "amountHint": "1000.00",
+  "@amountHint": {
+    "description": "Amount hint"
+  },
+  "cameraLabel": "Camera",
+  "@cameraLabel": {
+    "description": "Camera button label"
+  },
+  "galleryLabel": "Gallery",
+  "@galleryLabel": {
+    "description": "Gallery button label"
+  },
+  "litresHint": "40.0",
+  "@litresHint": {
+    "description": "Litres hint"
+  },
+  "rateHint": "110.00",
+  "@rateHint": {
+    "description": "Rate hint"
+  },
+  "totalHint": "4400.00",
+  "@totalHint": {
+    "description": "Total hint"
+  },
+  "odometerHint": "10000",
+  "@odometerHint": {
+    "description": "Odometer hint"
+  },
+  "expenseDetailTitle": "Expense #{expenseId}",
+  "@expenseDetailTitle": {
+    "description": "Expense detail screen title",
+    "placeholders": {
+      "expenseId": {
+        "type": "int",
+        "description": "Expense ID"
+      }
+    }
+  },
+  "confirmDeleteExpense": "Are you sure you want to delete this expense?",
+  "@confirmDeleteExpense": {
+    "description": "Confirm delete expense dialog"
+  },
+  "fuelDetailTitle": "Fuel #{fuelId}",
+  "@fuelDetailTitle": {
+    "description": "Fuel detail screen title",
+    "placeholders": {
+      "fuelId": {
+        "type": "int",
+        "description": "Fuel ID"
+      }
+    }
+  },
+  "confirmDeleteFuel": "Are you sure you want to delete this fuel record?",
+  "@confirmDeleteFuel": {
+    "description": "Confirm delete fuel dialog"
+  },
+  "addLoanTitle": "Add Loan",
+  "@addLoanTitle": {
+    "description": "Add loan screen title"
+  },
+  "principalLabel": "Principal (৳)",
+  "@principalLabel": {
+    "description": "Principal label"
+  },
+  "principalHint": "500000",
+  "@principalHint": {
+    "description": "Principal hint"
+  },
+  "interestRateLabel": "Annual Interest Rate (%)",
+  "@interestRateLabel": {
+    "description": "Annual interest rate label"
+  },
+  "interestRateHint": "12.00",
+  "@interestRateHint": {
+    "description": "Interest rate hint"
+  },
+  "startDateLabel": "Start Date",
+  "@startDateLabel": {
+    "description": "Start date label"
+  },
+  "noteLabel": "Note",
+  "@noteLabel": {
+    "description": "Note label"
+  },
+  "noteHint": "Loan details",
+  "@noteHint": {
+    "description": "Note hint"
+  },
+  "addInstallmentTitle": "Add Installment",
+  "@addInstallmentTitle": {
+    "description": "Add installment screen title"
+  },
+  "installmentDateLabel": "Installment Date",
+  "@installmentDateLabel": {
+    "description": "Installment date label"
+  },
+  "totalPaidLabel": "Total Paid (৳)",
+  "@totalPaidLabel": {
+    "description": "Total paid label"
+  },
+  "totalPaidHint": "15000.00",
+  "@totalPaidHint": {
+    "description": "Total paid hint"
+  },
+  "principalPortionLabel": "Principal Portion (৳)",
+  "@principalPortionLabel": {
+    "description": "Principal portion label"
+  },
+  "principalPortionHint": "10000.00",
+  "@principalPortionHint": {
+    "description": "Principal portion hint"
+  },
+  "interestPortionLabel": "Interest Portion (৳)",
+  "@interestPortionLabel": {
+    "description": "Interest portion label"
+  },
+  "interestPortionHint": "5000.00",
+  "@interestPortionHint": {
+    "description": "Interest portion hint"
+  },
+  "validationWarning": "Principal + Interest (৳{sum}) ≠ Total Paid (৳{total})",
+  "@validationWarning": {
+    "description": "Validation warning for principal + interest != total",
+    "placeholders": {
+      "sum": {
+        "type": "String",
+        "description": "Sum of principal and interest"
+      },
+      "total": {
+        "type": "String",
+        "description": "Total paid"
+      }
+    }
+  },
+  "principalExceedsOutstanding": "Principal cannot exceed outstanding amount",
+  "@principalExceedsOutstanding": {
+    "description": "Principal exceeds outstanding error"
+  },
+  "loanDetailTitle": "Loan #{loanId}",
+  "@loanDetailTitle": {
+    "description": "Loan detail screen title",
+    "placeholders": {
+      "loanId": {
+        "type": "int",
+        "description": "Loan ID"
+      }
+    }
+  },
+  "addInstallmentTooltip": "Add Installment",
+  "@addInstallmentTooltip": {
+    "description": "Add installment tooltip"
+  },
+  "noInstallmentsYet": "No installments yet",
+  "@noInstallmentsYet": {
+    "description": "No installments yet message"
+  },
+  "addFirstInstallment": "Add the first installment to get started",
+  "@addFirstInstallment": {
+    "description": "Add first installment message"
+  },
+  "installmentDetail": "Installment #{installmentId}",
+  "@installmentDetail": {
+    "description": "Installment detail",
+    "placeholders": {
+      "installmentId": {
+        "type": "int",
+        "description": "Installment ID"
+      }
+    }
+  },
+  "installmentNote": "Note: {note}",
+  "@installmentNote": {
+    "description": "Installment note",
+    "placeholders": {
+      "note": {
+        "type": "String",
+        "description": "Installment note"
+      }
+    }
+  },
+  "driverLoanTitle": "Driver Loan",
+  "@driverLoanTitle": {
+    "description": "Driver loan screen title"
+  },
+  "loanBalanceLabel": "Loan Balance: {amount}",
+  "@loanBalanceLabel": {
+    "description": "Loan balance label",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Loan balance amount"
+      }
+    }
+  },
+  "loanGivenLabel": "Loan Given",
+  "@loanGivenLabel": {
+    "description": "Loan given label"
+  },
+  "loanRepaidLabel": "Loan Repaid",
+  "@loanRepaidLabel": {
+    "description": "Loan repaid label"
+  },
+  "loanAmountHint": "5000.00",
+  "@loanAmountHint": {
+    "description": "Loan amount hint"
+  },
+  "advanceDeductLabel": "Advance to Deduct (৳)",
+  "@advanceDeductLabel": {
+    "description": "Advance deduction label"
+  },
+  "maxAdvanceLabel": "Max: {amount}",
+  "@maxAdvanceLabel": {
+    "description": "Max advance label",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Max advance amount"
+      }
+    }
+  },
+  "amountToPayLabel": "Amount to Pay (৳)",
+  "@amountToPayLabel": {
+    "description": "Amount to pay label"
+  },
+  "noteHintSalary": "Salary payment for {month}/{year}",
+  "@noteHintSalary": {
+    "description": "Salary payment note hint",
+    "placeholders": {
+      "month": {
+        "type": "int",
+        "description": "Month"
+      },
+      "year": {
+        "type": "int",
+        "description": "Year"
+      }
+    }
+  },
+  "paySalaryButton": "Pay Salary",
+  "@paySalaryButton": {
+    "description": "Pay salary button"
+  },
+  "outstandingAdvanceLabel": "Outstanding Advance: {amount}",
+  "@outstandingAdvanceLabel": {
+    "description": "Outstanding advance label",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Outstanding advance amount"
+      }
+    }
+  },
+  "advanceAmountHint": "5000.00",
+  "@advanceAmountHint": {
+    "description": "Advance amount hint"
+  },
+  "driverLoanScreenTitle": "Driver Loan",
+  "@driverLoanScreenTitle": {
+    "description": "Driver loan screen title"
+  },
+  "loanGivenLabel": "Loan Given",
+  "@loanGivenLabel": {
+    "description": "Loan given label"
+  },
+  "loanRepaidLabel": "Loan Repaid",
+  "@loanRepaidLabel": {
+    "description": "Loan repaid label"
+  },
+  "loanAmountHintDriver": "5000.00",
+  "@loanAmountHintDriver": {
+    "description": "Driver loan amount hint"
+  },
+  "loanNoteHintGiven": "Loan given to driver",
+  "@loanNoteHintGiven": {
+    "description": "Loan note hint given"
+  },
+  "loanNoteHintRepaid": "Loan repaid by driver",
+  "@loanNoteHintRepaid": {
+    "description": "Loan note hint repaid"
+  },
+  "giveLoanButton": "Give Loan",
+  "@giveLoanButton": {
+    "description": "Give loan button"
+  },
+  "recordRepaymentButton": "Record Repayment",
+  "@recordRepaymentButton": {
+    "description": "Record repayment button"
+  },
+  "loanGivenAction": "Loan Given",
+  "@loanGivenAction": {
+    "description": "Loan given action"
+  },
+  "loanRepaidAction": "Loan Repaid",
+  "@loanRepaidAction": {
+    "description": "Loan repaid action"
+  }
+}

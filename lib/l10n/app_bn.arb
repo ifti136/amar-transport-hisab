@@ -1,0 +1,1483 @@
+{
+  "@@locale": "bn",
+  "appTitle": "আমার ট্রান্সপোর্ট হিসাব",
+  "@appTitle": {
+    "description": "App title shown in Home app bar"
+  },
+  "homeTab": "হোম",
+  "@homeTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "tripsTab": "ট্রিপ",
+  "@tripsTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "moneyTab": "খরচ",
+  "@moneyTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "moreTab": "আরও",
+  "@moreTab": {
+    "description": "Bottom navigation tab label"
+  },
+  "languageToggle": "ভাষা",
+  "@languageToggle": {
+    "description": "Language toggle button tooltip"
+  },
+  "themeToggle": "থিম",
+  "@themeToggle": {
+    "description": "Theme toggle button tooltip"
+  },
+  "save": "সংরক্ষণ",
+  "@save": {
+    "description": "Primary action button"
+  },
+  "cancel": "বাতিল",
+  "@cancel": {
+    "description": "Secondary action button"
+  },
+  "delete": "মুছুন",
+  "@delete": {
+    "description": "Destructive action button"
+  },
+  "edit": "সম্পাদনা",
+  "@edit": {
+    "description": "Edit action button"
+  },
+  "add": "যোগ করুন",
+  "@add": {
+    "description": "Add new item button"
+  },
+  "search": "খুঁজুন",
+  "@search": {
+    "description": "Search hint/icon"
+  },
+  "filter": "ফিল্টার",
+  "@filter": {
+    "description": "Filter button"
+  },
+  "export": "এক্সপোর্ট",
+  "@export": {
+    "description": "Export button"
+  },
+  "backup": "ব্যাকআপ",
+  "@backup": {
+    "description": "Backup button"
+  },
+  "restore": "রিস্টোর",
+  "@restore": {
+    "description": "Restore button"
+  },
+  "confirm": "নিশ্চিত করুন",
+  "@confirm": {
+    "description": "Confirm dialog button"
+  },
+  "discard": "বাতিল করুন",
+  "@discard": {
+    "description": "Discard changes button"
+  },
+  "errorRequired": "এই ফিল্ডটি আবশ্যক",
+  "@errorRequired": {
+    "description": "Validation error for required field"
+  },
+  "errorPositiveAmount": "পরিমাণ ০-র চেয়ে বড় হতে হবে",
+  "@errorPositiveAmount": {
+    "description": "Validation error for amount <= 0"
+  },
+  "errorAdvanceExceedsFare": "অগ্রিম ফেয়ারের চেয়ে বেশি হতে পারে না",
+  "@errorAdvanceExceedsFare": {
+    "description": "Validation error when advance > fare"
+  },
+  "errorOdometerDecreased": "ওডোমিটার কমতে পারবে না",
+  "@errorOdometerDecreased": {
+    "description": "Validation error when odometer decreases"
+  },
+  "errorInvalidNumber": "সঠিক সংখ্যা লিখুন",
+  "@errorInvalidNumber": {
+    "description": "Validation error for invalid number input"
+  },
+  "errorMaxTwoDecimals": "দশমিকের পর সর্বোচ্চ ২ অঙ্ক",
+  "@errorMaxTwoDecimals": {
+    "description": "Validation error for >2 decimal places"
+  },
+  "today": "আজ",
+  "@today": {
+    "description": "Today label"
+  },
+  "yesterday": "গতকাল",
+  "@yesterday": {
+    "description": "Yesterday label"
+  },
+  "thisMonth": "এই মাস",
+  "@thisMonth": {
+    "description": "This month label"
+  },
+  "lastMonth": "গত মাস",
+  "@lastMonth": {
+    "description": "Last month label"
+  },
+  "addTripTitle": "নতুন ট্রিপ",
+  "@addTripTitle": {
+    "description": "Add Trip screen title"
+  },
+  "customerLabel": "গ্রাহক",
+  "@customerLabel": {
+    "description": "Customer field label"
+  },
+  "vehicleLabel": "গাড়ি",
+  "@vehicleLabel": {
+    "description": "Vehicle field label"
+  },
+  "driverLabel": "ড্রাইভার",
+  "@driverLabel": {
+    "description": "Driver field label"
+  },
+  "dateLabel": "তারিখ",
+  "@dateLabel": {
+    "description": "Date field label"
+  },
+  "fareLabel": "ফেয়ার",
+  "@fareLabel": {
+    "description": "Fare field label"
+  },
+  "advanceLabel": "অগ্রিম",
+  "@advanceLabel": {
+    "description": "Advance field label"
+  },
+  "startOdoLabel": "শুরুর ওডোমিটার",
+  "@startOdoLabel": {
+    "description": "Start odometer field label"
+  },
+  "endOdoLabel": "শেষের ওডোমিটার",
+  "@endOdoLabel": {
+    "description": "End odometer field label"
+  },
+  "outstandingLabel": "বকেয়া",
+  "@outstandingLabel": {
+    "description": "Outstanding fare label"
+  },
+  "outstandingValue": "{amount}",
+  "@outstandingValue": {
+    "description": "Outstanding fare value (formatted via formatters)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string from formatMoney()"
+      }
+    }
+  },
+  "addExpenseTitle": "নতুন খরচ",
+  "@addExpenseTitle": {
+    "description": "Add Expense screen title"
+  },
+  "addFuelTitle": "নতুন ইন্ধন",
+  "@addFuelTitle": {
+    "description": "Add Fuel screen title"
+  },
+  "categoryLabel": "ক্যাটাগরি",
+  "@categoryLabel": {
+    "description": "Expense category field label"
+  },
+  "amountLabel": "পরিমাণ",
+  "@amountLabel": {
+    "description": "Amount field label"
+  },
+  "litresLabel": "লিটার",
+  "@litresLabel": {
+    "description": "Litres field label"
+  },
+  "rateLabel": "হার (প্রতি লিটার)",
+  "@rateLabel": {
+    "description": "Rate per litre field label"
+  },
+  "totalLabel": "মোট",
+  "@totalLabel": {
+    "description": "Total field label"
+  },
+  "odometerLabel": "ওডোমিটার",
+  "@odometerLabel": {
+    "description": "Odometer field label"
+  },
+  "tripLabel": "ট্রিপ (ঐচ্ছিক)",
+  "@tripLabel": {
+    "description": "Optional trip field label"
+  },
+  "noteLabel": "নোট",
+  "@noteLabel": {
+    "description": "Note field label"
+  },
+  "receiptPhotoLabel": "রসিদের ছবি",
+  "@receiptPhotoLabel": {
+    "description": "Receipt photo field label"
+  },
+  "category_diesel": "ডিজেল",
+  "@category_diesel": {
+    "description": "Expense category: Diesel"
+  },
+  "category_toll": "টোল",
+  "@category_toll": {
+    "description": "Expense category: Toll"
+  },
+  "category_repair": "মেরামত",
+  "@category_repair": {
+    "description": "Expense category: Repair"
+  },
+  "category_maintenance": "রক্ষণাবেক্ষণ",
+  "@category_maintenance": {
+    "description": "Expense category: Maintenance"
+  },
+  "category_insurance": "বীমা",
+  "@category_insurance": {
+    "description": "Expense category: Insurance"
+  },
+  "category_fitness": "ফিটনেস",
+  "@category_fitness": {
+    "description": "Expense category: Fitness"
+  },
+  "category_tax_token": "ট্যাক্স টোকেন",
+  "@category_tax_token": {
+    "description": "Expense category: Tax Token"
+  },
+  "category_other": "অন্যান্য",
+  "@category_other": {
+    "description": "Expense category: Other"
+  },
+  "totalRevenue": "মোট আয়",
+  "@totalRevenue": {
+    "description": "Dashboard figure: Total Revenue"
+  },
+  "totalExpense": "মোট ব্যয়",
+  "@totalExpense": {
+    "description": "Dashboard figure: Total Expense"
+  },
+  "profit": "লাভ",
+  "@profit": {
+    "description": "Dashboard figure: Profit (positive)"
+  },
+  "loss": "নষ্ট",
+  "@loss": {
+    "description": "Dashboard figure: Loss (negative profit)"
+  },
+  "cashReceived": "নগদ প্রাপ্তি",
+  "@cashReceived": {
+    "description": "Dashboard figure: Cash Received"
+  },
+  "cashPaid": "নগদ প্রদান",
+  "@cashPaid": {
+    "description": "Dashboard figure: Cash Paid"
+  },
+  "cashBalance": "নগদ ব্যালেন্স",
+  "@cashBalance": {
+    "description": "Dashboard figure: Cash Balance"
+  },
+  "totalOutstanding": "মোট বকেয়া",
+  "@totalOutstanding": {
+    "description": "Dashboard figure: Total Outstanding"
+  },
+  "loanOutstanding": "লোনের বকেয়া",
+  "@loanOutstanding": {
+    "description": "Dashboard figure: Loan Outstanding"
+  },
+  "driverBalance": "ড্রাইভার ব্যালেন্স",
+  "@driverBalance": {
+    "description": "Dashboard figure: Driver Balance"
+  },
+  "vanSummaryTitle": "গাড়ির সংক্ষিপ্ত বিবরণ",
+  "@vanSummaryTitle": {
+    "description": "Dashboard section title for vehicle summaries"
+  },
+  "vanCardTitle": "গাড়ি {regNo}",
+  "@vanCardTitle": {
+    "description": "Van summary card title",
+    "placeholders": {
+      "regNo": {
+        "type": "String",
+        "description": "Vehicle registration number"
+      }
+    }
+  },
+  "vanTrips": "ট্রিপ: {count}",
+  "@vanTrips": {
+    "description": "Van card: trip count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of trips"
+      }
+    }
+  },
+  "vanProfit": "লাভ: {amount}",
+  "@vanProfit": {
+    "description": "Van card: profit",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string"
+      }
+    }
+  },
+  "vanCash": "নগদ: {amount}",
+  "@vanCash": {
+    "description": "Van card: cash balance",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string"
+      }
+    }
+  },
+  "vanOutstanding": "বকেয়া: {amount}",
+  "@vanOutstanding": {
+    "description": "Van card: outstanding",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Pre-formatted money string"
+      }
+    }
+  },
+  "expiryInsurance": "বীমা: {days} দিন",
+  "@expiryInsurance": {
+    "description": "Expiry badge: insurance",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "expiryFitness": "ফিটনেস: {days} দিন",
+  "@expiryFitness": {
+    "description": "Expiry badge: fitness",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "expiryTax": "ট্যাক্স: {days} দিন",
+  "@expiryTax": {
+    "description": "Expiry badge: tax token",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "reportTripRegister": "ট্রিপ রেজিস্টার",
+  "@reportTripRegister": {
+    "description": "Report name"
+  },
+  "reportCustomerLedger": "গ্রাহক লেজার",
+  "@reportCustomerLedger": {
+    "description": "Report name"
+  },
+  "reportDriverLedger": "ড্রাইভার লেজার",
+  "@reportDriverLedger": {
+    "description": "Report name"
+  },
+  "reportExpenseRegister": "খরচ রেজিস্টার",
+  "@reportExpenseRegister": {
+    "description": "Report name"
+  },
+  "reportFuelRegister": "ইন্ধন রেজিস্টার",
+  "@reportFuelRegister": {
+    "description": "Report name"
+  },
+  "reportVehiclePL": "গাড়ির লাভ-নষ্ট",
+  "@reportVehiclePL": {
+    "description": "Report name"
+  },
+  "reportCashFlow": "নগদ প্রবাহ",
+  "@reportCashFlow": {
+    "description": "Report name"
+  },
+  "reportLoanSchedule": "লোন শিডিউল",
+  "@reportLoanSchedule": {
+    "description": "Report name"
+  },
+  "reportExpiryAlerts": "মেয়াদোত্তীর্ণ সতর্কতা",
+  "@reportExpiryAlerts": {
+    "description": "Report name"
+  },
+  "dateRangeLabel": "তারিখ পরিসর",
+  "@dateRangeLabel": {
+    "description": "Date range picker label"
+  },
+  "vehicleFilterLabel": "গাড়ি ফিল্টার",
+  "@vehicleFilterLabel": {
+    "description": "Vehicle filter label"
+  },
+  "allVehicles": "সব গাড়ি",
+  "@allVehicles": {
+    "description": "Vehicle filter: all vehicles option"
+  },
+  "exportExcel": "এক্সেল এক্সপোর্ট",
+  "@exportExcel": {
+    "description": "Export to Excel button"
+  },
+  "exportPdf": "পিডিএফ এক্সপোর্ট",
+  "@exportPdf": {
+    "description": "Export to PDF button"
+  },
+  "settingsTitle": "সেটিংস",
+  "@settingsTitle": {
+    "description": "Settings screen title"
+  },
+  "languageLabel": "ভাষা",
+  "@languageLabel": {
+    "description": "Language setting label"
+  },
+  "themeLabel": "থিম",
+  "@themeLabel": {
+    "description": "Theme setting label"
+  },
+  "themeLight": "লাইট",
+  "@themeLight": {
+    "description": "Light theme option"
+  },
+  "themeDark": "ডার্ক",
+  "@themeDark": {
+    "description": "Dark theme option"
+  },
+  "themeSystem": "সিস্টেম",
+  "@themeSystem": {
+    "description": "System theme option"
+  },
+  "appLockLabel": "অ্যাপ লক",
+  "@appLockLabel": {
+    "description": "App lock setting label"
+  },
+  "appLockDesc": "পিন বা বায়োমেট্রিক দিয়ে অ্যাপ লক করুন",
+  "@appLockDesc": {
+    "description": "App lock setting description"
+  },
+  "notificationsLabel": "মেয়াদোত্তীর্ণ সতর্কতা",
+  "@notificationsLabel": {
+    "description": "Expiry notifications setting label"
+  },
+  "notificationsDesc": "বীমা, ফিটনেস, ট্যাক্সের মেয়াদোত্তীর্ণের সতর্কতা পান",
+  "@notificationsDesc": {
+    "description": "Expiry notifications setting description"
+  },
+  "cloudBackupLabel": "ক্লাউড ব্যাকআপ",
+  "@cloudBackupLabel": {
+    "description": "Cloud backup setting label"
+  },
+  "cloudBackupDesc": "এনক্রিপ্টেড ব্যাকআপ ক্লাউডে আপলোড করুন",
+  "@cloudBackupDesc": {
+    "description": "Cloud backup setting description"
+  },
+  "openingBalancesLabel": "ওপেনিং ব্যালেন্স",
+  "@openingBalancesLabel": {
+    "description": "Opening balances section label"
+  },
+  "openingCashLabel": "ওপেনিং নগদ",
+  "@openingCashLabel": {
+    "description": "Opening cash field label"
+  },
+  "customerOpeningLabel": "গ্রাহকের ওপেনিং ব্যালেন্স",
+  "@customerOpeningLabel": {
+    "description": "Customer opening balance field label"
+  },
+  "driverOpeningLabel": "ড্রাইভারের ওপেনিং ব্যালেন্স",
+  "@driverOpeningLabel": {
+    "description": "Driver opening balance field label"
+  },
+  "backupTitle": "লোকাল ব্যাকআপ",
+  "@backupTitle": {
+    "description": "Backup screen title"
+  },
+  "createBackup": "ব্যাকআপ তৈরি করুন",
+  "@createBackup": {
+    "description": "Create backup button"
+  },
+  "backupSuccess": "ব্যাকআপ সফল: {path}",
+  "@backupSuccess": {
+    "description": "Backup success toast",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "description": "Backup file path"
+      }
+    }
+  },
+  "restoreTitle": "রিস্টোর",
+  "@restoreTitle": {
+    "description": "Restore screen title"
+  },
+  "selectBackupFile": "ব্যাকআপ ফাইল বেছে নিন",
+  "@selectBackupFile": {
+    "description": "File picker prompt"
+  },
+  "restorePreview": "প্রিভিউ: {count} রেকর্ড, {date}",
+  "@restorePreview": {
+    "description": "Restore preview dialog",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of records"
+      },
+      "date": {
+        "type": "String",
+        "description": "Backup date"
+      }
+    }
+  },
+  "restoreConfirm": "⚠️ এটি আপনার সব ডেটা প্রতিস্থাপন করবে। বর্তমান ডেটার ব্যাকআপ তৈরি হবে।",
+  "@restoreConfirm": {
+    "description": "Restore confirmation dialog (2-step)"
+  },
+  "restoreButton": "আমি বুঝলাম, রিস্টোর করুন",
+  "@restoreButton": {
+    "description": "Restore confirmation button"
+  },
+  "restoreSuccess": "রিস্টোর সফল। অ্যাপ রিস্টার্ট হবে।",
+  "@restoreSuccess": {
+    "description": "Restore success message"
+  },
+  "auditLogTitle": "অডিট লগ",
+  "@auditLogTitle": {
+    "description": "Audit log screen title"
+  },
+  "auditField": "ফিল্ড",
+  "@auditField": {
+    "description": "Audit log column: field name"
+  },
+  "auditOldValue": "পুরনো মান",
+  "@auditOldValue": {
+    "description": "Audit log column: old value"
+  },
+  "auditNewValue": "নতুন মান",
+  "@auditNewValue": {
+    "description": "Audit log column: new value"
+  },
+  "auditAction": "অ্যাকশন",
+  "@auditAction": {
+    "description": "Audit log column: action"
+  },
+  "auditTime": "সময়",
+  "@auditTime": {
+    "description": "Audit log column: timestamp"
+  },
+  "actionInsert": "যোগ",
+  "@actionInsert": {
+    "description": "Audit action: insert"
+  },
+  "actionUpdate": "আপডেট",
+  "@actionUpdate": {
+    "description": "Audit action: update"
+  },
+  "actionDelete": "মুছে ফেলা",
+  "@actionDelete": {
+    "description": "Audit action: delete"
+  },
+  "expiryExpired": "মেয়াদোত্তীর্ণ",
+  "@expiryExpired": {
+    "description": "Expiry status: expired"
+  },
+  "expiryDaysLeft": "{days} দিন বাকি",
+  "@expiryDaysLeft": {
+    "description": "Expiry status: days left",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "description": "Days until expiry"
+      }
+    }
+  },
+  "expiryToday": "আজ মেয়াদোত্তীর্ণ",
+  "@expiryToday": {
+    "description": "Expiry status: expires today"
+  },
+  "pageNotFound": "পৃষ্ঠা পাওয়া যায়নি: {error}",
+  "@pageNotFound": {
+    "description": "Error page message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error description"
+      }
+    }
+  },
+  "scaffoldHome": "এম০ স্ক্যাফফোল্ড - হোম স্ক্রিন",
+  "@scaffoldHome": {
+    "description": "M0 scaffold home screen placeholder"
+  },
+  "scaffoldTrips": "এম০ স্ক্যাফফোল্ড - ট্রিপ স্ক্রিন",
+  "@scaffoldTrips": {
+    "description": "M0 scaffold trips screen placeholder"
+  },
+  "scaffoldMoney": "এম০ স্ক্যাফফোল্ড - খরচ স্ক্রিন",
+  "@scaffoldMoney": {
+    "description": "M0 scaffold money screen placeholder"
+  },
+  "scaffoldMore": "এম০ স্ক্যাফফোল্ড - আরও স্ক্রিন",
+  "@scaffoldMore": {
+    "description": "M0 scaffold more screen placeholder"
+  },
+  "currentLocale": "বর্তমান লোকেল: {locale}",
+  "@currentLocale": {
+    "description": "Current locale display",
+    "placeholders": {
+      "locale": {
+        "type": "String",
+        "description": "Locale code"
+      }
+    }
+  },
+  "settingsTitle": "সেটিংস",
+  "@settingsTitle": {
+    "description": "Settings screen title"
+  },
+  "themeLabel": "থিম",
+  "@themeLabel": {
+    "description": "Theme setting label"
+  },
+  "themeLight": "লাইট",
+  "@themeLight": {
+    "description": "Light theme option"
+  },
+  "themeDark": "ডার্ক",
+  "@themeDark": {
+    "description": "Dark theme option"
+  },
+  "themeSystem": "সিস্টেম",
+  "@themeSystem": {
+    "description": "System theme option"
+  },
+  "languageLabel": "ভাষা",
+  "@languageLabel": {
+    "description": "Language setting label"
+  },
+  "openingBalancesLabel": "ওপেনিং ব্যালেন্স",
+  "@openingBalancesLabel": {
+    "description": "Opening balances section label"
+  },
+  "openingCashLabel": "ওপেনিং নগদ",
+  "@openingCashLabel": {
+    "description": "Opening cash field label"
+  },
+  "customerOpeningLabel": "গ্রাহকের ওপেনিং ব্যালেন্স",
+  "@customerOpeningLabel": {
+    "description": "Customer opening balance field label"
+  },
+  "driverOpeningLabel": "ড্রাইভারের ওপেনিং ব্যালেন্স",
+  "@driverOpeningLabel": {
+    "description": "Driver opening balance field label"
+  },
+  "createBackup": "ব্যাকআপ তৈরি করুন",
+  "@createBackup": {
+    "description": "Create backup button"
+  },
+  "restoreTitle": "রিস্টোর",
+  "@restoreTitle": {
+    "description": "Restore screen title"
+  },
+  "appLockLabel": "অ্যাপ লক",
+  "@appLockLabel": {
+    "description": "App lock setting label"
+  },
+  "appLockDesc": "পিন বা বায়োমেট্রিক দিয়ে অ্যাপ লক করুন",
+  "@appLockDesc": {
+    "description": "App lock setting description"
+  },
+  "notificationsLabel": "মেয়াদোত্তীর্ণ সতর্কতা",
+  "@notificationsLabel": {
+    "description": "Expiry notifications setting label"
+  },
+  "notificationsDesc": "বীমা, ফিটনেস, ট্যাক্সের মেয়াদোত্তীর্ণের সতর্কতা পান",
+  "@notificationsDesc": {
+    "description": "Expiry notifications setting description"
+  },
+  "cloudBackupLabel": "ক্লাউড ব্যাকআপ",
+  "@cloudBackupLabel": {
+    "description": "Cloud backup setting label"
+  },
+  "cloudBackupDesc": "এনক্রিপ্টেড ব্যাকআপ ক্লাউডে আপলোড করুন",
+  "@cloudBackupDesc": {
+    "description": "Cloud backup setting description"
+  },
+  "vehicleTypeLabel": "টাইপ",
+  "@vehicleTypeLabel": {
+    "description": "Vehicle type field label"
+  },
+  "vehicleTypeHint": "কভারড ভ্যান",
+  "@vehicleTypeHint": {
+    "description": "Vehicle type hint"
+  },
+  "vehicleRegNoHint": "ডব্লিউবি-১২৩৪",
+  "@vehicleRegNoHint": {
+    "description": "Vehicle registration number hint"
+  },
+  "statusLabel": "স্ট্যাটাস",
+  "@statusLabel": {
+    "description": "Status field label"
+  },
+  "statusActive": "সক্রিয়",
+  "@statusActive": {
+    "description": "Status: Active"
+  },
+  "statusSold": "বিক্রি",
+  "@statusSold": {
+    "description": "Status: Sold"
+  },
+  "statusRetired": "অবসরপ্রাপ্ত",
+  "@statusRetired": {
+    "description": "Status: Retired"
+  },
+  "expiryDatesTitle": "মেয়াদোত্তীর্ণের তারিখ",
+  "@expiryDatesTitle": {
+    "description": "Expiry dates section title"
+  },
+  "errorLoadingExpiry": "মেয়াদোত্তীর্ণের তারিখ লোড করতে সমস্যা হয়েছে",
+  "@errorLoadingExpiry": {
+    "description": "Error loading expiry dates"
+  },
+  "phoneLabel": "ফোন",
+  "@phoneLabel": {
+    "description": "Phone field label"
+  },
+  "phoneHint": "০১XXXXXXXXX",
+  "@phoneHint": {
+    "description": "Phone hint"
+  },
+  "monthlySalaryLabel": "মাসিক বেতন (৳)",
+  "@monthlySalaryLabel": {
+    "description": "Monthly salary field label"
+  },
+  "monthlySalaryHint": "১২০০০",
+  "@monthlySalaryHint": {
+    "description": "Monthly salary hint"
+  },
+  "joinedDateLabel": "যোগদানের তারিখ",
+  "@joinedDateLabel": {
+    "description": "Joined date field label"
+  },
+  "driverStatusLabel": "স্ট্যাটাস",
+  "@driverStatusLabel": {
+    "description": "Driver status field label"
+  },
+  "driverStatusActive": "সক্রিয়",
+  "@driverStatusActive": {
+    "description": "Driver status: Active"
+  },
+  "driverStatusInactive": "নিষ্ক্রিয়",
+  "@driverStatusInactive": {
+    "description": "Driver status: Inactive"
+  },
+  "paySalaryTitle": "বেতন প্রদান",
+  "@paySalaryTitle": {
+    "description": "Pay salary action"
+  },
+  "giveAdvanceTitle": "অগ্রিম দিন",
+  "@giveAdvanceTitle": {
+    "description": "Give advance action"
+  },
+  "confirmDeleteDriver": "আপনি কি এই ড্রাইভারটি মুছে ফেলতে চান?",
+  "@confirmDeleteDriver": {
+    "description": "Confirm delete driver dialog"
+  },
+  "noCustomerOpeningBalances": "কোনো গ্রাহকের ওপেনিং ব্যালেন্স সেট করা হয়নি",
+  "@noCustomerOpeningBalances": {
+    "description": "No customer opening balances message"
+  },
+  "noDriverOpeningBalances": "কোনো ড্রাইভারের ওপেনিং ব্যালেন্স সেট করা হয়নি",
+  "@noDriverOpeningBalances": {
+    "description": "No driver opening balances message"
+  },
+  "errorLoadingBalances": "ত্রুটি: {error}",
+  "@errorLoadingBalances": {
+    "description": "Error loading balances",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error message"
+      }
+    }
+  },
+  "customerIdLabel": "গ্রাহক #{customerId}",
+  "@customerIdLabel": {
+    "description": "Customer ID label",
+    "placeholders": {
+      "customerId": {
+        "type": "int",
+        "description": "Customer ID"
+      }
+    }
+  },
+  "driverIdLabel": "ড্রাইভার #{driverId}",
+  "@driverIdLabel": {
+    "description": "Driver ID label",
+    "placeholders": {
+      "driverId": {
+        "type": "int",
+        "description": "Driver ID"
+      }
+    }
+  },
+  "confirmDeleteVehicle": "আপনি কি এই গাড়িটি মুছে ফেলতে চান?",
+  "@confirmDeleteVehicle": {
+    "description": "Confirm delete vehicle dialog"
+  },
+  "driverNameHint": "ড্রাইভারের নাম",
+  "@driverNameHint": {
+    "description": "Driver name hint"
+  },
+  "newDriverTitle": "নতুন ড্রাইভার",
+  "@newDriverTitle": {
+    "description": "New driver form title"
+  },
+  "customerNameHint": "গ্রাহকের নাম",
+  "@customerNameHint": {
+    "description": "Customer name hint"
+  },
+  "openingBalanceHint": "০.০০",
+  "@openingBalanceHint": {
+    "description": "Opening balance hint"
+  },
+  "errorLoadingLedger": "লেজার লোড করতে সমস্যা হয়েছে",
+  "@errorLoadingLedger": {
+    "description": "Error loading ledger"
+  },
+  "dateRangePickerComingSoon": "তারিখ পরিসর বাছাই শীঘ্রই আসছে",
+  "@dateRangePickerComingSoon": {
+    "description": "Date range picker coming soon"
+  },
+  "statusFilterTitle": "স্ট্যাটাস",
+  "@statusFilterTitle": {
+    "description": "Status filter title"
+  },
+  "statusAll": "সব",
+  "@statusAll": {
+    "description": "Status: All"
+  },
+  "statusCompleted": "সম্পন্ন",
+  "@statusCompleted": {
+    "description": "Status: Completed"
+  },
+  "statusCancelled": "বাতিল",
+  "@statusCancelled": {
+    "description": "Status: Cancelled"
+  },
+  "fareHint": "১০০০০.০০",
+  "@fareHint": {
+    "description": "Fare hint"
+  },
+  "advanceHint": "০.০০",
+  "@advanceHint": {
+    "description": "Advance hint"
+  },
+  "startOdoHint": "১০০০০",
+  "@startOdoHint": {
+    "description": "Start odometer hint"
+  },
+  "endOdoHint": "১০৫০০",
+  "@endOdoHint": {
+    "description": "End odometer hint"
+  },
+  "noItemsAvailable": "কোনো {label} উপলব্ধ নেই। প্রথমে যোগ করুন।",
+  "@noItemsAvailable": {
+    "description": "No items available message",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "errorLoadingItems": "{label} লোড করতে সমস্যা হয়েছে",
+  "@errorLoadingItems": {
+    "description": "Error loading items",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "tripDetailTitle": "ট্রিপ #{tripId}",
+  "@tripDetailTitle": {
+    "description": "Trip detail screen title",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "errorLoadingTrip": "ত্রুটি: {error}",
+  "@errorLoadingTrip": {
+    "description": "Error loading trip",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error message"
+      }
+    }
+  },
+  "confirmDeleteTrip": "আপনি কি এই ট্রিপটি মুছে ফেলতে চান?",
+  "@confirmDeleteTrip": {
+    "description": "Confirm delete trip dialog"
+  },
+  "tripDetailHeader": "ট্রিপ #{tripId}",
+  "@tripDetailHeader": {
+    "description": "Trip detail header",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "noPaymentsYet": "এখনো কোনো পেমেন্ট নেই",
+  "@noPaymentsYet": {
+    "description": "No payments yet message"
+  },
+  "receivePaymentAction": "পেমেন্ট গ্রহণ",
+  "@receivePaymentAction": {
+    "description": "Receive payment action"
+  },
+  "viewTripExpensesAction": "ট্রিপ খরচ দেখুন",
+  "@viewTripExpensesAction": {
+    "description": "View trip expenses action"
+  },
+  "noOutstandingTrips": "এই গ্রাহকের জন্য কোনো বকেয়াদার ট্রিপ নেই",
+  "@noOutstandingTrips": {
+    "description": "No outstanding trips message"
+  },
+  "tripOutstandingLabel": "ট্রিপ #{tripId} - {amount} বকেয়া",
+  "@tripOutstandingLabel": {
+    "description": "Trip outstanding label",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      },
+      "amount": {
+        "type": "String",
+        "description": "Outstanding amount"
+      }
+    }
+  },
+  "paymentAmountHint": "৫০০০.০০",
+  "@paymentAmountHint": {
+    "description": "Payment amount hint"
+  },
+  "selectTripError": "একটি ট্রিপ নির্বাচন করুন",
+  "@selectTripError": {
+    "description": "Select trip error"
+  },
+  "paymentExceedsWarning": "সতর্কতা",
+  "@paymentExceedsWarning": {
+    "description": "Payment exceeds warning title"
+  },
+  "paymentExceedsMessage": "পেমেন্ট বকেয়ার চেয়ে বেশি। চালিয়ে যাবেন?",
+  "@paymentExceedsMessage": {
+    "description": "Payment exceeds message"
+  },
+  "cancelButton": "বাতিল",
+  "@cancelButton": {
+    "description": "Cancel button"
+  },
+  "continueButton": "চালিয়ে যান",
+  "@continueButton": {
+    "description": "Continue button"
+  },
+  "tripOutstandingPreview": "ট্রিপ #{tripId}",
+  "@tripOutstandingPreview": {
+    "description": "Trip outstanding preview",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "newCustomerTitle": "নতুন গ্রাহক",
+  "@newCustomerTitle": {
+    "description": "New customer form title"
+  },
+  "customerNameHint": "গ্রাহকের নাম",
+  "@customerNameHint": {
+    "description": "Customer name hint"
+  },
+  "openingBalanceHint": "০.০০",
+  "@openingBalanceHint": {
+    "description": "Opening balance hint"
+  },
+  "errorLoadingLedger": "লেজার লোড করতে সমস্যা হয়েছে",
+  "@errorLoadingLedger": {
+    "description": "Error loading ledger"
+  },
+  "dateRangePickerComingSoon": "তারিখ পরিসর বাছাই শীঘ্রই আসছে",
+  "@dateRangePickerComingSoon": {
+    "description": "Date range picker coming soon"
+  },
+  "statusFilterTitle": "স্ট্যাটাস",
+  "@statusFilterTitle": {
+    "description": "Status filter title"
+  },
+  "statusAll": "সব",
+  "@statusAll": {
+    "description": "Status: All"
+  },
+  "statusCompleted": "সম্পন্ন",
+  "@statusCompleted": {
+    "description": "Status: Completed"
+  },
+  "statusCancelled": "বাতিল",
+  "@statusCancelled": {
+    "description": "Status: Cancelled"
+  },
+  "fareHint": "১০০০০.০০",
+  "@fareHint": {
+    "description": "Fare hint"
+  },
+  "advanceHint": "০.০০",
+  "@advanceHint": {
+    "description": "Advance hint"
+  },
+  "startOdoHint": "১০০০০",
+  "@startOdoHint": {
+    "description": "Start odometer hint"
+  },
+  "endOdoHint": "১০৫০০",
+  "@endOdoHint": {
+    "description": "End odometer hint"
+  },
+  "noItemsAvailable": "কোনো {label} উপলব্ধ নেই। প্রথমে যোগ করুন।",
+  "@noItemsAvailable": {
+    "description": "No items available message",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "errorLoadingItems": "{label} লোড করতে সমস্যা হয়েছে",
+  "@errorLoadingItems": {
+    "description": "Error loading items",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "description": "Item label"
+      }
+    }
+  },
+  "tripDetailTitle": "ট্রিপ #{tripId}",
+  "@tripDetailTitle": {
+    "description": "Trip detail screen title",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "errorLoadingTrip": "ত্রুটি: {error}",
+  "@errorLoadingTrip": {
+    "description": "Error loading trip",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error message"
+      }
+    }
+  },
+  "confirmDeleteTrip": "আপনি কি এই ট্রিপটি মুছে ফেলতে চান?",
+  "@confirmDeleteTrip": {
+    "description": "Confirm delete trip dialog"
+  },
+  "tripDetailHeader": "ট্রিপ #{tripId}",
+  "@tripDetailHeader": {
+    "description": "Trip detail header",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "noPaymentsYet": "এখনো কোনো পেমেন্ট নেই",
+  "@noPaymentsYet": {
+    "description": "No payments yet message"
+  },
+  "receivePaymentAction": "পেমেন্ট গ্রহণ",
+  "@receivePaymentAction": {
+    "description": "Receive payment action"
+  },
+  "viewTripExpensesAction": "ট্রিপ খরচ দেখুন",
+  "@viewTripExpensesAction": {
+    "description": "View trip expenses action"
+  },
+  "noOutstandingTrips": "এই গ্রাহকের জন্য কোনো বকেয়াদার ট্রিপ নেই",
+  "@noOutstandingTrips": {
+    "description": "No outstanding trips message"
+  },
+  "tripOutstandingLabel": "ট্রিপ #{tripId} - {amount} বকেয়া",
+  "@tripOutstandingLabel": {
+    "description": "Trip outstanding label",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      },
+      "amount": {
+        "type": "String",
+        "description": "Outstanding amount"
+      }
+    }
+  },
+  "paymentAmountHint": "৫০০০.০০",
+  "@paymentAmountHint": {
+    "description": "Payment amount hint"
+  },
+  "selectTripError": "একটি ট্রিপ নির্বাচন করুন",
+  "@selectTripError": {
+    "description": "Select trip error"
+  },
+  "paymentExceedsWarning": "সতর্কতা",
+  "@paymentExceedsWarning": {
+    "description": "Payment exceeds warning title"
+  },
+  "paymentExceedsMessage": "পেমেন্ট বকেয়ার চেয়ে বেশি। চালিয়ে যাবেন?",
+  "@paymentExceedsMessage": {
+    "description": "Payment exceeds message"
+  },
+  "cancelButton": "বাতিল",
+  "@cancelButton": {
+    "description": "Cancel button"
+  },
+  "continueButton": "চালিয়ে যান",
+  "@continueButton": {
+    "description": "Continue button"
+  },
+  "tripOutstandingPreview": "ট্রিপ #{tripId}",
+  "@tripOutstandingPreview": {
+    "description": "Trip outstanding preview",
+    "placeholders": {
+      "tripId": {
+        "type": "int",
+        "description": "Trip ID"
+      }
+    }
+  },
+  "noTransactionsYet": "এখনো কোনো লেনদেন নেই",
+  "@noTransactionsYet": {
+    "description": "No transactions yet message"
+  },
+  "addTripOrPaymentToSeeLedger": "ট্রিপ যোগ করুন বা পেমেন্ট গ্রহণ করুন লেজার দেখতে",
+  "@addTripOrPaymentToSeeLedger": {
+    "description": "Add trip or payment to see ledger message"
+  },
+  "totalFares": "মোট ফেয়ার",
+  "@totalFares": {
+    "description": "Total fares label"
+  },
+  "totalPayments": "মোট পেমেন্ট",
+  "@totalPayments": {
+    "description": "Total payments label"
+  },
+  "paidAmount": "প্রদত্ত: {amount}",
+  "@paidAmount": {
+    "description": "Paid amount format",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Formatted money amount"
+      }
+    }
+  },
+  "amountHint": "১০০০.০০",
+  "@amountHint": {
+    "description": "Amount hint"
+  },
+  "cameraLabel": "ক্যামেরা",
+  "@cameraLabel": {
+    "description": "Camera button label"
+  },
+  "galleryLabel": "গ্যালারি",
+  "@galleryLabel": {
+    "description": "Gallery button label"
+  },
+  "litresHint": "৪০.০",
+  "@litresHint": {
+    "description": "Litres hint"
+  },
+  "rateHint": "১১০.০০",
+  "@rateHint": {
+    "description": "Rate hint"
+  },
+  "totalHint": "৪৪০০.০০",
+  "@totalHint": {
+    "description": "Total hint"
+  },
+  "odometerHint": "১০০০০",
+  "@odometerHint": {
+    "description": "Odometer hint"
+  },
+  "expenseDetailTitle": "খরচ #{expenseId}",
+  "@expenseDetailTitle": {
+    "description": "Expense detail screen title",
+    "placeholders": {
+      "expenseId": {
+        "type": "int",
+        "description": "Expense ID"
+      }
+    }
+  },
+  "confirmDeleteExpense": "আপনি কি এই খরচটি মুছে ফেলতে চান?",
+  "@confirmDeleteExpense": {
+    "description": "Confirm delete expense dialog"
+  },
+  "fuelDetailTitle": "ইন্ধন #{fuelId}",
+  "@fuelDetailTitle": {
+    "description": "Fuel detail screen title",
+    "placeholders": {
+      "fuelId": {
+        "type": "int",
+        "description": "Fuel ID"
+      }
+    }
+  },
+  "confirmDeleteFuel": "আপনি কি এই ইন্ধন রেকর্ডটি মুছে ফেলতে চান?",
+  "@confirmDeleteFuel": {
+    "description": "Confirm delete fuel dialog"
+  },
+  "addLoanTitle": "লোন যোগ করুন",
+  "@addLoanTitle": {
+    "description": "Add loan screen title"
+  },
+  "principalLabel": "মূলধন (৳)",
+  "@principalLabel": {
+    "description": "Principal label"
+  },
+  "principalHint": "৫০০০০০",
+  "@principalHint": {
+    "description": "Principal hint"
+  },
+  "interestRateLabel": "বার্ষিক সুদ হার (%)",
+  "@interestRateLabel": {
+    "description": "Annual interest rate label"
+  },
+  "interestRateHint": "১২.০০",
+  "@interestRateHint": {
+    "description": "Interest rate hint"
+  },
+  "startDateLabel": "শুরুর তারিখ",
+  "@startDateLabel": {
+    "description": "Start date label"
+  },
+  "noteLabel": "নোট",
+  "@noteLabel": {
+    "description": "Note label"
+  },
+  "noteHint": "লোনের বিবরণ",
+  "@noteHint": {
+    "description": "Note hint"
+  },
+  "addInstallmentTitle": "ইনস্টলমেন্ট যোগ করুন",
+  "@addInstallmentTitle": {
+    "description": "Add installment screen title"
+  },
+  "installmentDateLabel": "ইনস্টলমেন্টের তারিখ",
+  "@installmentDateLabel": {
+    "description": "Installment date label"
+  },
+  "totalPaidLabel": "মোট প্রদত্ত (৳)",
+  "@totalPaidLabel": {
+    "description": "Total paid label"
+  },
+  "totalPaidHint": "১৫০০০.০০",
+  "@totalPaidHint": {
+    "description": "Total paid hint"
+  },
+  "principalPortionLabel": "মূলধনের অংশ (৳)",
+  "@principalPortionLabel": {
+    "description": "Principal portion label"
+  },
+  "principalPortionHint": "১০০০০.০০",
+  "@principalPortionHint": {
+    "description": "Principal portion hint"
+  },
+  "interestPortionLabel": "সুদের অংশ (৳)",
+  "@interestPortionLabel": {
+    "description": "Interest portion label"
+  },
+  "interestPortionHint": "৫০০০.০০",
+  "@interestPortionHint": {
+    "description": "Interest portion hint"
+  },
+  "validationWarning": "মূলধন + সুদ (৳{sum}) ≠ মোট প্রদত্ত (৳{total})",
+  "@validationWarning": {
+    "description": "Validation warning for principal + interest != total",
+    "placeholders": {
+      "sum": {
+        "type": "String",
+        "description": "Sum of principal and interest"
+      },
+      "total": {
+        "type": "String",
+        "description": "Total paid"
+      }
+    }
+  },
+  "principalExceedsOutstanding": "মূলধন বকেয়ার চেয়ে বেশি হতে পারে না",
+  "@principalExceedsOutstanding": {
+    "description": "Principal exceeds outstanding error"
+  },
+  "loanDetailTitle": "লোন #{loanId}",
+  "@loanDetailTitle": {
+    "description": "Loan detail screen title",
+    "placeholders": {
+      "loanId": {
+        "type": "int",
+        "description": "Loan ID"
+      }
+    }
+  },
+  "addInstallmentTooltip": "ইনস্টলমেন্ট যোগ করুন",
+  "@addInstallmentTooltip": {
+    "description": "Add installment tooltip"
+  },
+  "noInstallmentsYet": "এখনো কোনো ইনস্টলমেন্ট নেই",
+  "@noInstallmentsYet": {
+    "description": "No installments yet message"
+  },
+  "addFirstInstallment": "প্রথম ইনস্টলমেন্ট যোগ করুন",
+  "@addFirstInstallment": {
+    "description": "Add first installment message"
+  },
+  "installmentDetail": "ইনস্টলমেন্ট #{installmentId}",
+  "@installmentDetail": {
+    "description": "Installment detail",
+    "placeholders": {
+      "installmentId": {
+        "type": "int",
+        "description": "Installment ID"
+      }
+    }
+  },
+  "installmentNote": "নোট: {note}",
+  "@installmentNote": {
+    "description": "Installment note",
+    "placeholders": {
+      "note": {
+        "type": "String",
+        "description": "Installment note"
+      }
+    }
+  },
+  "driverLoanTitle": "ড্রাইভার লোন",
+  "@driverLoanTitle": {
+    "description": "Driver loan screen title"
+  },
+  "loanBalanceLabel": "লোন ব্যালেন্স: {amount}",
+  "@loanBalanceLabel": {
+    "description": "Loan balance label",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Loan balance amount"
+      }
+    }
+  },
+  "loanGivenLabel": "লোন দেওয়া",
+  "@loanGivenLabel": {
+    "description": "Loan given label"
+  },
+  "loanRepaidLabel": "লোন ফেরত",
+  "@loanRepaidLabel": {
+    "description": "Loan repaid label"
+  },
+  "loanAmountHint": "৫০০০.০০",
+  "@loanAmountHint": {
+    "description": "Loan amount hint"
+  },
+  "advanceDeductLabel": "অগ্রিম কাটা (৳)",
+  "@advanceDeductLabel": {
+    "description": "Advance deduction label"
+  },
+  "maxAdvanceLabel": "সর্বোচ্চ: {amount}",
+  "@maxAdvanceLabel": {
+    "description": "Max advance label",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Max advance amount"
+      }
+    }
+  },
+  "amountToPayLabel": "প্রদেয় পরিমাণ (৳)",
+  "@amountToPayLabel": {
+    "description": "Amount to pay label"
+  },
+  "noteHintSalary": "{month}/{year} মাসের বেতন প্রদান",
+  "@noteHintSalary": {
+    "description": "Salary payment note hint",
+    "placeholders": {
+      "month": {
+        "type": "int",
+        "description": "Month"
+      },
+      "year": {
+        "type": "int",
+        "description": "Year"
+      }
+    }
+  },
+  "paySalaryButton": "বেতন প্রদান",
+  "@paySalaryButton": {
+    "description": "Pay salary button"
+  },
+  "outstandingAdvanceLabel": "বকেয়া অগ্রিম: {amount}",
+  "@outstandingAdvanceLabel": {
+    "description": "Outstanding advance label",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "Outstanding advance amount"
+      }
+    }
+  },
+  "advanceAmountHint": "৫০০০.০০",
+  "@advanceAmountHint": {
+    "description": "Advance amount hint"
+  },
+  "driverLoanScreenTitle": "ড্রাইভার লোন",
+  "@driverLoanScreenTitle": {
+    "description": "Driver loan screen title"
+  },
+  "loanGivenAction": "লোন দেওয়া",
+  "@loanGivenAction": {
+    "description": "Loan given action"
+  },
+  "loanRepaidAction": "লোন ফেরত",
+  "@loanRepaidAction": {
+    "description": "Loan repaid action"
+  },
+  "loanAmountHintDriver": "৫০০০.০০",
+  "@loanAmountHintDriver": {
+    "description": "Driver loan amount hint"
+  },
+  "loanNoteHintGiven": "ড্রাইভারের লোন দেওয়া",
+  "@loanNoteHintGiven": {
+    "description": "Loan note hint given"
+  },
+  "loanNoteHintRepaid": "ড্রাইভার লোন ফেরত",
+  "@loanNoteHintRepaid": {
+    "description": "Loan note hint repaid"
+  },
+  "giveLoanButton": "লোন দিন",
+  "@giveLoanButton": {
+    "description": "Give loan button"
+  },
+  "recordRepaymentButton": "ফেরত রেকর্ড করুন",
+  "@recordRepaymentButton": {
+    "description": "Record repayment button"
+  }
+}
