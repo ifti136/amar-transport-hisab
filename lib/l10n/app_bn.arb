@@ -1713,5 +1713,77 @@
         "description": "Error details"
       }
     }
+  },
+  "businessNameLabel": "ব্যবসা বা মালিকের নাম",
+  "@businessNameLabel": {
+    "description": "Business or owner name label"
+  },
+  "businessNameHint": "যেমন: মেসার্স করিম ট্রান্সপোর্ট",
+  "@businessNameHint": {
+    "description": "Business name hint"
+  },
+  "businessNameDesc": "অ্যাপের শীর্ষ বারে এই নামটি প্রদর্শিত হবে",
+  "@businessNameDesc": {
+    "description": "Business name description"
+  },
+  "businessNameSaved": "নাম সফলভাবে সংরক্ষিত হয়েছে",
+  "@businessNameSaved": {
+    "description": "Business name saved confirmation"
+  },
+  "onboardingWelcomeTitle": "আমার ট্রান্সপোর্ট হিসাবে স্বাগতম",
+  "@onboardingWelcomeTitle": {
+    "description": "Onboarding slide 1 title"
+  },
+  "onboardingWelcomeDesc": "কাভার্ড ভ্যান, ট্রিপ, জ্বালানি, ড্রাইভার ও আর্থিক হিসাবের নির্ভরযোগ্য অফলাইন খাতা।",
+  "@onboardingWelcomeDesc": {
+    "description": "Onboarding slide 1 description"
+  },
+  "onboardingBengaliTitle": "সহজ বাংলা ইন্টারফেস",
+  "@onboardingBengaliTitle": {
+    "description": "Onboarding slide 2 title"
+  },
+  "onboardingBengaliDesc": "সম্পূর্ণ বাংলায় তৈরি, তবে যে কোনো সময় উপরে ভাষা পরিবর্তন করে ইংরেজিতেও ব্যবহার করতে পারবেন।",
+  "@onboardingBengaliDesc": {
+    "description": "Onboarding slide 2 description"
+  },
+  "onboardingOfflineTitle": "১০০% অফলাইন হিসাব",
+  "@onboardingOfflineTitle": {
+    "description": "Onboarding slide 3 title"
+  },
+  "onboardingOfflineDesc": "আপনার সমস্ত তথ্য আপনার ফোনেই সুরক্ষিত থাকবে। দৈনন্দিন হিসাবের জন্য ইন্টারনেটের প্রয়োজন নেই।",
+  "@onboardingOfflineDesc": {
+    "description": "Onboarding slide 3 description"
+  },
+  "onboardingSecureTitle": "নিরাপদ ও নিখুঁত অডিট",
+  "@onboardingSecureTitle": {
+    "description": "Onboarding slide 4 title"
+  },
+  "onboardingSecureDesc": "ফিঙ্গারপ্রিন্ট বা পিন নিরাপত্তা লক এবং প্রতিটি সংশোধনের সম্পূর্ণ নির্ভুল অডিট লগ।",
+  "@onboardingSecureDesc": {
+    "description": "Onboarding slide 4 description"
+  },
+  "onboardingNameTitle": "আপনার ব্যবসার নাম দিন",
+  "@onboardingNameTitle": {
+    "description": "Onboarding slide 5 title"
+  },
+  "onboardingNameDesc": "আপনার নাম বা ট্রান্সপোর্ট ব্যবসার নাম লিখুন। এটি অ্যাপের শীর্ষ বারে দেখাবে।",
+  "@onboardingNameDesc": {
+    "description": "Onboarding slide 5 description"
+  },
+  "getStarted": "শুরু করুন",
+  "@getStarted": {
+    "description": "Get started button label"
+  },
+  "next": "পরবর্তী",
+  "@next": {
+    "description": "Next button label"
+  },
+  "back": "পূর্ববর্তী",
+  "@back": {
+    "description": "Back button label"
+  },
+  "skip": "এড়িয়ে যান",
+  "@skip": {
+    "description": "Skip button label"
   }
 }

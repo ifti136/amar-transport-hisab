@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'package:transport_hisab/core/services/business_name_provider.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -13,41 +14,58 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
+  final TextEditingController _nameController = TextEditingController();
   int _currentPage = 0;
+  bool _isSaving = false;
 
-  final List<OnboardingPage> _pages = [
-    OnboardingPage(
-      title: 'Welcome to Amar Transport Hisab', // i18n-ignore
-      description: 'Your complete transport accounting solution for managing vans, drivers, trips, and finances.',
-      icon: Icons.local_shipping,
-    ),
-    OnboardingPage(
-      title: 'Bengali First', // i18n-ignore
-      description: 'The app is designed in Bengali as the primary language with full English support. Switch languages anytime from the app bar.',
-      icon: Icons.language,
-    ),
-    OnboardingPage(
-      title: 'Offline First', // i18n-ignore
-      description: 'All your data stays on your device. No internet required for daily operations. Optional encrypted cloud backup available.',
-      icon: Icons.cloud_off,
-    ),
-    OnboardingPage(
-      title: 'Secure & Private', // i18n-ignore
-      description: 'Your financial data is encrypted locally. Optional app lock with PIN or biometric. Local backup/restore with verification.',
-      icon: Icons.security,
-    ),
-    OnboardingPage(
-      title: 'Ready to Start', // i18n-ignore
-      description: 'Set up your vehicles, drivers, and opening balances to begin tracking your transport business.',
-      icon: Icons.check_circle,
-      actionText: 'Get Started',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    final existingName = ref.read(businessNameProvider);
+    if (existingName.isNotEmpty) {
+      _nameController.text = existingName;
+    }
+  }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _nameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _completeOnboarding() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+
+    final l10n = AppLocalizations.of(context)!;
+    final name = _nameController.text.trim();
+
+    try {
+      if (name.isNotEmpty) {
+        await ref.read(businessNameProvider.notifier).setBusinessName(name);
+      }
+      await ref.read(onboardingCompletedStateProvider.notifier).setCompleted(true);
+
+      if (mounted) {
+        if (name.isNotEmpty) {
+          AppToast.showSuccess(context, l10n.businessNameSaved);
+        }
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go('/');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
   }
 
   @override
@@ -55,156 +73,279 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
+    // 5 slides: 4 intro slides + 1 setup name slide
+    const totalPages = 5;
+
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: _pages.length,
-              onPageChanged: (index) => setState(() => _currentPage = index),
-              itemBuilder: (context, index) => _OnboardingPageWidget(page: _pages[index]),
-            ),
-          ),
-          // Page indicators
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_pages.length, (index) {
-                return AnimatedContainer(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          if (_currentPage < totalPages - 1)
+            TextButton(
+              onPressed: () {
+                _pageController.animateToPage(
+                  totalPages - 1,
                   duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: _currentPage == index ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _currentPage == index
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.outline,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
+                  curve: Curves.easeInOut,
                 );
-              }),
+              },
+              child: Text(l10n.skip, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
             ),
-          ),
-          // Action buttons
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              children: [
-                if (_currentPage > 0)
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => _pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) => setState(() => _currentPage = index),
+                children: [
+                  // Slide 0: Welcome
+                  _OnboardingSlide(
+                    iconWidget: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/logo.png', // i18n-ignore
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.contain,
                       ),
-                      child: const Text('Back'), // i18n-ignore
+                    ),
+                    title: l10n.onboardingWelcomeTitle,
+                    description: l10n.onboardingWelcomeDesc,
+                  ),
+
+                  // Slide 1: Bengali First
+                  _OnboardingSlide(
+                    iconData: Icons.language,
+                    title: l10n.onboardingBengaliTitle,
+                    description: l10n.onboardingBengaliDesc,
+                  ),
+
+                  // Slide 2: 100% Offline
+                  _OnboardingSlide(
+                    iconData: Icons.cloud_off,
+                    title: l10n.onboardingOfflineTitle,
+                    description: l10n.onboardingOfflineDesc,
+                  ),
+
+                  // Slide 3: Secure & Private
+                  _OnboardingSlide(
+                    iconData: Icons.security,
+                    title: l10n.onboardingSecureTitle,
+                    description: l10n.onboardingSecureDesc,
+                  ),
+
+                  // Slide 4: Personalize / Name
+                  _NameSetupSlide(
+                    controller: _nameController,
+                    title: l10n.onboardingNameTitle,
+                    description: l10n.onboardingNameDesc,
+                    label: l10n.businessNameLabel,
+                    hint: l10n.businessNameHint,
+                  ),
+                ],
+              ),
+            ),
+
+            // Page indicators
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(totalPages, (index) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: _currentPage == index ? 24 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: _currentPage == index
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  );
+                }),
+              ),
+            ),
+
+            // Navigation Controls
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  if (_currentPage > 0)
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _isSaving
+                            ? null
+                            : () => _pageController.previousPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                ),
+                        child: Text(l10n.back),
+                      ),
+                    ),
+                  if (_currentPage > 0) const SizedBox(width: 16),
+                  Expanded(
+                    flex: _currentPage == 0 ? 2 : 1,
+                    child: FilledButton(
+                      onPressed: _isSaving
+                          ? null
+                          : () {
+                              if (_currentPage < totalPages - 1) {
+                                _pageController.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              } else {
+                                _completeOnboarding();
+                              }
+                            },
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            )
+                          : Text(_currentPage == totalPages - 1 ? l10n.getStarted : l10n.next),
                     ),
                   ),
-                if (_currentPage > 0) const SizedBox(width: 16),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      if (_currentPage < _pages.length - 1) {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      } else {
-                        _completeOnboarding();
-                      }
-                    },
-                    child: Text(_currentPage == _pages.length - 1 ? 'Get Started' : 'Next'),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-
-  Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_completed', true);
-    if (context.mounted) {
-      context.go('/');
-    }
-  }
 }
 
-class OnboardingPage {
+class _OnboardingSlide extends StatelessWidget {
+  final Widget? iconWidget;
+  final IconData? iconData;
   final String title;
   final String description;
-  final IconData icon;
-  final String? actionText;
 
-  OnboardingPage({
+  const _OnboardingSlide({
+    this.iconWidget,
+    this.iconData,
     required this.title,
     required this.description,
-    required this.icon,
-    this.actionText,
   });
-}
-
-class _OnboardingPageWidget extends StatelessWidget {
-  final OnboardingPage page;
-
-  const _OnboardingPageWidget({required this.page});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (page.icon == Icons.local_shipping)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                'assets/images/logo.png', // i18n-ignore
-                width: 120,
-                height: 120,
-                fit: BoxFit.contain,
-              ),
-            )
-          else
-            Icon(page.icon, size: 100, color: Theme.of(context).colorScheme.primary),
+          if (iconWidget != null)
+            iconWidget!
+          else if (iconData != null)
+            Icon(iconData, size: 96, color: theme.colorScheme.primary),
           const SizedBox(height: 32),
           Text(
-            page.title,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+            title,
+            style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
-            page.description,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            description,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
-          if (page.actionText != null) ...[
-            const SizedBox(height: 32),
-            FilledButton(
-              onPressed: () {
-                // Handled by parent
-              },
-              child: Text(page.actionText!),
-            ),
-          ],
         ],
       ),
     );
   }
 }
 
-/// Provider to check if onboarding is completed
-final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getBool('onboarding_completed') ?? false;
-});
+class _NameSetupSlide extends StatelessWidget {
+  final TextEditingController controller;
+  final String title;
+  final String description;
+  final String label;
+  final String hint;
+
+  const _NameSetupSlide({
+    required this.controller,
+    required this.title,
+    required this.description,
+    required this.label,
+    required this.hint,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.business, size: 64, color: theme.colorScheme.onPrimaryContainer),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                title,
+                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                description,
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              Card(
+                elevation: 0,
+                color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextFormField(
+                    controller: controller,
+                    autofocus: false,
+                    style: theme.textTheme.titleMedium,
+                    decoration: InputDecoration(
+                      labelText: label,
+                      hintText: hint,
+                      prefixIcon: const Icon(Icons.badge_outlined),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

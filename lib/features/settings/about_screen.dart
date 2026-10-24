@@ -51,7 +51,7 @@ class AboutScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'Version v0.2.2 (Build 5)', // i18n-ignore
+                    'Version v0.2.3 (Build 6)', // i18n-ignore
                     style: TextStyle(
                       color: theme.colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
@@ -109,7 +109,20 @@ class AboutScreen extends ConsumerWidget {
                   Text('Version History & Updates', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)), // i18n-ignore
                   const SizedBox(height: 12),
                   _ChangelogItem(
-                    version: 'v0.2.2 (Latest)', // i18n-ignore
+                    version: 'v0.2.3 (Latest)', // i18n-ignore
+                    date: 'October 2026', // i18n-ignore
+                    changes: const [
+                      'Automatic first-run interactive walkthrough on initial app launch',
+                      'Onboarding business / owner name setup with live top bar branding',
+                      'Configurable business / owner name in Settings with persistent SQLite backup',
+                      'Comprehensive database call audit across all 12 Drift tables and DAOs',
+                      'Toast notification system with animated overlays and multi-click guards',
+                      'Automated cascade deletion between fuel records and diesel expense entries',
+                    ],
+                  ),
+                  const Divider(height: 20),
+                  _ChangelogItem(
+                    version: 'v0.2.2', // i18n-ignore
                     date: 'October 2026', // i18n-ignore
                     changes: const [
                       'Comprehensive database call audit across the entire application',

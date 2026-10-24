@@ -9,6 +9,7 @@ import 'package:transport_hisab/core/theme/theme_provider.dart';
 import 'package:transport_hisab/domain/accounting/accounting.dart';
 import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
+import 'package:transport_hisab/core/services/business_name_provider.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -17,6 +18,8 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final dashboardAsync = ref.watch(dashboardProvider);
+    final customName = ref.watch(businessNameProvider);
+    final displayTitle = customName.trim().isNotEmpty ? customName.trim() : l10n.appTitle;
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +36,12 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Flexible(child: Text(l10n.appTitle)),
+            Flexible(
+              child: Text(
+                displayTitle,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         actions: [

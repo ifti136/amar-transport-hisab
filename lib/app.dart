@@ -7,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/services/app_lock_service.dart';
+import 'core/services/business_name_provider.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/trips/trips_screen.dart';
 import 'features/trips/trip_form.dart';
@@ -29,9 +30,18 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Router provider with persistent bottom navigation shell and root sub-routes
 final routerProvider = Provider<GoRouter>((ref) {
+  final isCompleted = ref.watch(onboardingCompletedStateProvider);
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/',
+    initialLocation: isCompleted ? '/' : '/onboarding',
+    redirect: (context, state) {
+      final completed = ref.read(onboardingCompletedStateProvider);
+      final isOnboarding = state.matchedLocation == '/onboarding';
+      if (!completed && !isOnboarding) {
+        return '/onboarding';
+      }
+      return null;
+    },
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

@@ -2,26 +2,26 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v0.2.2-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.2)
+[![Release](https://img.shields.io/badge/Release-v0.2.3-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.3)
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://developer.android.com)
 
 **Amar Transport Hisab** is an offline-first, privacy-respecting Android accounting app tailored specifically for transport and covered van fleet owners in Bangladesh. Built from the ground up to replace paper notebooks (*খাতা*), it guarantees 100% offline data storage, strict double-entry ledger arithmetic, native Bengali typography, and accurate per-vehicle Profit & Loss reporting.
 
 ---
 
-## 🚀 What's New in v0.2.2 (ভার্সন ০.২.২ ডাটাবেস অডিট, টোস্ট ও সাবমিশন ফিডব্যাক)
+## 🚀 What's New in v0.2.3 (ভার্সন ০.২.৩ ফার্স্ট-রান ওয়াকথ্রু ও কাস্টম টপ বার নাম)
 
-- 🔍 **Full Database Operation Audit (সম্পূর্ণ ডাটাবেস অডিট):** Audited 100% of database interactions across all screens, DAOs, repositories, and backup services (`docs/DATABASE_AUDIT.md`). Ensured schema, nullability, foreign key, and indexing integrity across all 12 SQLite tables.
-- 🍞 **Centralized Toast Feedback (ইউনিফাইড টোস্ট নোটিফিকেশন):** Introduced `AppToast` with distinct floating semantic styling (success in deep green with checkmark, error in red, warning in amber) across vehicle, driver, trip, expense, fuel, customer, payment, loan, and settings workflows.
-- 🛡️ **Duplicate Click Prevention (_isSaving ও প্রগ্রেস স্পিনার):** Guarded all form and modal dialog submit buttons (`_isSaving`) with active loading spinners to completely eliminate double submissions or duplicate records.
-- 🧹 **Form Dismissal & Reset Lifecycle (ফর্ম স্বয়ংক্রিয় বন্ধ ও রিসেট):** Verified that forms dismiss automatically upon confirmed SQLite persistence and preserve user input if validation or persistence fails. Supported clean input resets for "Save & Add Another" consecutive trip expense logging.
-- 🔢 **Bengali Numeral Parsing in Financial Forms (বাংলা সংখ্যা ইনপুট ফিক্স):** Enhanced input parsing (`parseMoneyInput` & `toEnDigits`) across vehicle loans, installments, driver salaries, advances, and payments to reliably accept Bengali numerals (১, ২, ৩...).
-- 🔗 **Cascade Soft-Delete Integrity (ক্যাসকেড সফট ডিলিট):** Deleting fuel records now cleanly cascades to soft-delete the linked diesel expense entry, and vice-versa, avoiding orphan records and guaranteeing single-source-of-truth P&L ledgers.
+- 🚀 **First-Run Interactive Walkthrough (প্রথমবার ব্যবহারে পরিচিতি ওয়াকথ্রু):** Automatically launches a 5-slide guided onboarding flow when the user opens the app for the very first time, introducing Bengali-first localization, 100% offline privacy, and accounting integrity.
+- 🏷️ **Business / Fleet Owner Name Setup (ব্যবসা বা মালিকের নাম সেটআপ):** At the end of the initial walkthrough, users can configure their business or fleet name (e.g., *আল-মদিনা ট্রান্সপোর্ট* or *M/S Karim Transport*).
+- 📱 **Dynamic Top Bar Branding (লাইভ টপ বার টাইটেল):** Displays the entered business name directly on the home screen top bar (AppBar) in place of the generic app name, with automatic fallback if not provided.
+- ⚙️ **Persistent & Editable in Settings (সেটিংস থেকে পরিবর্তনযোগ্য):** Users can edit their business name at any time from Settings > Business Profile, with instant reactive updates across the app and full local SQLite persistence.
+- 🔍 **Database Audit & Robust Form Lifecycles:** Carried over full database audit validations, centralized `AppToast` alerts, double-submission guards (`_isSaving`), Bengali numeral support, and cascading fuel-diesel deletions.
 
 ---
 
 ## 📜 Version History (ভার্সন ইতিহাস)
 
+- **v0.2.3:** Automatic first-run walkthrough, business/owner name onboarding prompt, dynamic top bar branding, settings business name editor with SQLite backup persistence.
 - **v0.2.2:** Full database call audit, centralized AppToast feedback system, duplicate click prevention (_isSaving), form dismissal & reset lifecycle, Bengali numeral parsing across all modal dialogs, and cascade soft-delete integrity.
 - **v0.2.1:** Profit card UI fix, vehicle numbers in alerts, optional customers & custom names, explicit trip completion actions, BaseDao comparison & saving fixes, consolidated 3-in-1 expense section with "Save & Add Another", future date picker support up to 2100, and Settings walkthrough.
 - **v0.2.0:** Trip distance tracking, dual trip/vehicle expense logging, customizable categories, streamlined fuel logging, report loading fixes, logo branding, and form anti-duplicate guards.

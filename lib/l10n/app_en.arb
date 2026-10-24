@@ -1721,5 +1721,77 @@
         "description": "Error details"
       }
     }
+  },
+  "businessNameLabel": "Business / Owner Name",
+  "@businessNameLabel": {
+    "description": "Business or owner name label"
+  },
+  "businessNameHint": "e.g. M/S Karim Transport",
+  "@businessNameHint": {
+    "description": "Business name hint"
+  },
+  "businessNameDesc": "Shown on the top bar of the application",
+  "@businessNameDesc": {
+    "description": "Business name description"
+  },
+  "businessNameSaved": "Business name saved successfully",
+  "@businessNameSaved": {
+    "description": "Business name saved confirmation"
+  },
+  "onboardingWelcomeTitle": "Welcome to Amar Transport Hisab",
+  "@onboardingWelcomeTitle": {
+    "description": "Onboarding slide 1 title"
+  },
+  "onboardingWelcomeDesc": "Your complete offline transport accounting solution for covered vans, trips, drivers, and cash flow.",
+  "@onboardingWelcomeDesc": {
+    "description": "Onboarding slide 1 description"
+  },
+  "onboardingBengaliTitle": "Bengali First",
+  "@onboardingBengaliTitle": {
+    "description": "Onboarding slide 2 title"
+  },
+  "onboardingBengaliDesc": "Designed natively in Bengali with English toggle support anytime from the top bar.",
+  "@onboardingBengaliDesc": {
+    "description": "Onboarding slide 2 description"
+  },
+  "onboardingOfflineTitle": "100% Offline-First",
+  "@onboardingOfflineTitle": {
+    "description": "Onboarding slide 3 title"
+  },
+  "onboardingOfflineDesc": "All accounts, fuel, and trip logs stay securely on your personal device without requiring internet.",
+  "@onboardingOfflineDesc": {
+    "description": "Onboarding slide 3 description"
+  },
+  "onboardingSecureTitle": "Secure & Private",
+  "@onboardingSecureTitle": {
+    "description": "Onboarding slide 4 title"
+  },
+  "onboardingSecureDesc": "Your financial data is protected with optional biometric app lock and tamper-proof double-entry audits.",
+  "@onboardingSecureDesc": {
+    "description": "Onboarding slide 4 description"
+  },
+  "onboardingNameTitle": "Name Your Business",
+  "@onboardingNameTitle": {
+    "description": "Onboarding slide 5 title"
+  },
+  "onboardingNameDesc": "Enter your name or business name. It will be displayed on the top bar of the application.",
+  "@onboardingNameDesc": {
+    "description": "Onboarding slide 5 description"
+  },
+  "getStarted": "Get Started",
+  "@getStarted": {
+    "description": "Get started button label"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Next button label"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back button label"
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button label"
   }
 }

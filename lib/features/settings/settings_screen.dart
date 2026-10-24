@@ -7,6 +7,8 @@ import 'package:transport_hisab/core/theme/theme_provider.dart';
 import 'package:transport_hisab/core/services/app_lock_service.dart';
 import 'package:transport_hisab/core/services/expiry_alert_service.dart';
 import 'package:transport_hisab/core/services/cloud_backup_service.dart';
+import 'package:transport_hisab/core/services/business_name_provider.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -21,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
     final expiryAlerts = ref.watch(vehicleExpiryAlertsListProvider);
     final cloudBackupEnabled = ref.watch(cloudBackupEnabledProvider);
     final lastCloudSync = ref.watch(cloudBackupLastSyncProvider);
+    final businessName = ref.watch(businessNameProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,6 +32,22 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         children: [
+          // Section 0: Business Profile
+          _SectionHeader(title: l10n.businessNameLabel),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: ListTile(
+              leading: const Icon(Icons.business, size: 28),
+              title: Text(
+                businessName.isNotEmpty ? businessName : l10n.appTitle,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(l10n.businessNameDesc),
+              trailing: const Icon(Icons.edit_outlined),
+              onTap: () => _showEditBusinessNameDialog(context, ref, businessName),
+            ),
+          ),
+
           // Section 1: Appearance & Language
           _SectionHeader(title: l10n.languageLabel),
           Card(
@@ -328,10 +347,47 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               title: Text(l10n.aboutTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: const Text('Amar Transport Hisab v0.2.2 • Iftekharul Islam'), // i18n-ignore
+              subtitle: const Text('Amar Transport Hisab v0.2.3 • Iftekharul Islam'), // i18n-ignore
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/settings/about'),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditBusinessNameDialog(BuildContext context, WidgetRef ref, String currentName) {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: currentName);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.businessNameLabel),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: l10n.businessNameLabel,
+            hintText: l10n.businessNameHint,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final newName = controller.text.trim();
+              await ref.read(businessNameProvider.notifier).setBusinessName(newName);
+              if (ctx.mounted) {
+                Navigator.of(ctx).pop();
+                AppToast.showSuccess(context, l10n.businessNameSaved);
+              }
+            },
+            child: Text(l10n.save),
           ),
         ],
       ),
