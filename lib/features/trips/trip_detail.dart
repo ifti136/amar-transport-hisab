@@ -156,8 +156,8 @@ class _TripDetailContent extends ConsumerWidget {
                 _DetailRow(label: l10n.driverLabel, value: 'Driver #${trip.driverId}'),
                 _DetailRow(label: l10n.fareLabel, value: formatMoney(Money.paisa(trip.agreedFarePaisa), context: context)),
                 _DetailRow(label: l10n.advanceLabel, value: formatMoney(Money.paisa(trip.advancePaisa), context: context)),
-                _DetailRow(label: l10n.startOdoLabel, value: trip.startOdo.toString()),
-                _DetailRow(label: l10n.endOdoLabel, value: trip.endOdo?.toString() ?? '—'),
+                if (trip.endOdo != null && trip.endOdo! > trip.startOdo)
+                  _DetailRow(label: l10n.distanceKmLabel, value: '${trip.endOdo! - trip.startOdo} km'), // i18n-ignore
                 _DetailRow(label: l10n.outstandingLabel, value: formatMoney(Money.paisa(tripData.outstanding), context: context)),
                 _DetailRow(label: l10n.statusLabel, value: trip.status),
               ],

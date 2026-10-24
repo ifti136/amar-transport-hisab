@@ -64,6 +64,25 @@ class ExpenseFilter {
       category: category ?? this.category,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExpenseFilter &&
+          runtimeType == other.runtimeType &&
+          from == other.from &&
+          to == other.to &&
+          vehicleId == other.vehicleId &&
+          tripId == other.tripId &&
+          category == other.category;
+
+  @override
+  int get hashCode =>
+      from.hashCode ^
+      to.hashCode ^
+      vehicleId.hashCode ^
+      tripId.hashCode ^
+      category.hashCode;
 }
 
 /// Stream of fuel records with filters
@@ -99,6 +118,21 @@ class FuelFilter {
       vehicleId: vehicleId ?? this.vehicleId,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FuelFilter &&
+          runtimeType == other.runtimeType &&
+          from == other.from &&
+          to == other.to &&
+          vehicleId == other.vehicleId;
+
+  @override
+  int get hashCode =>
+      from.hashCode ^
+      to.hashCode ^
+      vehicleId.hashCode;
 }
 
 /// Provider for fuel consumption
@@ -117,4 +151,16 @@ class FuelConsumptionFilter {
     required this.from,
     required this.to,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FuelConsumptionFilter &&
+          runtimeType == other.runtimeType &&
+          vehicleId == other.vehicleId &&
+          from == other.from &&
+          to == other.to;
+
+  @override
+  int get hashCode => vehicleId.hashCode ^ from.hashCode ^ to.hashCode;
 }

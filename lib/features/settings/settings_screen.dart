@@ -288,94 +288,36 @@ class SettingsScreen extends ConsumerWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/reports'),
                 ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.category_outlined),
+                  title: Text(l10n.expenseCategoriesTitle),
+                  subtitle: Text(l10n.expenseCategoriesDesc),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/settings/expense-categories'),
+                ),
               ],
             ),
           ),
 
-          // Section 7: About Section
+          // Section 7: About Section (Clean Sub-section)
           _SectionHeader(title: l10n.aboutTitle),
           Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: ListTile(
-              leading: const Icon(Icons.help_outline),
-              title: const Text('App Guide & Feature Walkthrough'), // i18n-ignore
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/onboarding'),
-            ),
-          ),
-          Card(
             margin: const EdgeInsets.only(bottom: 32),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.local_shipping,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          size: 32,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Amar Transport Hisab\n(আমার ট্রান্সপোর্ট হিসাব)',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${l10n.appVersionLabel}: v1.1.0 (Build 2)',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.appAboutDesc,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const Divider(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(l10n.developerLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(l10n.developerName, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    ],
-                  ),
-                  const Divider(height: 24),
-                  Text(
-                    l10n.patchUpdatesLabel,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '• Fixed blank placeholder screens with full Dashboard and Trips views.\n'
-                    '• Added persistent bottom navigation bar across all main tabs.\n'
-                    '• Enabled top app bar back navigation for child screens.\n'
-                    '• Directly accessible Settings tab with inline Language & Theme controls.\n'
-                    '• Functional Opening Balances management (Cash, Customer, Driver).\n'
-                    '• Local Database Backup & Restore with file sharing and restoration.\n'
-                    '• Biometric & Screen Lock security protection (App Lock).\n'
-                    '• Expiry notification alerts for vehicle fitness, tax token, insurance & route permits.\n'
-                    '• Encrypted Cloud Backup export support.',
-                    style: TextStyle(fontSize: 12, height: 1.4),
-                  ),
-                ],
+            child: ListTile(
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  'assets/images/logo.png', // i18n-ignore
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.contain,
+                ),
               ),
+              title: Text(l10n.aboutTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('Amar Transport Hisab v0.2.0 • Iftekharul Islam'), // i18n-ignore
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/settings/about'),
             ),
           ),
         ],

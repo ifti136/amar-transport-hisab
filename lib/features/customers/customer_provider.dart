@@ -79,6 +79,27 @@ class TripFilter {
       status: status ?? this.status,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TripFilter &&
+          runtimeType == other.runtimeType &&
+          from == other.from &&
+          to == other.to &&
+          vehicleId == other.vehicleId &&
+          customerId == other.customerId &&
+          driverId == other.driverId &&
+          status == other.status;
+
+  @override
+  int get hashCode =>
+      from.hashCode ^
+      to.hashCode ^
+      vehicleId.hashCode ^
+      customerId.hashCode ^
+      driverId.hashCode ^
+      status.hashCode;
 }
 
 /// Provider for trip with outstanding
@@ -109,4 +130,16 @@ class CustomerLedgerFilter {
     required this.from,
     required this.to,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CustomerLedgerFilter &&
+          runtimeType == other.runtimeType &&
+          customerId == other.customerId &&
+          from == other.from &&
+          to == other.to;
+
+  @override
+  int get hashCode => customerId.hashCode ^ from.hashCode ^ to.hashCode;
 }

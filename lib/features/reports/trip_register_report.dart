@@ -9,28 +9,30 @@ import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 
-class TripRegisterReport extends ConsumerWidget {
+class TripRegisterReport extends ConsumerStatefulWidget {
   const TripRegisterReport({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-
-    return _TripRegisterReportBody(dateRange: DateTimeRange(start: firstDayOfMonth, end: lastDayOfMonth));
-  }
+  ConsumerState<TripRegisterReport> createState() => _TripRegisterReportState();
 }
 
-class _TripRegisterReportBody extends ConsumerWidget {
-  final DateTimeRange dateRange;
-
-  const _TripRegisterReportBody({required this.dateRange});
+class _TripRegisterReportState extends ConsumerState<TripRegisterReport> {
+  late DateTimeRange _dateRange;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _dateRange = DateTimeRange(
+      start: DateTime(now.year, now.month, 1),
+      end: DateTime(now.year, now.month + 1, 0, 23, 59, 59),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final tripsAsync = ref.watch(tripsProvider(TripFilter(from: dateRange.start, to: dateRange.end)));
+    final tripsAsync = ref.watch(tripsProvider(TripFilter(from: _dateRange.start, to: _dateRange.end)));
     final customers = ref.watch(activeCustomersProvider).asData?.value ?? [];
     final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? [];
 
@@ -82,7 +84,8 @@ class _TripRegisterReportBody extends ConsumerWidget {
           headers: headers,
           rows: rows,
           totals: totals,
-          initialDateRange: dateRange,
+          initialDateRange: _dateRange,
+          onDateRangeChanged: (range) => setState(() => _dateRange = range),
           onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
             title: l10n.reportTripRegister,
             headers: headers,
@@ -97,8 +100,14 @@ class _TripRegisterReportBody extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text(e.toString())),
+      loading: () => Scaffold(
+        appBar: AppBar(title: Text(l10n.reportTripRegister)),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(l10n.reportTripRegister)),
+        body: Center(child: Text(e.toString())), // i18n-ignore
+      ),
     );
   }
 }

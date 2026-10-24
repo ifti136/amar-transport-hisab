@@ -22,6 +22,8 @@ import 'features/settings/settings_screen.dart';
 import 'features/settings/opening_balances_screen.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
+import 'features/settings/about_screen.dart';
+import 'features/settings/expense_categories_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -134,6 +136,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/settings/about',
+        builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/settings/expense-categories',
+        builder: (context, state) => const ExpenseCategoriesScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

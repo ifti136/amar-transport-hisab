@@ -1,7 +1,7 @@
 name: transport_hisab
 description: "Amar Transport Hisab - Offline-first transport accounting app for Bangladesh"
 publish_to: 'none'
-version: 1.1.0+2
+version: 0.2.0+3
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

@@ -46,3 +46,4 @@ class ReportExportHelper {
     await Share.shareXFiles([XFile(file.path)], subject: title);
   }
 }
+

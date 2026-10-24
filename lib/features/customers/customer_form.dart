@@ -20,6 +20,7 @@ class _CustomerFormState extends ConsumerState<CustomerForm> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _openingBalanceController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -99,15 +100,17 @@ class _CustomerFormState extends ConsumerState<CustomerForm> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
                     child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton(
-                    onPressed: _save,
-                    child: Text(isEditing ? l10n.save : l10n.add),
+                    onPressed: _isSaving ? null : _save,
+                    child: _isSaving
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Text(isEditing ? l10n.save : l10n.add),
                   ),
                 ),
               ],
@@ -120,29 +123,50 @@ class _CustomerFormState extends ConsumerState<CustomerForm> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
 
-    final openingBalancePaisa = (_openingBalanceController.text.isEmpty)
-        ? 0
-        : (double.parse(_openingBalanceController.text) * 100).round();
+    setState(() => _isSaving = true);
 
-    final dao = ref.read(customerDaoProvider);
-    final companion = CustomersCompanion(
-      name: Value(_nameController.text.trim()),
-      phone: Value(_phoneController.text.trim().isEmpty ? null : _phoneController.text.trim()),
-      openingBalancePaisa: Value(openingBalancePaisa),
-      updatedAt: Value(DateTime.now()),
-    );
+    try {
+      int openingBalancePaisa = 0;
+      if (_openingBalanceController.text.trim().isNotEmpty) {
+        final balRes = parseMoneyInput(_openingBalanceController.text);
+        if (balRes is Success) openingBalancePaisa = balRes.value.paisa;
+      }
 
-    if (widget.customer != null) {
-      await dao.updateWithAudit(companion, id: widget.customer!.id, userNote: 'Customer updated');
-    } else {
-      await dao.insertWithAudit(companion, userNote: 'Customer added');
-    }
+      final dao = ref.read(customerDaoProvider);
+      final companion = CustomersCompanion(
+        name: Value(_nameController.text.trim()),
+        phone: Value(_phoneController.text.trim().isEmpty ? null : _phoneController.text.trim()),
+        openingBalancePaisa: Value(openingBalancePaisa),
+        updatedAt: Value(DateTime.now()),
+      );
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(activeCustomersProvider);
+      if (widget.customer != null) {
+        await dao.updateWithAudit(companion, id: widget.customer!.id, userNote: 'Customer updated');
+      } else {
+        await dao.insertWithAudit(companion, userNote: 'Customer added');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${_nameController.text.trim()} saved successfully')), // i18n-ignore
+        );
+        Navigator.pop(context);
+        ref.invalidate(activeCustomersProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e')), // i18n-ignore
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

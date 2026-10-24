@@ -1555,5 +1555,69 @@
   "cloudBackupStatus": "ফোনে এনক্রিপ্ট করা ব্যাকআপ যা ক্লাউডে রাখা নিরাপদ",
   "@cloudBackupStatus": {
     "description": "Cloud backup status description"
+  },
+  "distanceKmLabel": "দূরত্ব (কিমি)",
+  "@distanceKmLabel": {
+    "description": "Distance in kilometers label"
+  },
+  "distanceKmHint": "যেমন ১২০",
+  "@distanceKmHint": {
+    "description": "Distance hint"
+  },
+  "tripAddedSuccess": "ট্রিপ সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@tripAddedSuccess": {
+    "description": "Trip saved confirmation"
+  },
+  "vehicleAddedSuccess": "গাড়ি সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@vehicleAddedSuccess": {
+    "description": "Vehicle saved confirmation"
+  },
+  "addVehicleTitle": "নতুন গাড়ি যোগ করুন",
+  "@addVehicleTitle": {
+    "description": "Add vehicle screen title"
+  },
+  "driverAddedSuccess": "ড্রাইভার সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@driverAddedSuccess": {
+    "description": "Driver saved confirmation"
+  },
+  "expenseAddedSuccess": "খরচ সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@expenseAddedSuccess": {
+    "description": "Expense saved confirmation"
+  },
+  "fuelAddedSuccess": "জ্বালানি হিসাব সংরক্ষণ করা হয়েছে",
+  "@fuelAddedSuccess": {
+    "description": "Fuel entry saved confirmation"
+  },
+  "tripExpenseOption": "ট্রিপের খরচ",
+  "@tripExpenseOption": {
+    "description": "Trip expense option label"
+  },
+  "generalExpenseOption": "গাড়ির খরচ",
+  "@generalExpenseOption": {
+    "description": "General vehicle expense option label"
+  },
+  "expenseCategoriesTitle": "খরচের খাতসমূহ",
+  "@expenseCategoriesTitle": {
+    "description": "Expense categories screen title"
+  },
+  "expenseCategoriesDesc": "ট্রিপ ও গাড়ির খরচের খাত পরিচালনা করুন",
+  "@expenseCategoriesDesc": {
+    "description": "Expense categories description"
+  },
+  "addCategoryTitle": "নতুন খাত যোগ করুন",
+  "@addCategoryTitle": {
+    "description": "Add expense category title"
+  },
+  "categoryNameLabel": "খাতের নাম",
+  "@categoryNameLabel": {
+    "description": "Category name field label"
+  },
+  "categoryTypeLabel": "খাতের ধরণ",
+  "@categoryTypeLabel": {
+    "description": "Category type dropdown label"
+  },
+  "deleteCategoryConfirm": "এই খাতটি মুছে ফেলতে চান?",
+  "@deleteCategoryConfirm": {
+    "description": "Delete category confirmation"
   }
 }

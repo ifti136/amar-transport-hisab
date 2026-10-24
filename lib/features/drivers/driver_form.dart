@@ -22,6 +22,7 @@ class _DriverFormState extends ConsumerState<DriverForm> {
   final _salaryController = TextEditingController();
   DateTime? _joinedDate;
   String _status = 'active';
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -98,13 +99,14 @@ class _DriverFormState extends ConsumerState<DriverForm> {
                 hintText: l10n.monthlySalaryHint,
                 prefixText: '৳ ',
               ),
-              keyboardType: TextInputType.number,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.errorRequired;
                 }
-                final parsed = double.tryParse(value);
-                if (parsed == null || parsed <= 0) {
+                final res = parseMoneyInput(value);
+                if (res is Failure) return res.error;
+                if (res is Success && res.value.paisa <= 0) {
                   return l10n.errorPositiveAmount;
                 }
                 return null;
@@ -151,15 +153,17 @@ class _DriverFormState extends ConsumerState<DriverForm> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
                     child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton(
-                    onPressed: _save,
-                    child: Text(isEditing ? l10n.save : l10n.add),
+                    onPressed: _isSaving ? null : _save,
+                    child: _isSaving
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Text(isEditing ? l10n.save : l10n.add),
                   ),
                 ),
               ],
@@ -172,30 +176,50 @@ class _DriverFormState extends ConsumerState<DriverForm> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
 
-    final salaryPaisa = (double.parse(_salaryController.text) * 100).round();
+    setState(() => _isSaving = true);
 
-    final dao = ref.read(driverDaoProvider);
-    final companion = DriversCompanion(
-      name: Value(_nameController.text.trim()),
-      phone: Value(_phoneController.text.trim().isEmpty ? null : _phoneController.text.trim()),
-      monthlySalaryPaisa: Value(salaryPaisa),
-      joinedDate: Value(_joinedDate ?? DateTime.now()),
-      status: Value(_status),
-      updatedAt: Value(DateTime.now()),
-    );
+    try {
+      final salRes = parseMoneyInput(_salaryController.text);
+      final salaryPaisa = salRes is Success ? salRes.value.paisa : 0;
 
-    if (widget.driver != null) {
-      await dao.updateWithAudit(companion, id: widget.driver!.id, userNote: 'Driver updated');
-    } else {
-      await dao.insertWithAudit(companion, userNote: 'Driver added');
-    }
+      final dao = ref.read(driverDaoProvider);
+      final companion = DriversCompanion(
+        name: Value(_nameController.text.trim()),
+        phone: Value(_phoneController.text.trim().isEmpty ? null : _phoneController.text.trim()),
+        monthlySalaryPaisa: Value(salaryPaisa),
+        joinedDate: Value(_joinedDate ?? DateTime.now()),
+        status: Value(_status),
+        updatedAt: Value(DateTime.now()),
+      );
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(activeDriversProvider);
-      ref.invalidate(allDriversProvider);
+      if (widget.driver != null) {
+        await dao.updateWithAudit(companion, id: widget.driver!.id, userNote: 'Driver updated');
+      } else {
+        await dao.insertWithAudit(companion, userNote: 'Driver added');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.driverAddedSuccess)),
+        );
+        Navigator.pop(context);
+        ref.invalidate(activeDriversProvider);
+        ref.invalidate(allDriversProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e')), // i18n-ignore
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

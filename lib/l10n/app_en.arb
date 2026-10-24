@@ -1563,5 +1563,69 @@
   "cloudBackupStatus": "Client-side encrypted backup ready to sync",
   "@cloudBackupStatus": {
     "description": "Cloud backup status description"
+  },
+  "distanceKmLabel": "Distance (km)",
+  "@distanceKmLabel": {
+    "description": "Distance in kilometers label"
+  },
+  "distanceKmHint": "e.g. 120",
+  "@distanceKmHint": {
+    "description": "Distance hint"
+  },
+  "tripAddedSuccess": "Trip saved successfully",
+  "@tripAddedSuccess": {
+    "description": "Trip saved confirmation"
+  },
+  "vehicleAddedSuccess": "Vehicle saved successfully",
+  "@vehicleAddedSuccess": {
+    "description": "Vehicle saved confirmation"
+  },
+  "addVehicleTitle": "Add Vehicle",
+  "@addVehicleTitle": {
+    "description": "Add vehicle screen title"
+  },
+  "driverAddedSuccess": "Driver saved successfully",
+  "@driverAddedSuccess": {
+    "description": "Driver saved confirmation"
+  },
+  "expenseAddedSuccess": "Expense saved successfully",
+  "@expenseAddedSuccess": {
+    "description": "Expense saved confirmation"
+  },
+  "fuelAddedSuccess": "Fuel entry saved successfully",
+  "@fuelAddedSuccess": {
+    "description": "Fuel entry saved confirmation"
+  },
+  "tripExpenseOption": "Trip Expense",
+  "@tripExpenseOption": {
+    "description": "Trip expense option label"
+  },
+  "generalExpenseOption": "Vehicle Expense",
+  "@generalExpenseOption": {
+    "description": "General vehicle expense option label"
+  },
+  "expenseCategoriesTitle": "Expense Categories",
+  "@expenseCategoriesTitle": {
+    "description": "Expense categories screen title"
+  },
+  "expenseCategoriesDesc": "Manage trip and vehicle expense heads",
+  "@expenseCategoriesDesc": {
+    "description": "Expense categories description"
+  },
+  "addCategoryTitle": "Add Category",
+  "@addCategoryTitle": {
+    "description": "Add expense category title"
+  },
+  "categoryNameLabel": "Category Name",
+  "@categoryNameLabel": {
+    "description": "Category name field label"
+  },
+  "categoryTypeLabel": "Category Type",
+  "@categoryTypeLabel": {
+    "description": "Category type dropdown label"
+  },
+  "deleteCategoryConfirm": "Are you sure you want to delete this category?",
+  "@deleteCategoryConfirm": {
+    "description": "Delete category confirmation"
   }
 }

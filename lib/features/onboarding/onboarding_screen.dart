@@ -162,7 +162,18 @@ class _OnboardingPageWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(page.icon, size: 100, color: Theme.of(context).colorScheme.primary),
+          if (page.icon == Icons.local_shipping)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                'assets/images/logo.png', // i18n-ignore
+                width: 120,
+                height: 120,
+                fit: BoxFit.contain,
+              ),
+            )
+          else
+            Icon(page.icon, size: 100, color: Theme.of(context).colorScheme.primary),
           const SizedBox(height: 32),
           Text(
             page.title,

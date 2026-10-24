@@ -8,28 +8,30 @@ import 'package:transport_hisab/features/reports/report_export_helper.dart';
 import 'package:transport_hisab/features/money/money_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 
-class ExpenseRegisterReport extends ConsumerWidget {
+class ExpenseRegisterReport extends ConsumerStatefulWidget {
   const ExpenseRegisterReport({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-
-    return _ExpenseRegisterBody(dateRange: DateTimeRange(start: firstDayOfMonth, end: lastDayOfMonth));
-  }
+  ConsumerState<ExpenseRegisterReport> createState() => _ExpenseRegisterReportState();
 }
 
-class _ExpenseRegisterBody extends ConsumerWidget {
-  final DateTimeRange dateRange;
-
-  const _ExpenseRegisterBody({required this.dateRange});
+class _ExpenseRegisterReportState extends ConsumerState<ExpenseRegisterReport> {
+  late DateTimeRange _dateRange;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _dateRange = DateTimeRange(
+      start: DateTime(now.year, now.month, 1),
+      end: DateTime(now.year, now.month + 1, 0, 23, 59, 59),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final expensesAsync = ref.watch(expensesProvider(ExpenseFilter(from: dateRange.start, to: dateRange.end)));
+    final expensesAsync = ref.watch(expensesProvider(ExpenseFilter(from: _dateRange.start, to: _dateRange.end)));
     final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? [];
 
     return expensesAsync.when(
@@ -52,7 +54,7 @@ class _ExpenseRegisterBody extends ConsumerWidget {
           rows.add([
             formatDate(exp.expenseDate, short: true, context: context),
             exp.category,
-            vehicle?.regNo ?? (exp.vehicleId != null ? 'Vehicle #${exp.vehicleId}' : '-'),
+            vehicle?.regNo ?? (exp.vehicleId != null ? 'Vehicle #${exp.vehicleId}' : '-'), // i18n-ignore
             formatMoney(Money.paisa(exp.amountPaisa), context: context),
             exp.note ?? '',
           ]);
@@ -71,7 +73,8 @@ class _ExpenseRegisterBody extends ConsumerWidget {
           headers: headers,
           rows: rows,
           totals: totals,
-          initialDateRange: dateRange,
+          initialDateRange: _dateRange,
+          onDateRangeChanged: (range) => setState(() => _dateRange = range),
           onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
             title: l10n.reportExpenseRegister,
             headers: headers,
@@ -86,8 +89,14 @@ class _ExpenseRegisterBody extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text(e.toString())),
+      loading: () => Scaffold(
+        appBar: AppBar(title: Text(l10n.reportExpenseRegister)),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(l10n.reportExpenseRegister)),
+        body: Center(child: Text(e.toString())), // i18n-ignore
+      ),
     );
   }
 }

@@ -13,6 +13,7 @@ class ReportViewer extends ConsumerStatefulWidget {
   final List<String> totals;
   final DateTimeRange? initialDateRange;
   final List<int>? vehicleIds;
+  final ValueChanged<DateTimeRange>? onDateRangeChanged;
   final Future<void> Function(DateTimeRange, int?) onExportExcel;
   final Future<void> Function(DateTimeRange, int?) onExportPdf;
 
@@ -24,6 +25,7 @@ class ReportViewer extends ConsumerStatefulWidget {
     required this.totals,
     this.initialDateRange,
     this.vehicleIds,
+    this.onDateRangeChanged,
     required this.onExportExcel,
     required this.onExportPdf,
   });
@@ -45,6 +47,14 @@ class _ReportViewerState extends ConsumerState<ReportViewer> {
     );
   }
 
+  @override
+  void didUpdateWidget(ReportViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialDateRange != null && widget.initialDateRange != oldWidget.initialDateRange) {
+      _dateRange = widget.initialDateRange!;
+    }
+  }
+
   Future<void> _showFilterDialog() async {
     final picked = await showDateRangePicker(
       context: context,
@@ -54,6 +64,7 @@ class _ReportViewerState extends ConsumerState<ReportViewer> {
     );
     if (picked != null) {
       setState(() => _dateRange = picked);
+      widget.onDateRangeChanged?.call(picked);
     }
   }
 

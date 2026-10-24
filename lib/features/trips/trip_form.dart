@@ -23,14 +23,14 @@ class _TripFormState extends ConsumerState<TripForm> {
   final _formKey = GlobalKey<FormState>();
   final _fareController = TextEditingController();
   final _advanceController = TextEditingController();
-  final _startOdoController = TextEditingController();
-  final _endOdoController = TextEditingController();
+  final _distanceController = TextEditingController();
 
   int? _customerId;
   int? _vehicleId;
   int? _driverId;
   DateTime _tripDate = DateTime.now();
   String _status = 'completed';
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -42,8 +42,10 @@ class _TripFormState extends ConsumerState<TripForm> {
       _tripDate = widget.trip!.tripDate;
       _fareController.text = (widget.trip!.agreedFarePaisa / 100).toStringAsFixed(2);
       _advanceController.text = (widget.trip!.advancePaisa / 100).toStringAsFixed(2);
-      _startOdoController.text = widget.trip!.startOdo.toString();
-      _endOdoController.text = widget.trip!.endOdo?.toString() ?? '';
+      final dist = widget.trip!.endOdo != null ? (widget.trip!.endOdo! - widget.trip!.startOdo) : null;
+      if (dist != null && dist > 0) {
+        _distanceController.text = dist.toString();
+      }
       _status = widget.trip!.status;
     }
   }
@@ -52,8 +54,7 @@ class _TripFormState extends ConsumerState<TripForm> {
   void dispose() {
     _fareController.dispose();
     _advanceController.dispose();
-    _startOdoController.dispose();
-    _endOdoController.dispose();
+    _distanceController.dispose();
     super.dispose();
   }
 
@@ -74,219 +75,236 @@ class _TripFormState extends ConsumerState<TripForm> {
       ),
       child: Form(
         key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              isEditing ? l10n.edit : l10n.addTripTitle,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                isEditing ? l10n.edit : l10n.addTripTitle,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
 
-            // Customer Picker
-            _PickerField<Customer>(
-              label: l10n.customerLabel,
-              value: _customerId,
-              asyncValue: customersAsync,
-              getLabel: (c) => c.name,
-              onChanged: (id) => setState(() => _customerId = id),
-              validator: (id) => id == null ? l10n.errorRequired : null,
-            ),
-            const SizedBox(height: 16),
+              // Customer Picker
+              _PickerField<Customer>(
+                label: l10n.customerLabel,
+                value: _customerId,
+                asyncValue: customersAsync,
+                getLabel: (c) => c.name,
+                onChanged: (id) => setState(() => _customerId = id),
+                validator: (id) => id == null ? l10n.errorRequired : null,
+              ),
+              const SizedBox(height: 16),
 
-            // Vehicle Picker
-            _PickerField<Vehicle>(
-              label: l10n.vehicleLabel,
-              value: _vehicleId,
-              asyncValue: vehiclesAsync,
-              getLabel: (v) => '${v.regNo} (${v.type})',
-              onChanged: (id) => setState(() => _vehicleId = id),
-              validator: (id) => id == null ? l10n.errorRequired : null,
-            ),
-            const SizedBox(height: 16),
+              // Vehicle Picker
+              _PickerField<Vehicle>(
+                label: l10n.vehicleLabel,
+                value: _vehicleId,
+                asyncValue: vehiclesAsync,
+                getLabel: (v) => '${v.regNo} (${v.type})',
+                onChanged: (id) => setState(() => _vehicleId = id),
+                validator: (id) => id == null ? l10n.errorRequired : null,
+              ),
+              const SizedBox(height: 16),
 
-            // Driver Picker
-            _PickerField<Driver>(
-              label: l10n.driverLabel,
-              value: _driverId,
-              asyncValue: driversAsync,
-              getLabel: (d) => '${d.name} (৳${(d.monthlySalaryPaisa / 100).toStringAsFixed(0)}/mo)',
-              onChanged: (id) => setState(() => _driverId = id),
-              validator: (id) => id == null ? l10n.errorRequired : null,
-            ),
-            const SizedBox(height: 16),
+              // Driver Picker
+              _PickerField<Driver>(
+                label: l10n.driverLabel,
+                value: _driverId,
+                asyncValue: driversAsync,
+                getLabel: (d) => '${d.name} (৳${(d.monthlySalaryPaisa / 100).toStringAsFixed(0)}/mo)',
+                onChanged: (id) => setState(() => _driverId = id),
+                validator: (id) => id == null ? l10n.errorRequired : null,
+              ),
+              const SizedBox(height: 16),
 
-            // Date Picker
-            InkWell(
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _tripDate,
-                  firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) setState(() => _tripDate = picked);
-              },
-              child: InputDecorator(
+              // Date Picker
+              InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _tripDate,
+                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                    lastDate: DateTime.now().add(const Duration(days: 30)),
+                  );
+                  if (picked != null) setState(() => _tripDate = picked);
+                },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: l10n.dateLabel,
+                    suffixIcon: const Icon(Icons.calendar_today),
+                  ),
+                  child: Text(formatDate(_tripDate, context: context)),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Fare
+              TextFormField(
+                controller: _fareController,
                 decoration: InputDecoration(
-                  labelText: l10n.dateLabel,
-                  suffixIcon: const Icon(Icons.calendar_today),
+                  labelText: l10n.fareLabel,
+                  hintText: l10n.fareHint,
+                  prefixText: '৳ ',
                 ),
-                child: Text(formatDate(_tripDate, context: context)),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) return l10n.errorRequired;
+                  final res = parseMoneyInput(value);
+                  if (res is Failure) return res.error;
+                  if (res is Success && res.value.paisa <= 0) return l10n.errorPositiveAmount;
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Fare
-            TextFormField(
-              controller: _fareController,
-              decoration: InputDecoration(
-                labelText: l10n.fareLabel,
-                hintText: l10n.fareHint,
-                prefixText: '৳ ',
+              // Advance
+              TextFormField(
+                controller: _advanceController,
+                decoration: InputDecoration(
+                  labelText: l10n.advanceLabel,
+                  hintText: l10n.advanceHint,
+                  prefixText: '৳ ',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) return null; // Optional
+                  final res = parseMoneyInput(value);
+                  if (res is Failure) return res.error;
+                  final fareRes = parseMoneyInput(_fareController.text);
+                  if (fareRes is Success && res is Success && res.value.paisa > fareRes.value.paisa) {
+                    return l10n.errorAdvanceExceedsFare;
+                  }
+                  return null;
+                },
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return l10n.errorRequired;
-                final parsed = double.tryParse(value);
-                if (parsed == null || parsed <= 0) return l10n.errorPositiveAmount;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Advance
-            TextFormField(
-              controller: _advanceController,
-              decoration: InputDecoration(
-                labelText: l10n.advanceLabel,
-                hintText: l10n.advanceHint,
-                prefixText: '৳ ',
+              // Distance (optional)
+              TextFormField(
+                controller: _distanceController,
+                decoration: InputDecoration(
+                  labelText: l10n.distanceKmLabel,
+                  hintText: l10n.distanceKmHint,
+                  suffixText: 'km', // i18n-ignore
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) return null; // Optional
+                  final parsed = int.tryParse(toEnDigits(value.trim()));
+                  if (parsed == null || parsed < 0) return l10n.errorInvalidNumber;
+                  return null;
+                },
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return null; // Optional
-                final parsed = double.tryParse(value);
-                if (parsed == null || parsed < 0) return l10n.errorPositiveAmount;
-                final fare = double.tryParse(_fareController.text) ?? 0;
-                if (parsed > fare) return l10n.errorAdvanceExceedsFare;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Start Odometer
-            TextFormField(
-              controller: _startOdoController,
-              decoration: InputDecoration(
-                labelText: l10n.startOdoLabel,
-                hintText: l10n.startOdoHint,
+              // Status
+              DropdownButtonFormField<String>(
+                value: _status,
+                decoration: InputDecoration(labelText: l10n.statusLabel),
+                items: [
+                  DropdownMenuItem(value: 'completed', child: Text(l10n.statusActive)),
+                  DropdownMenuItem(value: 'cancelled', child: Text(l10n.statusCancelled)),
+                ],
+                onChanged: (value) => setState(() => _status = value!),
               ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return l10n.errorRequired;
-                final parsed = int.tryParse(value);
-                if (parsed == null || parsed < 0) return l10n.errorInvalidNumber;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // End Odometer
-            TextFormField(
-              controller: _endOdoController,
-              decoration: InputDecoration(
-                labelText: l10n.endOdoLabel,
-                hintText: l10n.endOdoHint,
-              ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return null; // Optional
-                final parsed = int.tryParse(value);
-                if (parsed == null || parsed < 0) return l10n.errorInvalidNumber;
-                final start = int.tryParse(_startOdoController.text) ?? 0;
-                if (parsed < start) return l10n.errorOdometerDecreased;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
+              // Outstanding preview
+              if (_customerId != null && _fareController.text.isNotEmpty)
+                _OutstandingPreview(
+                  fareText: _fareController.text,
+                  advanceText: _advanceController.text,
+                ),
 
-            // Status
-            DropdownButtonFormField<String>(
-              value: _status,
-              decoration: InputDecoration(labelText: l10n.statusLabel),
-              items: [
-                DropdownMenuItem(value: 'completed', child: Text(l10n.statusActive)),
-                DropdownMenuItem(value: 'cancelled', child: Text(l10n.statusCancelled)),
-              ],
-              onChanged: (value) => setState(() => _status = value!),
-            ),
-            const SizedBox(height: 16),
-
-            // Outstanding (read-only)
-            if (_customerId != null && _fareController.text.isNotEmpty && _advanceController.text.isNotEmpty)
-              _OutstandingPreview(
-                fare: double.tryParse(_fareController.text) ?? 0,
-                advance: double.tryParse(_advanceController.text) ?? 0,
-              ),
-
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(l10n.cancel),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _isSaving ? null : () => Navigator.pop(context),
+                      child: Text(l10n.cancel),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: _save,
-                    child: Text(isEditing ? l10n.save : l10n.add),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: _isSaving ? null : _save,
+                      child: _isSaving
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : Text(isEditing ? l10n.save : l10n.add),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_customerId == null || _vehicleId == null || _driverId == null) return;
 
-    final farePaisa = (_fareController.text.isEmpty) ? 0 : (double.parse(_fareController.text) * 100).round();
-    final advancePaisa = (_advanceController.text.isEmpty) ? 0 : (double.parse(_advanceController.text) * 100).round();
-    final startOdo = int.parse(_startOdoController.text);
-    final endOdo = _endOdoController.text.isEmpty ? null : int.parse(_endOdoController.text);
+    setState(() => _isSaving = true);
 
-    final dao = ref.read(tripDaoProvider);
-    final companion = TripsCompanion(
-      customerId: Value(_customerId!),
-      vehicleId: Value(_vehicleId!),
-      driverId: Value(_driverId!),
-      tripDate: Value(_tripDate),
-      agreedFarePaisa: Value(farePaisa),
-      advancePaisa: Value(advancePaisa),
-      startOdo: Value(startOdo),
-      endOdo: Value(endOdo),
-      status: Value(_status),
-      updatedAt: Value(DateTime.now()),
-    );
+    try {
+      final fareRes = parseMoneyInput(_fareController.text);
+      final farePaisa = (fareRes is Success) ? fareRes.value.paisa : 0;
 
-    if (widget.trip != null) {
-      await dao.updateWithAudit(companion, id: widget.trip!.id, userNote: 'Trip updated');
-    } else {
-      await dao.insertWithAudit(companion, userNote: 'Trip added');
-    }
+      int advancePaisa = 0;
+      if (_advanceController.text.trim().isNotEmpty) {
+        final advRes = parseMoneyInput(_advanceController.text);
+        if (advRes is Success) advancePaisa = advRes.value.paisa;
+      }
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(tripsProvider(const TripFilter()));
+      int? distanceKm;
+      if (_distanceController.text.trim().isNotEmpty) {
+        distanceKm = int.tryParse(toEnDigits(_distanceController.text.trim()));
+      }
+
+      final dao = ref.read(tripDaoProvider);
+      final companion = TripsCompanion(
+        customerId: Value(_customerId!),
+        vehicleId: Value(_vehicleId!),
+        driverId: Value(_driverId!),
+        tripDate: Value(_tripDate),
+        agreedFarePaisa: Value(farePaisa),
+        advancePaisa: Value(advancePaisa),
+        startOdo: const Value(0),
+        endOdo: Value(distanceKm),
+        status: Value(_status),
+        updatedAt: Value(DateTime.now()),
+      );
+
+      if (widget.trip != null) {
+        await dao.updateWithAudit(companion, id: widget.trip!.id, userNote: 'Trip updated');
+      } else {
+        await dao.insertWithAudit(companion, userNote: 'Trip added');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.tripAddedSuccess)),
+        );
+        Navigator.pop(context);
+        ref.invalidate(tripsProvider(const TripFilter()));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e')), // i18n-ignore
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }
@@ -343,16 +361,21 @@ class _PickerField<T> extends StatelessWidget {
 }
 
 class _OutstandingPreview extends StatelessWidget {
-  final double fare;
-  final double advance;
+  final String fareText;
+  final String advanceText;
 
-  const _OutstandingPreview({required this.fare, required this.advance});
+  const _OutstandingPreview({required this.fareText, required this.advanceText});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final outstanding = fare - advance;
+    final fareRes = parseMoneyInput(fareText);
+    final advRes = parseMoneyInput(advanceText.isEmpty ? '0' : advanceText);
+
+    final farePaisa = fareRes is Success ? fareRes.value.paisa : 0;
+    final advPaisa = advRes is Success ? advRes.value.paisa : 0;
+    final outstandingPaisa = farePaisa - advPaisa;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -365,9 +388,9 @@ class _OutstandingPreview extends StatelessWidget {
         children: [
           Text(l10n.outstandingLabel, style: theme.textTheme.titleMedium),
           Text(
-            formatMoney(Money.paisa((outstanding * 100).round()), context: context),
+            formatMoney(Money.paisa(outstandingPaisa), context: context),
             style: theme.textTheme.titleLarge?.copyWith(
-              color: outstanding >= 0 ? theme.extension<AppSemanticColors>()!.danger : theme.extension<AppSemanticColors>()!.success,
+              color: outstandingPaisa >= 0 ? theme.extension<AppSemanticColors>()!.danger : theme.extension<AppSemanticColors>()!.success,
               fontWeight: FontWeight.bold,
             ),
           ),

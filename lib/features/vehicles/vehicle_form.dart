@@ -23,6 +23,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
   DateTime? _fitnessExpiry;
   DateTime? _taxExpiry;
   String _status = 'active';
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -63,7 +64,7 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isEditing ? l10n.edit : l10n.addTripTitle,
+              isEditing ? l10n.edit : l10n.addVehicleTitle,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
@@ -123,15 +124,17 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
                     child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton(
-                    onPressed: _save,
-                    child: Text(isEditing ? l10n.save : l10n.add),
+                    onPressed: _isSaving ? null : _save,
+                    child: _isSaving
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Text(isEditing ? l10n.save : l10n.add),
                   ),
                 ),
               ],
@@ -144,30 +147,48 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
-
     final l10n = AppLocalizations.of(context)!;
-    final dao = ref.read(vehicleDaoProvider);
-    final companion = VehiclesCompanion(
-      regNo: Value(_regNoController.text.trim()),
-      type: Value(_typeController.text.trim().isEmpty ? l10n.vehicleTypeHint : _typeController.text.trim()),
-      insuranceExpiry: Value(_insuranceExpiry),
-      fitnessExpiry: Value(_fitnessExpiry),
-      taxExpiry: Value(_taxExpiry),
-      status: Value(_status),
-      updatedAt: Value(DateTime.now()),
-    );
+    if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
 
-    if (widget.vehicle != null) {
-      await dao.updateWithAudit(companion, id: widget.vehicle!.id, userNote: 'Vehicle updated');
-    } else {
-      await dao.insertWithAudit(companion, userNote: 'Vehicle added');
-    }
+    setState(() => _isSaving = true);
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(activeVehiclesProvider);
-      ref.invalidate(allVehiclesProvider);
+    try {
+      final dao = ref.read(vehicleDaoProvider);
+      final companion = VehiclesCompanion(
+        regNo: Value(_regNoController.text.trim()),
+        type: Value(_typeController.text.trim().isEmpty ? l10n.vehicleTypeHint : _typeController.text.trim()),
+        insuranceExpiry: Value(_insuranceExpiry),
+        fitnessExpiry: Value(_fitnessExpiry),
+        taxExpiry: Value(_taxExpiry),
+        status: Value(_status),
+        updatedAt: Value(DateTime.now()),
+      );
+
+      if (widget.vehicle != null) {
+        await dao.updateWithAudit(companion, id: widget.vehicle!.id, userNote: 'Vehicle updated');
+      } else {
+        await dao.insertWithAudit(companion, userNote: 'Vehicle added');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.vehicleAddedSuccess)),
+        );
+        Navigator.pop(context);
+        ref.invalidate(activeVehiclesProvider);
+        ref.invalidate(allVehiclesProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e')), // i18n-ignore
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

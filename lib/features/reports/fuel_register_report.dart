@@ -8,28 +8,30 @@ import 'package:transport_hisab/features/reports/report_export_helper.dart';
 import 'package:transport_hisab/features/money/money_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 
-class FuelRegisterReport extends ConsumerWidget {
+class FuelRegisterReport extends ConsumerStatefulWidget {
   const FuelRegisterReport({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-
-    return _FuelRegisterBody(dateRange: DateTimeRange(start: firstDayOfMonth, end: lastDayOfMonth));
-  }
+  ConsumerState<FuelRegisterReport> createState() => _FuelRegisterReportState();
 }
 
-class _FuelRegisterBody extends ConsumerWidget {
-  final DateTimeRange dateRange;
-
-  const _FuelRegisterBody({required this.dateRange});
+class _FuelRegisterReportState extends ConsumerState<FuelRegisterReport> {
+  late DateTimeRange _dateRange;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _dateRange = DateTimeRange(
+      start: DateTime(now.year, now.month, 1),
+      end: DateTime(now.year, now.month + 1, 0, 23, 59, 59),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final fuelAsync = ref.watch(fuelRecordsProvider(FuelFilter(from: dateRange.start, to: dateRange.end)));
+    final fuelAsync = ref.watch(fuelRecordsProvider(FuelFilter(from: _dateRange.start, to: _dateRange.end)));
     final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? [];
 
     return fuelAsync.when(
@@ -40,7 +42,6 @@ class _FuelRegisterBody extends ConsumerWidget {
           l10n.litresLabel,
           l10n.rateLabel,
           l10n.amountLabel,
-          l10n.odometerLabel,
         ];
 
         double totalLitres = 0;
@@ -55,11 +56,10 @@ class _FuelRegisterBody extends ConsumerWidget {
 
           rows.add([
             formatDate(r.fuelDate, short: true, context: context),
-            vehicle?.regNo ?? 'Vehicle #${r.vehicleId}',
+            vehicle?.regNo ?? 'Vehicle #${r.vehicleId}', // i18n-ignore
             formatLitres(r.litres, context: context),
             formatMoney(Money.paisa(r.ratePerLitrePaisa), context: context),
             formatMoney(Money.paisa(cost), context: context),
-            formatKm(r.odometer, context: context),
           ]);
         }
 
@@ -69,7 +69,6 @@ class _FuelRegisterBody extends ConsumerWidget {
           formatLitres(totalLitres, context: context),
           '',
           formatMoney(Money.paisa(totalCost), context: context),
-          '',
         ];
 
         return ReportViewer(
@@ -77,7 +76,8 @@ class _FuelRegisterBody extends ConsumerWidget {
           headers: headers,
           rows: rows,
           totals: totals,
-          initialDateRange: dateRange,
+          initialDateRange: _dateRange,
+          onDateRangeChanged: (range) => setState(() => _dateRange = range),
           onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
             title: l10n.reportFuelRegister,
             headers: headers,
@@ -92,8 +92,14 @@ class _FuelRegisterBody extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text(e.toString())),
+      loading: () => Scaffold(
+        appBar: AppBar(title: Text(l10n.reportFuelRegister)),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(l10n.reportFuelRegister)),
+        body: Center(child: Text(e.toString())), // i18n-ignore
+      ),
     );
   }
 }

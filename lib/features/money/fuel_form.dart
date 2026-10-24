@@ -21,10 +21,10 @@ class _FuelFormState extends ConsumerState<FuelForm> {
   final _litresController = TextEditingController();
   final _rateController = TextEditingController();
   final _totalController = TextEditingController();
-  final _odometerController = TextEditingController();
 
   int? _vehicleId;
   DateTime _fuelDate = DateTime.now();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -35,7 +35,6 @@ class _FuelFormState extends ConsumerState<FuelForm> {
       _litresController.text = widget.fuel!.litres.toStringAsFixed(1);
       _rateController.text = (widget.fuel!.ratePerLitrePaisa / 100).toStringAsFixed(2);
       _totalController.text = ((widget.fuel!.ratePerLitrePaisa * widget.fuel!.litres) / 100).toStringAsFixed(2);
-      _odometerController.text = widget.fuel!.odometer.toString();
     }
   }
 
@@ -44,22 +43,24 @@ class _FuelFormState extends ConsumerState<FuelForm> {
     _litresController.dispose();
     _rateController.dispose();
     _totalController.dispose();
-    _odometerController.dispose();
     super.dispose();
   }
 
   void _updateTotal() {
-    final litres = double.tryParse(_litresController.text) ?? 0;
-    final rate = double.tryParse(_rateController.text) ?? 0;
-    final total = litres * rate;
-    _totalController.text = total.toStringAsFixed(2);
+    final litresStr = toEnDigits(_litresController.text.trim());
+    final rateStr = toEnDigits(_rateController.text.trim());
+    final litres = double.tryParse(litresStr) ?? 0;
+    final rate = double.tryParse(rateStr) ?? 0;
+    if (litres > 0 && rate > 0) {
+      final total = litres * rate;
+      _totalController.text = total.toStringAsFixed(2);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isEditing = widget.fuel != null;
-    final vehiclesAsync = ref.watch(activeVehiclesProvider);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -70,221 +71,218 @@ class _FuelFormState extends ConsumerState<FuelForm> {
       ),
       child: Form(
         key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              isEditing ? l10n.edit : l10n.addFuelTitle,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
-
-            // Vehicle Picker
-            _PickerField<int>(
-              label: l10n.vehicleLabel,
-              value: _vehicleId,
-              asyncValue: ref.watch(activeVehiclesProvider),
-              getLabel: (v) => '${v.regNo} (${v.type})',
-              getId: (v) => v.id,
-              onChanged: (id) => setState(() => _vehicleId = id),
-              validator: (id) => id == null ? l10n.errorRequired : null,
-            ),
-            const SizedBox(height: 16),
-
-            // Date Picker
-            InkWell(
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _fuelDate,
-                  firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) setState(() => _fuelDate = picked);
-              },
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: l10n.dateLabel,
-                  suffixIcon: const Icon(Icons.calendar_today),
-                ),
-                child: Text(formatDate(_fuelDate, context: context)),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                isEditing ? l10n.edit : l10n.addFuelTitle,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Litres
-            TextFormField(
-              controller: _litresController,
-              decoration: InputDecoration(
-                labelText: l10n.litresLabel,
-                hintText: l10n.litresHint,
+              // Vehicle Picker
+              _PickerField<int>(
+                label: l10n.vehicleLabel,
+                value: _vehicleId,
+                asyncValue: ref.watch(activeVehiclesProvider),
+                getLabel: (v) => '${v.regNo} (${v.type})',
+                getId: (v) => v.id,
+                onChanged: (id) => setState(() => _vehicleId = id),
+                validator: (id) => id == null ? l10n.errorRequired : null,
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onChanged: (_) => _updateTotal(),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return l10n.errorRequired;
-                final parsed = double.tryParse(value);
-                if (parsed == null || parsed <= 0) return l10n.errorPositiveAmount;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Rate per Litre
-            TextFormField(
-              controller: _rateController,
-              decoration: InputDecoration(
-                labelText: l10n.rateLabel,
-                hintText: l10n.rateHint,
-                prefixText: '৳ ',
-              ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onChanged: (_) => _updateTotal(),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return l10n.errorRequired;
-                final parsed = double.tryParse(value);
-                if (parsed == null || parsed <= 0) return l10n.errorPositiveAmount;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Total (auto-calculated, editable)
-            TextFormField(
-              controller: _totalController,
-              decoration: InputDecoration(
-                labelText: l10n.totalLabel,
-                hintText: l10n.totalHint,
-                prefixText: '৳ ',
-              ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onChanged: (_) {
-                // Allow manual override of total
-              },
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return l10n.errorRequired;
-                final parsed = double.tryParse(value);
-                if (parsed == null || parsed <= 0) return l10n.errorPositiveAmount;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Odometer
-            TextFormField(
-              controller: _odometerController,
-              decoration: InputDecoration(
-                labelText: l10n.odometerLabel,
-                hintText: l10n.odometerHint,
-              ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) return l10n.errorRequired;
-                final parsed = int.tryParse(value);
-                if (parsed == null || parsed < 0) return l10n.errorInvalidNumber;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Date Picker
-            InkWell(
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _fuelDate,
-                  firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) setState(() => _fuelDate = picked);
-              },
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: l10n.dateLabel,
-                  suffixIcon: const Icon(Icons.calendar_today),
-                ),
-                child: Text(formatDate(_fuelDate, context: context)),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(l10n.cancel),
+              // Date Picker
+              InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _fuelDate,
+                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                    lastDate: DateTime.now().add(const Duration(days: 30)),
+                  );
+                  if (picked != null) setState(() => _fuelDate = picked);
+                },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: l10n.dateLabel,
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
+                  child: Text(formatDate(_fuelDate, context: context)),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: _save,
-                    child: Text(isEditing ? l10n.save : l10n.add),
+              ),
+              const SizedBox(height: 16),
+
+              // Litres
+              TextFormField(
+                controller: _litresController,
+                decoration: InputDecoration(
+                  labelText: l10n.litresLabel,
+                  hintText: l10n.litresHint,
+                  suffixText: 'L', // i18n-ignore
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                onChanged: (_) => _updateTotal(),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) return l10n.errorRequired;
+                  final parsed = double.tryParse(toEnDigits(value.trim()));
+                  if (parsed == null || parsed <= 0) return l10n.errorPositiveAmount;
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Rate per Litre
+              TextFormField(
+                controller: _rateController,
+                decoration: InputDecoration(
+                  labelText: l10n.rateLabel,
+                  hintText: l10n.rateHint,
+                  prefixText: '৳ ',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                onChanged: (_) => _updateTotal(),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) return l10n.errorRequired;
+                  final res = parseMoneyInput(value);
+                  if (res is Failure) return res.error;
+                  if (res is Success && res.value.paisa <= 0) return l10n.errorPositiveAmount;
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Total (auto-calculated, editable)
+              TextFormField(
+                controller: _totalController,
+                decoration: InputDecoration(
+                  labelText: l10n.totalLabel,
+                  hintText: l10n.totalHint,
+                  prefixText: '৳ ',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) return l10n.errorRequired;
+                  final res = parseMoneyInput(value);
+                  if (res is Failure) return res.error;
+                  if (res is Success && res.value.paisa <= 0) return l10n.errorPositiveAmount;
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _isSaving ? null : () => Navigator.pop(context),
+                      child: Text(l10n.cancel),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: _isSaving ? null : _save,
+                      child: _isSaving
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : Text(isEditing ? l10n.save : l10n.add),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_vehicleId == null) return;
 
-    final litres = double.parse(_litresController.text);
-    final ratePaisa = (double.parse(_rateController.text) * 100).round();
-    final totalPaisa = (double.parse(_totalController.text) * 100).round();
-    final odometer = int.parse(_odometerController.text);
+    setState(() => _isSaving = true);
 
-    final dao = ref.read(fuelDaoProvider);
-    final expenseDao = ref.read(expenseDaoProvider);
+    try {
+      final litres = double.parse(toEnDigits(_litresController.text.trim()));
+      final rateRes = parseMoneyInput(_rateController.text);
+      final totalRes = parseMoneyInput(_totalController.text);
 
-    // Create/update fuel record
-    final fuelCompanion = FuelRecordsCompanion(
-      vehicleId: Value(_vehicleId!),
-      litres: Value(litres),
-      ratePerLitrePaisa: Value(ratePaisa),
-      odometer: Value(odometer),
-      fuelDate: Value(_fuelDate),
-      updatedAt: Value(DateTime.now()),
-    );
+      final ratePaisa = rateRes is Success ? rateRes.value.paisa : (litres > 0 ? (totalRes is Success ? (totalRes.value.paisa / litres).round() : 0) : 0);
+      final totalPaisa = totalRes is Success ? totalRes.value.paisa : (litres * ratePaisa).round();
 
-    int fuelId;
-    if (widget.fuel != null) {
-      await dao.updateWithAudit(fuelCompanion, id: widget.fuel!.id, userNote: 'Fuel record updated');
-      fuelId = widget.fuel!.id;
-    } else {
-      fuelId = await dao.insertWithAudit(fuelCompanion, userNote: 'Fuel record added');
-    }
+      final dao = ref.read(fuelDaoProvider);
+      final expenseDao = ref.read(expenseDaoProvider);
 
-    // Create/update linked diesel expense
-    final expenseCompanion = ExpensesCompanion(
-      vehicleId: Value(_vehicleId!),
-      category: const Value('diesel'),
-      amountPaisa: Value(totalPaisa),
-      expenseDate: Value(_fuelDate),
-      note: const Value('Fuel purchase'),
-      updatedAt: Value(DateTime.now()),
-    );
+      if (widget.fuel != null) {
+        // Update linked diesel expense
+        final expenseCompanion = ExpensesCompanion(
+          vehicleId: Value(_vehicleId!),
+          category: const Value('diesel'),
+          amountPaisa: Value(totalPaisa),
+          expenseDate: Value(_fuelDate),
+          note: const Value('Fuel purchase'),
+          updatedAt: Value(DateTime.now()),
+        );
+        await expenseDao.updateWithAudit(expenseCompanion, id: widget.fuel!.expenseId, userNote: 'Fuel expense updated');
 
-    if (widget.fuel != null && widget.fuel!.expenseId != null) {
-      await expenseDao.updateWithAudit(expenseCompanion, id: widget.fuel!.expenseId!, userNote: 'Fuel expense updated');
-    } else {
-      final expenseId = await expenseDao.insertWithAudit(expenseCompanion, userNote: 'Fuel expense added');
-      // Update fuel record with expense_id
-      await (dao.db.update(dao.db.fuelRecords)..where((t) => t.id.equals(fuelId)))
-          .write(FuelRecordsCompanion(expenseId: Value(expenseId)));
-    }
+        // Update fuel record
+        final fuelCompanion = FuelRecordsCompanion(
+          vehicleId: Value(_vehicleId!),
+          litres: Value(litres),
+          ratePerLitrePaisa: Value(ratePaisa),
+          odometer: const Value(0),
+          fuelDate: Value(_fuelDate),
+          updatedAt: Value(DateTime.now()),
+        );
+        await dao.updateWithAudit(fuelCompanion, id: widget.fuel!.id, userNote: 'Fuel record updated');
+      } else {
+        // 1. Insert expense first to obtain expense_id
+        final expenseCompanion = ExpensesCompanion(
+          vehicleId: Value(_vehicleId!),
+          category: const Value('diesel'),
+          amountPaisa: Value(totalPaisa),
+          expenseDate: Value(_fuelDate),
+          note: const Value('Fuel purchase'),
+          updatedAt: Value(DateTime.now()),
+        );
+        final expenseId = await expenseDao.insertWithAudit(expenseCompanion, userNote: 'Fuel expense added');
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(fuelRecordsProvider(const FuelFilter()));
-      ref.invalidate(expensesProvider(const ExpenseFilter()));
+        // 2. Insert fuel record with valid expenseId
+        final fuelCompanion = FuelRecordsCompanion(
+          vehicleId: Value(_vehicleId!),
+          expenseId: Value(expenseId),
+          litres: Value(litres),
+          ratePerLitrePaisa: Value(ratePaisa),
+          odometer: const Value(0),
+          fuelDate: Value(_fuelDate),
+          updatedAt: Value(DateTime.now()),
+        );
+        await dao.insertWithAudit(fuelCompanion, userNote: 'Fuel record added');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.fuelAddedSuccess)),
+        );
+        Navigator.pop(context);
+        ref.invalidate(fuelRecordsProvider(const FuelFilter()));
+        ref.invalidate(expensesProvider(const ExpenseFilter()));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e')), // i18n-ignore
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }
@@ -332,8 +330,8 @@ class _PickerField<T> extends StatelessWidget {
             value: getId(item),
             child: Text(getLabel(item)),
           )).toList(),
-          onChanged: (id) => onChanged(id as int?),
-          validator: (id) => id == null ? l10n.errorRequired : null,
+          onChanged: onChanged,
+          validator: validator,
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),

@@ -2,29 +2,31 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v1.1.0-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v1.1.0)
+[![Release](https://img.shields.io/badge/Release-v0.2.0-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.0)
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://developer.android.com)
 
 **Amar Transport Hisab** is an offline-first, privacy-respecting Android accounting app tailored specifically for transport and covered van fleet owners in Bangladesh. Built from the ground up to replace paper notebooks (*খাতা*), it guarantees 100% offline data storage, strict double-entry ledger arithmetic, native Bengali typography, and accurate per-vehicle Profit & Loss reporting.
 
 ---
 
-## 🚀 What's New in v1.1.0 (ভার্সন ১.১.০ প্যাচ আপডেট ও ফিক্স)
+## 🚀 What's New in v0.2.0 (ভার্সন ০.২.০ প্যাচ আপডেট ও ফিক্স)
 
-- 📊 **Complete Financial Reports Suite (পূর্ণাঙ্গ রিপোর্ট ও স্টেটমেন্ট):** Full implementations for Trip Register, Expense Register, Fuel Register, Vehicle P&L, Cash Flow, Customer Ledger, Driver Ledger, Loan Schedule, and Expiry Alerts with PDF and Excel export capabilities.
-- 🚚 **Dynamic Vehicle & Customer Identifiers (সঠিক পরিচিতি):** Replaced static ID tags across trip and expense logs with live vehicle registration numbers and customer names.
-- 👥 **Driver Transactions & Advance Sheets (ড্রাইভার খাতা ও কিস্তি):** Interactive driver action sheets (Pay Salary, Give Advance, Driver Loan) with live balance validation and ledger views.
-- 📈 **Automated Balance Tracking (স্বয়ংক্রিয় ব্যালেন্স হিসাব):** Real-time customer receivables, fleet vehicle loans outstanding, and driver balance calculations on the main dashboard.
-- 📱 **Resolved Placeholder Screens (পূর্ণাঙ্গ ফিচার পর্দা):** Replaced temporary M0 scaffold placeholders with complete feature implementations (Interactive Dashboard with P&L metrics, Trips ledger, and Money/Fuel registers).
-- 🧭 **Persistent Bottom Navigation (স্থায়ী নেভিগেশন বার):** Implemented `StatefulShellRoute.indexedStack` bottom navigation bar that remains smoothly persistent across all primary tabs (Dashboard, Trips, Money, Settings).
-- 🔙 **Universal Top Back Button (ব্যাক বাটন সুবিধা):** Child screens and sub-routes now register on the root navigator key, ensuring standard top app bar back buttons on every child screen.
-- ⚙️ **Direct Settings Tab (সেটিংস ট্যাব):** Replaced the nested "More" section with a first-class Settings screen offering instant inline Language (বাংলা / English) and Theme (Light / Dark / System) toggles.
-- 💵 **Fixed Opening Balances (প্রারম্ভিক জের ও ব্যালেন্স):** Full editing capabilities for Opening Cash, Customer Receivables, and Driver Balances with robust Bengali & Latin numeric parsing (`parseMoneyInput`).
-- 💾 **Reliable Backup & Restore (ব্যাকআপ ও রিস্টোর):** Streamlined local SQLite encrypted database backup export via Android system share sheet (`share_plus`) and cache invalidation on restore.
-- 🔐 **App Lock Security (অ্যাপ লক ও বায়োমেট্রিক):** Integrated biometric (Fingerprint/Face unlock) and device PIN authentication via `local_auth`.
-- ⚠️ **Vehicle Document Expiry Alerts (কাগজপত্রের মেয়াদ সতর্কতা):** Automated alert monitoring for vehicle fitness, tax token, insurance, and route permit expiration dates.
-- ☁️ **Encrypted Cloud Backup Export (ক্লাউড ব্যাকআপ):** One-tap client-side AES-256 encrypted database export to Google Drive, Email, or external storage.
-- 👨‍💻 **About & Developer Section (অ্যাপ পরিচিতি ও ডেভেলপার):** Integrated App Details, Developer information (Iftekharul Islam - `ifti136`), and patch update changelog.
+- 🛣️ **Trip Distance Recording (দূরত্ব হিসাব):** Removed start and end odometer requirements when recording trips. Added optional distance (km) entry instead.
+- 💸 **Dual Expense Modes (ট্রিপ খরচ ও সাধারণ খরচ):** Categorized expense logging into **Trip Expense** (linked to a specific trip with toll, chanda, police tips, labour) and **Vehicle Expense** (maintenance, repairs, tax token, insurance, etc.).
+- 🏷️ **Customizable Expense Categories (খরচের খাত ব্যবস্থাপনা):** Full management in Settings to add, view, or remove custom expense categories. Removed redundant duplicate category selector.
+- ⛽ **Streamlined Fuel Form (সহজ জ্বালানি হিসাব):** Removed odometer requirement from fuel entry and fixed SQLite foreign key linking between fuel entries and expenses.
+- 🛡️ **Anti-Duplicate Form Guards & Notices (নিশ্চিতকরণ নোটিস):** Multi-click protection and confirmation notices when saving vehicles, drivers, customers, trips, and expenses.
+- 🔄 **Fixed Report Loading (রিপোর্ট লোডিং ফিক্স):** Solved continuous loading spinner on Trip Register, Expense Register, and Fuel Register reports by ensuring filter equality and stable date range queries.
+- 🎨 **App Logo Integration (অফিসিয়াল অ্যাপ লোগো):** Integrated `logo.png` (covered van with ledger) across app bar, launcher icon, onboarding, and about sections.
+- ℹ️ **Clean About Section (অ্যাপ ও ডেভেলপার পরিচিতি):** Grouped app details, developer information (Iftekharul Islam - `ifti136`), and patch changelog in a clean dedicated subsection in Settings.
+
+---
+
+## 📜 Version History (ভার্সন ইতিহাস)
+
+- **v0.2.0:** Trip distance tracking, dual trip/vehicle expense logging, customizable categories, streamlined fuel logging, report loading fixes, logo branding, and form anti-duplicate guards.
+- **v0.1.0:** Persistent bottom navigation, dedicated settings screen, biometric/PIN app lock, document expiry warnings, financial reports suite with PDF/Excel export, reliable local backup/restore.
+- **v0.0.1:** Initial stable scaffold, offline SQLite database, pure Dart accounting engine, and Bengali/English localization.
 
 ---
 
@@ -59,7 +61,7 @@
 
 ## 📲 Installation Guide (ইনস্টলেশন গাইড)
 
-1. **Download APK:** Download `Amar-Transport-Hisab-v1.1.0.apk` from the [Latest Release](https://github.com/ifti136/amar-transport-hisab/releases).
+1. **Download APK:** Download `Amar-Transport-Hisab-v0.2.0.apk` from the [Latest Release](https://github.com/ifti136/amar-transport-hisab/releases).
 2. **Transfer to Device:** Copy the file to your Android phone via USB cable, Telegram/WhatsApp document, Google Drive, or directly in your mobile browser.
 3. **Allow Installation:** Tap the downloaded APK file. When prompted by Android to allow installing apps from this source ("Install unknown apps"), grant permission.
 4. **Play Protect Prompt:** If Google Play Protect displays a message regarding an unknown developer, tap **"More details"** and select **"Install anyway"**.
