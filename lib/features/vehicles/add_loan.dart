@@ -10,8 +10,9 @@ import 'package:transport_hisab/features/vehicles/vehicle_loan_provider.dart';
 
 class AddLoanSheet extends ConsumerStatefulWidget {
   final Vehicle vehicle;
+  final VehicleLoan? loan;
 
-  const AddLoanSheet({super.key, required this.vehicle});
+  const AddLoanSheet({super.key, required this.vehicle, this.loan});
 
   @override
   ConsumerState<AddLoanSheet> createState() => _AddLoanSheetState();
@@ -23,8 +24,23 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
   final _interestRateController = TextEditingController();
   final _noteController = TextEditingController();
 
-  DateTime _startDate = DateTime.now();
+  late DateTime _startDate;
   bool _isSaving = false;
+
+  bool get isEditing => widget.loan != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.loan != null) {
+      final loan = widget.loan!;
+      _principalController.text = (loan.principalPaisa / 100).toStringAsFixed(0);
+      _interestRateController.text = (loan.annualInterestRateBps / 100).toStringAsFixed(1);
+      _startDate = loan.startDate;
+    } else {
+      _startDate = DateTime.now();
+    }
+  }
 
   @override
   void dispose() {
@@ -37,7 +53,6 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isEditing = false; // TODO: Support editing
 
     return Padding(
       padding: EdgeInsets.only(
@@ -52,7 +67,7 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l10n.addLoanTitle, style: Theme.of(context).textTheme.headlineSmall),
+            Text(isEditing ? l10n.edit : l10n.addLoanTitle, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
 
             // Vehicle Info (read-only)
@@ -159,7 +174,7 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
                     onPressed: _isSaving ? null : _save,
                     child: _isSaving
                         ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : Text(l10n.add),
+                        : Text(isEditing ? l10n.save : l10n.add),
                   ),
                 ),
               ],
@@ -186,12 +201,28 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
       final interestRateBps = (rateDouble * 100).round(); // Convert % to basis points
 
       final dao = ref.read(vehicleLoanDaoProvider);
-      await dao.insertWithAudit(VehicleLoansCompanion.insert(
-        vehicleId: widget.vehicle.id,
-        principalPaisa: principalPaisa,
-        annualInterestRateBps: interestRateBps,
-        startDate: _startDate,
-      ), userNote: 'Vehicle loan added');
+      if (isEditing) {
+        await dao.updateWithAudit(
+          VehicleLoansCompanion(
+            vehicleId: Value(widget.vehicle.id),
+            principalPaisa: Value(principalPaisa),
+            annualInterestRateBps: Value(interestRateBps),
+            startDate: Value(_startDate),
+          ),
+          id: widget.loan!.id,
+          userNote: 'Vehicle loan updated',
+        );
+      } else {
+        await dao.insertWithAudit(
+          VehicleLoansCompanion.insert(
+            vehicleId: widget.vehicle.id,
+            principalPaisa: principalPaisa,
+            annualInterestRateBps: interestRateBps,
+            startDate: _startDate,
+          ),
+          userNote: 'Vehicle loan added',
+        );
+      }
 
       if (mounted) {
         AppToast.showSuccess(context, l10n.loanAddedSuccess);
@@ -199,6 +230,9 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
         ref.invalidate(vehicleLoansProvider(widget.vehicle.id));
         ref.invalidate(allLoansProvider);
         ref.invalidate(dashboardProvider);
+        if (isEditing) {
+          ref.invalidate(loanOutstandingProvider);
+        }
       }
     } catch (e) {
       if (mounted) {

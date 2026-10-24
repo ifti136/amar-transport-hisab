@@ -17,6 +17,7 @@ class ExpenseRegisterReport extends ConsumerStatefulWidget {
 
 class _ExpenseRegisterReportState extends ConsumerState<ExpenseRegisterReport> {
   late DateTimeRange _dateRange;
+  int? _vehicleId;
 
   @override
   void initState() {
@@ -31,7 +32,11 @@ class _ExpenseRegisterReportState extends ConsumerState<ExpenseRegisterReport> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final expensesAsync = ref.watch(expensesProvider(ExpenseFilter(from: _dateRange.start, to: _dateRange.end)));
+    final expensesAsync = ref.watch(expensesProvider(ExpenseFilter(
+      from: _dateRange.start,
+      to: _dateRange.end,
+      vehicleId: _vehicleId,
+    )));
     final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? [];
 
     return expensesAsync.when(
@@ -74,7 +79,9 @@ class _ExpenseRegisterReportState extends ConsumerState<ExpenseRegisterReport> {
           rows: rows,
           totals: totals,
           initialDateRange: _dateRange,
+          selectedVehicleId: _vehicleId,
           onDateRangeChanged: (range) => setState(() => _dateRange = range),
+          onVehicleChanged: (id) => setState(() => _vehicleId = id),
           onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
             title: l10n.reportExpenseRegister,
             headers: headers,

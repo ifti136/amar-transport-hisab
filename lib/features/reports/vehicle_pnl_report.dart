@@ -6,11 +6,18 @@ import 'package:transport_hisab/features/reports/report_viewer.dart';
 import 'package:transport_hisab/features/reports/report_export_helper.dart';
 import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 
-class VehiclePnLReport extends ConsumerWidget {
+class VehiclePnLReport extends ConsumerStatefulWidget {
   const VehiclePnLReport({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<VehiclePnLReport> createState() => _VehiclePnLReportState();
+}
+
+class _VehiclePnLReportState extends ConsumerState<VehiclePnLReport> {
+  int? _vehicleId;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final dashboardAsync = ref.watch(dashboardProvider);
 
@@ -26,7 +33,11 @@ class VehiclePnLReport extends ConsumerWidget {
         int totalProfit = 0;
         final rows = <List<String>>[];
 
-        for (final van in dashboard.vanSummaries) {
+        final filteredVans = _vehicleId != null
+            ? dashboard.vanSummaries.where((v) => v.vehicleId == _vehicleId).toList()
+            : dashboard.vanSummaries;
+
+        for (final van in filteredVans) {
           totalTrips += van.tripCount;
           totalProfit += van.profitPaisa;
 
@@ -38,7 +49,7 @@ class VehiclePnLReport extends ConsumerWidget {
         }
 
         final totals = [
-          '${l10n.vehicleLabel}: ${dashboard.vanSummaries.length}',
+          '${l10n.vehicleLabel}: ${filteredVans.length}',
           '$totalTrips',
           formatMoney(Money.paisa(totalProfit), context: context),
         ];
@@ -48,6 +59,8 @@ class VehiclePnLReport extends ConsumerWidget {
           headers: headers,
           rows: rows,
           totals: totals,
+          selectedVehicleId: _vehicleId,
+          onVehicleChanged: (id) => setState(() => _vehicleId = id),
           onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
             title: l10n.reportVehiclePL,
             headers: headers,

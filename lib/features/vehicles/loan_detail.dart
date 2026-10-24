@@ -6,6 +6,7 @@ import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_loan_provider.dart';
 import 'package:transport_hisab/features/vehicles/add_installment.dart';
+import 'package:transport_hisab/features/vehicles/add_loan.dart';
 
 class LoanDetailScreen extends ConsumerWidget {
   final VehicleLoan loan;
@@ -24,6 +25,17 @@ class LoanDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.loanDetailTitle(loan.id)),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => AddLoanSheet(vehicle: vehicle, loan: loan),
+              );
+            },
+            tooltip: l10n.edit,
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () => _showAddInstallment(context),

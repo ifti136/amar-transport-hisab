@@ -115,6 +115,8 @@ class AboutScreen extends ConsumerWidget {
                       'Automatic first-run interactive walkthrough on initial app launch',
                       'Onboarding business / owner name setup with live top bar branding',
                       'Configurable business / owner name in Settings with persistent SQLite backup',
+                      'Full dynamic vehicle filter across Trip, Expense, Fuel, and P&L reports',
+                      'Vehicle loan editing and management from loan details and cards',
                       'Comprehensive database call audit across all 12 Drift tables and DAOs',
                       'Toast notification system with animated overlays and multi-click guards',
                       'Automated cascade deletion between fuel records and diesel expense entries',

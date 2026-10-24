@@ -15,6 +15,8 @@
 - 🏷️ **Business / Fleet Owner Name Setup (ব্যবসা বা মালিকের নাম সেটআপ):** At the end of the initial walkthrough, users can configure their business or fleet name (e.g., *আল-মদিনা ট্রান্সপোর্ট* or *M/S Karim Transport*).
 - 📱 **Dynamic Top Bar Branding (লাইভ টপ বার টাইটেল):** Displays the entered business name directly on the home screen top bar (AppBar) in place of the generic app name, with automatic fallback if not provided.
 - ⚙️ **Persistent & Editable in Settings (সেটিংস থেকে পরিবর্তনযোগ্য):** Users can edit their business name at any time from Settings > Business Profile, with instant reactive updates across the app and full local SQLite persistence.
+- 🚛 **Dynamic Vehicle Filtering in Reports (রিপোর্টে গাড়িভিত্তিক ফিল্টার):** Full vehicle dropdown selector across Trip Register, Expense Register, Fuel Register, and Vehicle P&L reports with instant filtered calculations and exports.
+- 💳 **Vehicle Loan Editing (গাড়ির লোন এডিট সুবিধা):** Direct editing capability for existing vehicle loans from loan cards and details, complete with audit trail tracking and balance recalculation.
 - 🔍 **Database Audit & Robust Form Lifecycles:** Carried over full database audit validations, centralized `AppToast` alerts, double-submission guards (`_isSaving`), Bengali numeral support, and cascading fuel-diesel deletions.
 
 ---

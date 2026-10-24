@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/reports/excel_export.dart';
 import 'package:transport_hisab/features/reports/pdf_export.dart';
+import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 
 /// Generic report viewer with date range, vehicle filter, sticky header, horizontal scroll, totals row
 class ReportViewer extends ConsumerStatefulWidget {
@@ -12,8 +13,10 @@ class ReportViewer extends ConsumerStatefulWidget {
   final List<List<String>> rows;
   final List<String> totals;
   final DateTimeRange? initialDateRange;
+  final int? selectedVehicleId;
   final List<int>? vehicleIds;
   final ValueChanged<DateTimeRange>? onDateRangeChanged;
+  final ValueChanged<int?>? onVehicleChanged;
   final Future<void> Function(DateTimeRange, int?) onExportExcel;
   final Future<void> Function(DateTimeRange, int?) onExportPdf;
 
@@ -24,8 +27,10 @@ class ReportViewer extends ConsumerStatefulWidget {
     required this.rows,
     required this.totals,
     this.initialDateRange,
+    this.selectedVehicleId,
     this.vehicleIds,
     this.onDateRangeChanged,
+    this.onVehicleChanged,
     required this.onExportExcel,
     required this.onExportPdf,
   });
@@ -45,6 +50,7 @@ class _ReportViewerState extends ConsumerState<ReportViewer> {
       start: DateTime(DateTime.now().year, DateTime.now().month, 1),
       end: DateTime(DateTime.now().year, DateTime.now().month + 1, 0, 23, 59, 59),
     );
+    _selectedVehicleId = widget.selectedVehicleId;
   }
 
   @override
@@ -52,6 +58,9 @@ class _ReportViewerState extends ConsumerState<ReportViewer> {
     super.didUpdateWidget(oldWidget);
     if (widget.initialDateRange != null && widget.initialDateRange != oldWidget.initialDateRange) {
       _dateRange = widget.initialDateRange!;
+    }
+    if (widget.selectedVehicleId != oldWidget.selectedVehicleId) {
+      _selectedVehicleId = widget.selectedVehicleId;
     }
   }
 
@@ -123,9 +132,15 @@ class _ReportViewerState extends ConsumerState<ReportViewer> {
           // Filter Bar
           _FilterBar(
             dateRange: _dateRange,
-            onDateRangeChanged: (range) => setState(() => _dateRange = range),
-            vehicleId: null, // TODO: Add vehicle filter
-            onVehicleChanged: (id) => setState(() {}),
+            onDateRangeChanged: (range) {
+              setState(() => _dateRange = range);
+              widget.onDateRangeChanged?.call(range);
+            },
+            vehicleId: _selectedVehicleId,
+            onVehicleChanged: (id) {
+              setState(() => _selectedVehicleId = id);
+              widget.onVehicleChanged?.call(id);
+            },
           ),
           // Report Table
           Expanded(
@@ -141,7 +156,7 @@ class _ReportViewerState extends ConsumerState<ReportViewer> {
   }
 }
 
-class _FilterBar extends StatelessWidget {
+class _FilterBar extends ConsumerWidget {
   final DateTimeRange dateRange;
   final ValueChanged<DateTimeRange> onDateRangeChanged;
   final int? vehicleId;
@@ -155,9 +170,10 @@ class _FilterBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? [];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -174,7 +190,7 @@ class _FilterBar extends StatelessWidget {
                 final range = await showDateRangePicker(
                   context: context,
                   firstDate: DateTime(2020),
-                  lastDate: DateTime.now(),
+                  lastDate: DateTime(2100),
                   initialDateRange: dateRange,
                 );
                 if (range != null) {
@@ -193,9 +209,12 @@ class _FilterBar extends StatelessWidget {
                   children: [
                     Icon(Icons.calendar_today, size: 18, color: theme.colorScheme.primary),
                     const SizedBox(width: 8),
-                    Text(
-                      '${formatDate(dateRange.start, short: true)} - ${formatDate(dateRange.end, short: true)}',
-                      style: theme.textTheme.bodyMedium,
+                    Expanded(
+                      child: Text(
+                        '${formatDate(dateRange.start, short: true, context: context)} - ${formatDate(dateRange.end, short: true, context: context)}',
+                        style: theme.textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -203,19 +222,27 @@ class _FilterBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // Vehicle Filter (placeholder)
+          // Vehicle Filter
           Expanded(
-            child: DropdownButtonFormField<int>(
-              value: null,
+            child: DropdownButtonFormField<int?>(
+              value: vehicleId,
+              isExpanded: true,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.vehicleLabel,
+                labelText: l10n.vehicleLabel,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               items: [
-                DropdownMenuItem(value: null, child: Text(AppLocalizations.of(context)!.allVehicles)),
+                DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text(l10n.allVehicles, overflow: TextOverflow.ellipsis),
+                ),
+                ...vehicles.map((v) => DropdownMenuItem<int?>(
+                  value: v.id,
+                  child: Text(v.regNo, overflow: TextOverflow.ellipsis),
+                )),
               ],
-              onChanged: (value) {},
+              onChanged: onVehicleChanged,
             ),
           ),
         ],

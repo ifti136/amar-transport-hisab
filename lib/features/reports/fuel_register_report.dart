@@ -17,6 +17,7 @@ class FuelRegisterReport extends ConsumerStatefulWidget {
 
 class _FuelRegisterReportState extends ConsumerState<FuelRegisterReport> {
   late DateTimeRange _dateRange;
+  int? _vehicleId;
 
   @override
   void initState() {
@@ -31,7 +32,11 @@ class _FuelRegisterReportState extends ConsumerState<FuelRegisterReport> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final fuelAsync = ref.watch(fuelRecordsProvider(FuelFilter(from: _dateRange.start, to: _dateRange.end)));
+    final fuelAsync = ref.watch(fuelRecordsProvider(FuelFilter(
+      from: _dateRange.start,
+      to: _dateRange.end,
+      vehicleId: _vehicleId,
+    )));
     final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? [];
 
     return fuelAsync.when(
@@ -77,7 +82,9 @@ class _FuelRegisterReportState extends ConsumerState<FuelRegisterReport> {
           rows: rows,
           totals: totals,
           initialDateRange: _dateRange,
+          selectedVehicleId: _vehicleId,
           onDateRangeChanged: (range) => setState(() => _dateRange = range),
+          onVehicleChanged: (id) => setState(() => _vehicleId = id),
           onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
             title: l10n.reportFuelRegister,
             headers: headers,

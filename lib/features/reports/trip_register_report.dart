@@ -18,6 +18,7 @@ class TripRegisterReport extends ConsumerStatefulWidget {
 
 class _TripRegisterReportState extends ConsumerState<TripRegisterReport> {
   late DateTimeRange _dateRange;
+  int? _vehicleId;
 
   @override
   void initState() {
@@ -32,7 +33,11 @@ class _TripRegisterReportState extends ConsumerState<TripRegisterReport> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final tripsAsync = ref.watch(tripsProvider(TripFilter(from: _dateRange.start, to: _dateRange.end)));
+    final tripsAsync = ref.watch(tripsProvider(TripFilter(
+      from: _dateRange.start,
+      to: _dateRange.end,
+      vehicleId: _vehicleId,
+    )));
     final customers = ref.watch(activeCustomersProvider).asData?.value ?? [];
     final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? [];
 
@@ -85,7 +90,9 @@ class _TripRegisterReportState extends ConsumerState<TripRegisterReport> {
           rows: rows,
           totals: totals,
           initialDateRange: _dateRange,
+          selectedVehicleId: _vehicleId,
           onDateRangeChanged: (range) => setState(() => _dateRange = range),
+          onVehicleChanged: (id) => setState(() => _vehicleId = id),
           onExportExcel: (range, vehicleId) => ReportExportHelper.exportAndShareExcel(
             title: l10n.reportTripRegister,
             headers: headers,

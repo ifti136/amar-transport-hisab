@@ -171,6 +171,15 @@ class _LoanCard extends ConsumerWidget {
                     ),
                   ),
                   _OutstandingBadge(loanId: loan.id),
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, size: 20),
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => AddLoanSheet(vehicle: vehicle, loan: loan),
+                    ),
+                    tooltip: l10n.edit,
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
