@@ -157,7 +157,7 @@ class _TripCard extends ConsumerWidget {
     final customers = ref.watch(activeCustomersProvider).asData?.value;
     final vehicle = vehicles?.firstWhereOrNull((v) => v.id == trip.vehicleId);
     final customer = customers?.firstWhereOrNull((c) => c.id == trip.customerId);
-    final customerDisplay = customer?.name ?? 'Customer #${trip.customerId}';
+    final customerDisplay = customer?.name ?? (trip.customCustomerName != null && trip.customCustomerName!.isNotEmpty ? trip.customCustomerName! : (trip.customerId != null ? 'Customer #${trip.customerId}' : l10n.noCustomer));
     final vehicleDisplay = vehicle?.regNo ?? 'Vehicle #${trip.vehicleId}';
 
     return Card(
@@ -238,9 +238,11 @@ class _TripCard extends ConsumerWidget {
                   ),
                   Expanded(
                     child: _InfoItem(
-                      icon: Icons.speed,
-                      label: 'Odo',
-                      value: '${trip.startOdo} → ${trip.endOdo ?? '-'}',
+                      icon: Icons.straighten,
+                      label: l10n.distanceKmLabel,
+                      value: (trip.endOdo != null && trip.endOdo! > trip.startOdo)
+                          ? '${trip.endOdo! - trip.startOdo} km'
+                          : (trip.endOdo != null && trip.endOdo! > 0 ? '${trip.endOdo} km' : '-'),
                     ),
                   ),
                   Expanded(
@@ -263,6 +265,7 @@ class _TripStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final semantic = theme.extension<AppSemanticColors>()!;
 
@@ -271,11 +274,15 @@ class _TripStatusBadge extends StatelessWidget {
     switch (status) {
       case 'completed':
         color = semantic.success;
-        label = 'Completed';
+        label = l10n.statusCompleted;
+        break;
+      case 'pending':
+        color = semantic.warning;
+        label = l10n.statusPending;
         break;
       case 'cancelled':
         color = semantic.danger;
-        label = 'Cancelled';
+        label = l10n.statusCancelled;
         break;
       default:
         color = theme.colorScheme.onSurfaceVariant;
@@ -413,8 +420,8 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
               onTap: () async {
                 final range = await showDateRangePicker(
                   context: context,
-                  firstDate: DateTime.now().subtract(const Duration(days: 365 * 2)),
-                  lastDate: DateTime.now(),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2100),
                   initialDateRange: _from != null && _to != null
                       ? DateTimeRange(start: _from!, end: _to!)
                       : null,

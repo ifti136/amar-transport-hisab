@@ -8,34 +8,47 @@ import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
 import 'package:transport_hisab/features/trips/receive_payment.dart';
 
-class CustomerLedgerScreen extends ConsumerWidget {
+class CustomerLedgerScreen extends ConsumerStatefulWidget {
   final Customer customer;
 
   const CustomerLedgerScreen({super.key, required this.customer});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomerLedgerScreen> createState() => _CustomerLedgerScreenState();
+}
+
+class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
+  late DateTime _from;
+  late DateTime _to;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _from = DateTime(now.year, now.month, 1);
+    _to = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
 
     final ledgerAsync = ref.watch(customerLedgerProvider(
       CustomerLedgerFilter(
-        customerId: customer.id,
-        from: firstDayOfMonth,
-        to: lastDayOfMonth,
+        customerId: widget.customer.id,
+        from: _from,
+        to: _to,
       ),
     ));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(customer.name),
+        title: Text(widget.customer.name),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: () => _showDateRangePicker(context, ref),
+            onPressed: () => _showDateRangePicker(context),
             tooltip: l10n.filter,
           ),
         ],
@@ -48,7 +61,7 @@ class CustomerLedgerScreen extends ConsumerWidget {
           return Column(
             children: [
               // Summary Card
-              _SummaryCard(customer: customer, entries: entries),
+              _SummaryCard(customer: widget.customer, entries: entries),
               // Ledger List
               Expanded(
                 child: ListView.builder(
@@ -102,18 +115,26 @@ class CustomerLedgerScreen extends ConsumerWidget {
     );
   }
 
-  void _showDateRangePicker(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.dateRangePickerComingSoon)),
+  Future<void> _showDateRangePicker(BuildContext context) async {
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      initialDateRange: DateTimeRange(start: _from, end: _to),
     );
+    if (picked != null) {
+      setState(() {
+        _from = picked.start;
+        _to = picked.end;
+      });
+    }
   }
 
   void _showReceivePayment(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => ReceivePaymentSheet(customer: customer),
+      builder: (context) => ReceivePaymentSheet(customer: widget.customer),
     );
   }
 }

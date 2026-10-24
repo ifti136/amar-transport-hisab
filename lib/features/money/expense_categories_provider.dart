@@ -110,3 +110,4 @@ String getCategoryDisplayName(String cat, BuildContext context) {
       return cat;
   }
 }
+

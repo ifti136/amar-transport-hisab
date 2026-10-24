@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
@@ -8,8 +9,12 @@ import 'package:transport_hisab/core/db/daos/trip_dao.dart';
 import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/trips/trip_form.dart';
 import 'package:transport_hisab/features/trips/receive_payment.dart';
+import 'package:collection/collection.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
+import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
+import 'package:transport_hisab/features/drivers/driver_provider.dart';
 import 'package:transport_hisab/features/money/money_provider.dart';
+import 'package:transport_hisab/features/money/expense_form.dart';
 
 class TripDetailScreen extends ConsumerWidget {
   final Trip trip;
@@ -118,6 +123,33 @@ class _TripDetailContent extends ConsumerWidget {
     final theme = Theme.of(context);
     final semantic = theme.extension<AppSemanticColors>()!;
 
+    final customers = ref.watch(activeCustomersProvider).asData?.value;
+    final vehicles = ref.watch(activeVehiclesProvider).asData?.value;
+    final drivers = ref.watch(activeDriversProvider).asData?.value;
+
+    final customer = customers?.firstWhereOrNull((c) => c.id == trip.customerId);
+    final vehicle = vehicles?.firstWhereOrNull((v) => v.id == trip.vehicleId);
+    final driver = drivers?.firstWhereOrNull((d) => d.id == trip.driverId);
+
+    final customerDisplay = customer?.name ?? (trip.customCustomerName != null && trip.customCustomerName!.isNotEmpty ? trip.customCustomerName! : (trip.customerId != null ? 'Customer #${trip.customerId}' : l10n.noCustomer));
+    final vehicleDisplay = vehicle != null ? '${vehicle.regNo} (${vehicle.type})' : 'Vehicle #${trip.vehicleId}';
+    final driverDisplay = driver?.name ?? 'Driver #${trip.driverId}';
+
+    String statusDisplay;
+    switch (trip.status) {
+      case 'completed':
+        statusDisplay = l10n.statusCompleted;
+        break;
+      case 'pending':
+        statusDisplay = l10n.statusPending;
+        break;
+      case 'cancelled':
+        statusDisplay = l10n.statusCancelled;
+        break;
+      default:
+        statusDisplay = trip.status;
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -151,15 +183,33 @@ class _TripDetailContent extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _DetailRow(label: l10n.customerLabel, value: 'Customer #${trip.customerId}'),
-                _DetailRow(label: l10n.vehicleLabel, value: 'Vehicle #${trip.vehicleId}'),
-                _DetailRow(label: l10n.driverLabel, value: 'Driver #${trip.driverId}'),
+                _DetailRow(label: l10n.customerLabel, value: customerDisplay),
+                _DetailRow(label: l10n.vehicleLabel, value: vehicleDisplay),
+                _DetailRow(label: l10n.driverLabel, value: driverDisplay),
                 _DetailRow(label: l10n.fareLabel, value: formatMoney(Money.paisa(trip.agreedFarePaisa), context: context)),
                 _DetailRow(label: l10n.advanceLabel, value: formatMoney(Money.paisa(trip.advancePaisa), context: context)),
                 if (trip.endOdo != null && trip.endOdo! > trip.startOdo)
                   _DetailRow(label: l10n.distanceKmLabel, value: '${trip.endOdo! - trip.startOdo} km'), // i18n-ignore
                 _DetailRow(label: l10n.outstandingLabel, value: formatMoney(Money.paisa(tripData.outstanding), context: context)),
-                _DetailRow(label: l10n.statusLabel, value: trip.status),
+                _DetailRow(label: l10n.statusLabel, value: statusDisplay),
+
+                if (trip.status != 'cancelled') ...[
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: trip.status == 'pending'
+                        ? FilledButton.icon(
+                            icon: const Icon(Icons.check_circle_outline),
+                            label: Text(l10n.markCompletedAction),
+                            onPressed: () => _toggleStatus(context, ref, 'completed'),
+                          )
+                        : OutlinedButton.icon(
+                            icon: const Icon(Icons.pending_actions),
+                            label: Text(l10n.markPendingAction),
+                            onPressed: () => _toggleStatus(context, ref, 'pending'),
+                          ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -239,6 +289,14 @@ class _TripDetailContent extends ConsumerWidget {
                   subtitle: Text(l10n.viewTripExpensesAction),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showTripExpenses(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.add_circle_outline),
+                  title: Text(l10n.add),
+                  subtitle: Text(l10n.tripExpenseOption),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showAddTripExpense(context),
                 ),
               ],
             ),
@@ -374,6 +432,31 @@ class _TripDetailContent extends ConsumerWidget {
       builder: (context) => ReceivePaymentSheet(trip: trip),
     );
   }
+
+  void _showAddTripExpense(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => ExpenseForm(
+        initialMode: ExpenseEntryMode.trip,
+        preselectedTripId: trip.id,
+      ),
+    );
+  }
+
+  Future<void> _toggleStatus(BuildContext context, WidgetRef ref, String newStatus) async {
+    final dao = ref.read(tripDaoProvider);
+    await dao.updateWithAudit(
+      TripsCompanion(
+        status: Value(newStatus),
+        updatedAt: Value(DateTime.now()),
+      ),
+      id: trip.id,
+      userNote: 'Trip marked as $newStatus',
+    );
+    ref.invalidate(tripWithOutstandingProvider(trip.id));
+    ref.invalidate(tripsProvider(const TripFilter()));
+  }
 }
 
 class _TripStatusBadge extends StatelessWidget {
@@ -393,6 +476,10 @@ class _TripStatusBadge extends StatelessWidget {
       case 'completed':
         color = semantic.success;
         label = l10n.statusCompleted;
+        break;
+      case 'pending':
+        color = semantic.warning;
+        label = l10n.statusPending;
         break;
       case 'cancelled':
         color = semantic.danger;

@@ -300,7 +300,20 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
 
-          // Section 7: About Section (Clean Sub-section)
+          // Section 7: App Feature Walkthrough
+          _SectionHeader(title: l10n.walkthroughTitle),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: ListTile(
+              leading: const Icon(Icons.help_outline, size: 28),
+              title: Text(l10n.walkthroughTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text(l10n.walkthroughDesc),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/onboarding'),
+            ),
+          ),
+
+          // Section 8: About Section (Clean Sub-section)
           _SectionHeader(title: l10n.aboutTitle),
           Card(
             margin: const EdgeInsets.only(bottom: 32),
@@ -315,7 +328,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               title: Text(l10n.aboutTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: const Text('Amar Transport Hisab v0.2.0 • Iftekharul Islam'), // i18n-ignore
+              subtitle: const Text('Amar Transport Hisab v0.2.1 • Iftekharul Islam'), // i18n-ignore
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/settings/about'),
             ),

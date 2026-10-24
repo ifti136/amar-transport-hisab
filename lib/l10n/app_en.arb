@@ -1627,5 +1627,45 @@
   "deleteCategoryConfirm": "Are you sure you want to delete this category?",
   "@deleteCategoryConfirm": {
     "description": "Delete category confirmation"
+  },
+  "statusPending": "Pending",
+  "@statusPending": {
+    "description": "Status pending"
+  },
+  "markCompletedAction": "Mark as Completed",
+  "@markCompletedAction": {
+    "description": "Mark as completed action"
+  },
+  "markPendingAction": "Mark as Pending",
+  "@markPendingAction": {
+    "description": "Mark as pending action"
+  },
+  "customCustomerNameLabel": "Custom Customer Name",
+  "@customCustomerNameLabel": {
+    "description": "Custom customer name field label"
+  },
+  "selectCustomerOrCustom": "Select Customer (Optional)",
+  "@selectCustomerOrCustom": {
+    "description": "Customer selection prompt optional"
+  },
+  "noCustomer": "No Customer",
+  "@noCustomer": {
+    "description": "No customer text"
+  },
+  "saveAndAddAnother": "Save & Add Another",
+  "@saveAndAddAnother": {
+    "description": "Save and add another expense button"
+  },
+  "fuelExpenseOption": "Fuel Expense",
+  "@fuelExpenseOption": {
+    "description": "Fuel expense option"
+  },
+  "walkthroughTitle": "App Feature Walkthrough",
+  "@walkthroughTitle": {
+    "description": "Walkthrough title"
+  },
+  "walkthroughDesc": "View intro guide and onboarding tutorial",
+  "@walkthroughDesc": {
+    "description": "Walkthrough description"
   }
 }

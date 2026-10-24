@@ -12,11 +12,12 @@ class TripDao extends BaseDao<Trips, TripsCompanion> {
   TableInfo get table => db.trips;
 
   @override
-  Map<String, dynamic> _companionToMap(TripsCompanion companion) {
+  Map<String, dynamic> companionToMap(TripsCompanion companion) {
     return {
       'vehicle_id': companion.vehicleId.valueOrNull,
       'driver_id': companion.driverId.valueOrNull,
       'customer_id': companion.customerId.valueOrNull,
+      'custom_customer_name': companion.customCustomerName.valueOrNull,
       'trip_date': companion.tripDate.valueOrNull?.toIso8601String(),
       'agreed_fare_paisa': companion.agreedFarePaisa.valueOrNull,
       'advance_paisa': companion.advancePaisa.valueOrNull,
@@ -30,12 +31,13 @@ class TripDao extends BaseDao<Trips, TripsCompanion> {
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'vehicle_id': row.vehicleId,
       'driver_id': row.driverId,
       'customer_id': row.customerId,
+      'custom_customer_name': row.customCustomerName,
       'trip_date': row.tripDate.toIso8601String(),
       'agreed_fare_paisa': row.agreedFarePaisa,
       'advance_paisa': row.advancePaisa,

@@ -12,7 +12,7 @@ class DriverDao extends BaseDao<Drivers, DriversCompanion> {
   TableInfo get table => db.drivers;
 
   @override
-  Map<String, dynamic> _companionToMap(DriversCompanion companion) {
+  Map<String, dynamic> companionToMap(DriversCompanion companion) {
     return {
       'name': companion.name.valueOrNull,
       'phone': companion.phone.valueOrNull,
@@ -26,7 +26,7 @@ class DriverDao extends BaseDao<Drivers, DriversCompanion> {
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'name': row.name,

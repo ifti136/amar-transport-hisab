@@ -1385,11 +1385,17 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
       const VerificationMeta('customerId');
   @override
   late final GeneratedColumn<int> customerId = GeneratedColumn<int>(
-      'customer_id', aliasedName, false,
+      'customer_id', aliasedName, true,
       type: DriftSqlType.int,
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES customers (id)'));
+  static const VerificationMeta _customCustomerNameMeta =
+      const VerificationMeta('customCustomerName');
+  @override
+  late final GeneratedColumn<String> customCustomerName =
+      GeneratedColumn<String>('custom_customer_name', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _tripDateMeta =
       const VerificationMeta('tripDate');
   @override
@@ -1427,7 +1433,7 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
       'status', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
-      defaultValue: const Constant('completed'));
+      defaultValue: const Constant('pending'));
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -1456,6 +1462,7 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
         vehicleId,
         driverId,
         customerId,
+        customCustomerName,
         tripDate,
         agreedFarePaisa,
         advancePaisa,
@@ -1496,8 +1503,12 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
           _customerIdMeta,
           customerId.isAcceptableOrUnknown(
               data['customer_id']!, _customerIdMeta));
-    } else if (isInserting) {
-      context.missing(_customerIdMeta);
+    }
+    if (data.containsKey('custom_customer_name')) {
+      context.handle(
+          _customCustomerNameMeta,
+          customCustomerName.isAcceptableOrUnknown(
+              data['custom_customer_name']!, _customCustomerNameMeta));
     }
     if (data.containsKey('trip_date')) {
       context.handle(_tripDateMeta,
@@ -1561,7 +1572,9 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
       driverId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}driver_id'])!,
       customerId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}customer_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}customer_id']),
+      customCustomerName: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}custom_customer_name']),
       tripDate: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}trip_date'])!,
       agreedFarePaisa: attachedDatabase.typeMapping
@@ -1593,7 +1606,8 @@ class Trip extends DataClass implements Insertable<Trip> {
   final int id;
   final int vehicleId;
   final int driverId;
-  final int customerId;
+  final int? customerId;
+  final String? customCustomerName;
   final DateTime tripDate;
   final int agreedFarePaisa;
   final int advancePaisa;
@@ -1607,7 +1621,8 @@ class Trip extends DataClass implements Insertable<Trip> {
       {required this.id,
       required this.vehicleId,
       required this.driverId,
-      required this.customerId,
+      this.customerId,
+      this.customCustomerName,
       required this.tripDate,
       required this.agreedFarePaisa,
       required this.advancePaisa,
@@ -1623,7 +1638,12 @@ class Trip extends DataClass implements Insertable<Trip> {
     map['id'] = Variable<int>(id);
     map['vehicle_id'] = Variable<int>(vehicleId);
     map['driver_id'] = Variable<int>(driverId);
-    map['customer_id'] = Variable<int>(customerId);
+    if (!nullToAbsent || customerId != null) {
+      map['customer_id'] = Variable<int>(customerId);
+    }
+    if (!nullToAbsent || customCustomerName != null) {
+      map['custom_customer_name'] = Variable<String>(customCustomerName);
+    }
     map['trip_date'] = Variable<DateTime>(tripDate);
     map['agreed_fare_paisa'] = Variable<int>(agreedFarePaisa);
     map['advance_paisa'] = Variable<int>(advancePaisa);
@@ -1645,7 +1665,12 @@ class Trip extends DataClass implements Insertable<Trip> {
       id: Value(id),
       vehicleId: Value(vehicleId),
       driverId: Value(driverId),
-      customerId: Value(customerId),
+      customerId: customerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customerId),
+      customCustomerName: customCustomerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customCustomerName),
       tripDate: Value(tripDate),
       agreedFarePaisa: Value(agreedFarePaisa),
       advancePaisa: Value(advancePaisa),
@@ -1668,7 +1693,9 @@ class Trip extends DataClass implements Insertable<Trip> {
       id: serializer.fromJson<int>(json['id']),
       vehicleId: serializer.fromJson<int>(json['vehicleId']),
       driverId: serializer.fromJson<int>(json['driverId']),
-      customerId: serializer.fromJson<int>(json['customerId']),
+      customerId: serializer.fromJson<int?>(json['customerId']),
+      customCustomerName:
+          serializer.fromJson<String?>(json['customCustomerName']),
       tripDate: serializer.fromJson<DateTime>(json['tripDate']),
       agreedFarePaisa: serializer.fromJson<int>(json['agreedFarePaisa']),
       advancePaisa: serializer.fromJson<int>(json['advancePaisa']),
@@ -1687,7 +1714,8 @@ class Trip extends DataClass implements Insertable<Trip> {
       'id': serializer.toJson<int>(id),
       'vehicleId': serializer.toJson<int>(vehicleId),
       'driverId': serializer.toJson<int>(driverId),
-      'customerId': serializer.toJson<int>(customerId),
+      'customerId': serializer.toJson<int?>(customerId),
+      'customCustomerName': serializer.toJson<String?>(customCustomerName),
       'tripDate': serializer.toJson<DateTime>(tripDate),
       'agreedFarePaisa': serializer.toJson<int>(agreedFarePaisa),
       'advancePaisa': serializer.toJson<int>(advancePaisa),
@@ -1704,7 +1732,8 @@ class Trip extends DataClass implements Insertable<Trip> {
           {int? id,
           int? vehicleId,
           int? driverId,
-          int? customerId,
+          Value<int?> customerId = const Value.absent(),
+          Value<String?> customCustomerName = const Value.absent(),
           DateTime? tripDate,
           int? agreedFarePaisa,
           int? advancePaisa,
@@ -1718,7 +1747,10 @@ class Trip extends DataClass implements Insertable<Trip> {
         id: id ?? this.id,
         vehicleId: vehicleId ?? this.vehicleId,
         driverId: driverId ?? this.driverId,
-        customerId: customerId ?? this.customerId,
+        customerId: customerId.present ? customerId.value : this.customerId,
+        customCustomerName: customCustomerName.present
+            ? customCustomerName.value
+            : this.customCustomerName,
         tripDate: tripDate ?? this.tripDate,
         agreedFarePaisa: agreedFarePaisa ?? this.agreedFarePaisa,
         advancePaisa: advancePaisa ?? this.advancePaisa,
@@ -1736,6 +1768,9 @@ class Trip extends DataClass implements Insertable<Trip> {
       driverId: data.driverId.present ? data.driverId.value : this.driverId,
       customerId:
           data.customerId.present ? data.customerId.value : this.customerId,
+      customCustomerName: data.customCustomerName.present
+          ? data.customCustomerName.value
+          : this.customCustomerName,
       tripDate: data.tripDate.present ? data.tripDate.value : this.tripDate,
       agreedFarePaisa: data.agreedFarePaisa.present
           ? data.agreedFarePaisa.value
@@ -1759,6 +1794,7 @@ class Trip extends DataClass implements Insertable<Trip> {
           ..write('vehicleId: $vehicleId, ')
           ..write('driverId: $driverId, ')
           ..write('customerId: $customerId, ')
+          ..write('customCustomerName: $customCustomerName, ')
           ..write('tripDate: $tripDate, ')
           ..write('agreedFarePaisa: $agreedFarePaisa, ')
           ..write('advancePaisa: $advancePaisa, ')
@@ -1778,6 +1814,7 @@ class Trip extends DataClass implements Insertable<Trip> {
       vehicleId,
       driverId,
       customerId,
+      customCustomerName,
       tripDate,
       agreedFarePaisa,
       advancePaisa,
@@ -1795,6 +1832,7 @@ class Trip extends DataClass implements Insertable<Trip> {
           other.vehicleId == this.vehicleId &&
           other.driverId == this.driverId &&
           other.customerId == this.customerId &&
+          other.customCustomerName == this.customCustomerName &&
           other.tripDate == this.tripDate &&
           other.agreedFarePaisa == this.agreedFarePaisa &&
           other.advancePaisa == this.advancePaisa &&
@@ -1810,7 +1848,8 @@ class TripsCompanion extends UpdateCompanion<Trip> {
   final Value<int> id;
   final Value<int> vehicleId;
   final Value<int> driverId;
-  final Value<int> customerId;
+  final Value<int?> customerId;
+  final Value<String?> customCustomerName;
   final Value<DateTime> tripDate;
   final Value<int> agreedFarePaisa;
   final Value<int> advancePaisa;
@@ -1825,6 +1864,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     this.vehicleId = const Value.absent(),
     this.driverId = const Value.absent(),
     this.customerId = const Value.absent(),
+    this.customCustomerName = const Value.absent(),
     this.tripDate = const Value.absent(),
     this.agreedFarePaisa = const Value.absent(),
     this.advancePaisa = const Value.absent(),
@@ -1839,7 +1879,8 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     this.id = const Value.absent(),
     required int vehicleId,
     required int driverId,
-    required int customerId,
+    this.customerId = const Value.absent(),
+    this.customCustomerName = const Value.absent(),
     required DateTime tripDate,
     required int agreedFarePaisa,
     this.advancePaisa = const Value.absent(),
@@ -1851,7 +1892,6 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     this.deletedAt = const Value.absent(),
   })  : vehicleId = Value(vehicleId),
         driverId = Value(driverId),
-        customerId = Value(customerId),
         tripDate = Value(tripDate),
         agreedFarePaisa = Value(agreedFarePaisa),
         startOdo = Value(startOdo);
@@ -1860,6 +1900,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     Expression<int>? vehicleId,
     Expression<int>? driverId,
     Expression<int>? customerId,
+    Expression<String>? customCustomerName,
     Expression<DateTime>? tripDate,
     Expression<int>? agreedFarePaisa,
     Expression<int>? advancePaisa,
@@ -1875,6 +1916,8 @@ class TripsCompanion extends UpdateCompanion<Trip> {
       if (vehicleId != null) 'vehicle_id': vehicleId,
       if (driverId != null) 'driver_id': driverId,
       if (customerId != null) 'customer_id': customerId,
+      if (customCustomerName != null)
+        'custom_customer_name': customCustomerName,
       if (tripDate != null) 'trip_date': tripDate,
       if (agreedFarePaisa != null) 'agreed_fare_paisa': agreedFarePaisa,
       if (advancePaisa != null) 'advance_paisa': advancePaisa,
@@ -1891,7 +1934,8 @@ class TripsCompanion extends UpdateCompanion<Trip> {
       {Value<int>? id,
       Value<int>? vehicleId,
       Value<int>? driverId,
-      Value<int>? customerId,
+      Value<int?>? customerId,
+      Value<String?>? customCustomerName,
       Value<DateTime>? tripDate,
       Value<int>? agreedFarePaisa,
       Value<int>? advancePaisa,
@@ -1906,6 +1950,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
       vehicleId: vehicleId ?? this.vehicleId,
       driverId: driverId ?? this.driverId,
       customerId: customerId ?? this.customerId,
+      customCustomerName: customCustomerName ?? this.customCustomerName,
       tripDate: tripDate ?? this.tripDate,
       agreedFarePaisa: agreedFarePaisa ?? this.agreedFarePaisa,
       advancePaisa: advancePaisa ?? this.advancePaisa,
@@ -1932,6 +1977,9 @@ class TripsCompanion extends UpdateCompanion<Trip> {
     }
     if (customerId.present) {
       map['customer_id'] = Variable<int>(customerId.value);
+    }
+    if (customCustomerName.present) {
+      map['custom_customer_name'] = Variable<String>(customCustomerName.value);
     }
     if (tripDate.present) {
       map['trip_date'] = Variable<DateTime>(tripDate.value);
@@ -1970,6 +2018,7 @@ class TripsCompanion extends UpdateCompanion<Trip> {
           ..write('vehicleId: $vehicleId, ')
           ..write('driverId: $driverId, ')
           ..write('customerId: $customerId, ')
+          ..write('customCustomerName: $customCustomerName, ')
           ..write('tripDate: $tripDate, ')
           ..write('agreedFarePaisa: $agreedFarePaisa, ')
           ..write('advancePaisa: $advancePaisa, ')
@@ -2011,9 +2060,9 @@ class $CustomerPaymentsTable extends CustomerPayments
       const VerificationMeta('customerId');
   @override
   late final GeneratedColumn<int> customerId = GeneratedColumn<int>(
-      'customer_id', aliasedName, false,
+      'customer_id', aliasedName, true,
       type: DriftSqlType.int,
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES customers (id)'));
   static const VerificationMeta _amountPaisaMeta =
@@ -2091,8 +2140,6 @@ class $CustomerPaymentsTable extends CustomerPayments
           _customerIdMeta,
           customerId.isAcceptableOrUnknown(
               data['customer_id']!, _customerIdMeta));
-    } else if (isInserting) {
-      context.missing(_customerIdMeta);
     }
     if (data.containsKey('amount_paisa')) {
       context.handle(
@@ -2140,7 +2187,7 @@ class $CustomerPaymentsTable extends CustomerPayments
       tripId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}trip_id'])!,
       customerId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}customer_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}customer_id']),
       amountPaisa: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}amount_paisa'])!,
       paymentDate: attachedDatabase.typeMapping
@@ -2165,7 +2212,7 @@ class $CustomerPaymentsTable extends CustomerPayments
 class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
   final int id;
   final int tripId;
-  final int customerId;
+  final int? customerId;
   final int amountPaisa;
   final DateTime paymentDate;
   final String? note;
@@ -2175,7 +2222,7 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
   const CustomerPayment(
       {required this.id,
       required this.tripId,
-      required this.customerId,
+      this.customerId,
       required this.amountPaisa,
       required this.paymentDate,
       this.note,
@@ -2187,7 +2234,9 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['trip_id'] = Variable<int>(tripId);
-    map['customer_id'] = Variable<int>(customerId);
+    if (!nullToAbsent || customerId != null) {
+      map['customer_id'] = Variable<int>(customerId);
+    }
     map['amount_paisa'] = Variable<int>(amountPaisa);
     map['payment_date'] = Variable<DateTime>(paymentDate);
     if (!nullToAbsent || note != null) {
@@ -2205,7 +2254,9 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
     return CustomerPaymentsCompanion(
       id: Value(id),
       tripId: Value(tripId),
-      customerId: Value(customerId),
+      customerId: customerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customerId),
       amountPaisa: Value(amountPaisa),
       paymentDate: Value(paymentDate),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
@@ -2223,7 +2274,7 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
     return CustomerPayment(
       id: serializer.fromJson<int>(json['id']),
       tripId: serializer.fromJson<int>(json['tripId']),
-      customerId: serializer.fromJson<int>(json['customerId']),
+      customerId: serializer.fromJson<int?>(json['customerId']),
       amountPaisa: serializer.fromJson<int>(json['amountPaisa']),
       paymentDate: serializer.fromJson<DateTime>(json['paymentDate']),
       note: serializer.fromJson<String?>(json['note']),
@@ -2238,7 +2289,7 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'tripId': serializer.toJson<int>(tripId),
-      'customerId': serializer.toJson<int>(customerId),
+      'customerId': serializer.toJson<int?>(customerId),
       'amountPaisa': serializer.toJson<int>(amountPaisa),
       'paymentDate': serializer.toJson<DateTime>(paymentDate),
       'note': serializer.toJson<String?>(note),
@@ -2251,7 +2302,7 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
   CustomerPayment copyWith(
           {int? id,
           int? tripId,
-          int? customerId,
+          Value<int?> customerId = const Value.absent(),
           int? amountPaisa,
           DateTime? paymentDate,
           Value<String?> note = const Value.absent(),
@@ -2261,7 +2312,7 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
       CustomerPayment(
         id: id ?? this.id,
         tripId: tripId ?? this.tripId,
-        customerId: customerId ?? this.customerId,
+        customerId: customerId.present ? customerId.value : this.customerId,
         amountPaisa: amountPaisa ?? this.amountPaisa,
         paymentDate: paymentDate ?? this.paymentDate,
         note: note.present ? note.value : this.note,
@@ -2323,7 +2374,7 @@ class CustomerPayment extends DataClass implements Insertable<CustomerPayment> {
 class CustomerPaymentsCompanion extends UpdateCompanion<CustomerPayment> {
   final Value<int> id;
   final Value<int> tripId;
-  final Value<int> customerId;
+  final Value<int?> customerId;
   final Value<int> amountPaisa;
   final Value<DateTime> paymentDate;
   final Value<String?> note;
@@ -2344,7 +2395,7 @@ class CustomerPaymentsCompanion extends UpdateCompanion<CustomerPayment> {
   CustomerPaymentsCompanion.insert({
     this.id = const Value.absent(),
     required int tripId,
-    required int customerId,
+    this.customerId = const Value.absent(),
     required int amountPaisa,
     required DateTime paymentDate,
     this.note = const Value.absent(),
@@ -2352,7 +2403,6 @@ class CustomerPaymentsCompanion extends UpdateCompanion<CustomerPayment> {
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
   })  : tripId = Value(tripId),
-        customerId = Value(customerId),
         amountPaisa = Value(amountPaisa),
         paymentDate = Value(paymentDate);
   static Insertable<CustomerPayment> custom({
@@ -2382,7 +2432,7 @@ class CustomerPaymentsCompanion extends UpdateCompanion<CustomerPayment> {
   CustomerPaymentsCompanion copyWith(
       {Value<int>? id,
       Value<int>? tripId,
-      Value<int>? customerId,
+      Value<int?>? customerId,
       Value<int>? amountPaisa,
       Value<DateTime>? paymentDate,
       Value<String?>? note,
@@ -6888,7 +6938,8 @@ typedef $$TripsTableCreateCompanionBuilder = TripsCompanion Function({
   Value<int> id,
   required int vehicleId,
   required int driverId,
-  required int customerId,
+  Value<int?> customerId,
+  Value<String?> customCustomerName,
   required DateTime tripDate,
   required int agreedFarePaisa,
   Value<int> advancePaisa,
@@ -6903,7 +6954,8 @@ typedef $$TripsTableUpdateCompanionBuilder = TripsCompanion Function({
   Value<int> id,
   Value<int> vehicleId,
   Value<int> driverId,
-  Value<int> customerId,
+  Value<int?> customerId,
+  Value<String?> customCustomerName,
   Value<DateTime> tripDate,
   Value<int> agreedFarePaisa,
   Value<int> advancePaisa,
@@ -6946,9 +6998,10 @@ final class $$TripsTableReferences
   static $CustomersTable _customerIdTable(_$AppDatabase db) => db.customers
       .createAlias($_aliasNameGenerator(db.trips.customerId, db.customers.id));
 
-  $$CustomersTableProcessedTableManager get customerId {
+  $$CustomersTableProcessedTableManager? get customerId {
+    if ($_item.customerId == null) return null;
     final manager = $$CustomersTableTableManager($_db, $_db.customers)
-        .filter((f) => f.id($_item.customerId));
+        .filter((f) => f.id($_item.customerId!));
     final item = $_typedResult.readTableOrNull(_customerIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
@@ -6997,6 +7050,10 @@ class $$TripsTableFilterComposer extends Composer<_$AppDatabase, $TripsTable> {
   });
   ColumnFilters<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get customCustomerName => $composableBuilder(
+      column: $table.customCustomerName,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get tripDate => $composableBuilder(
       column: $table.tripDate, builder: (column) => ColumnFilters(column));
@@ -7141,6 +7198,10 @@ class $$TripsTableOrderingComposer
   ColumnOrderings<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get customCustomerName => $composableBuilder(
+      column: $table.customCustomerName,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get tripDate => $composableBuilder(
       column: $table.tripDate, builder: (column) => ColumnOrderings(column));
 
@@ -7242,6 +7303,9 @@ class $$TripsTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get customCustomerName => $composableBuilder(
+      column: $table.customCustomerName, builder: (column) => column);
 
   GeneratedColumn<DateTime> get tripDate =>
       $composableBuilder(column: $table.tripDate, builder: (column) => column);
@@ -7404,7 +7468,8 @@ class $$TripsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<int> vehicleId = const Value.absent(),
             Value<int> driverId = const Value.absent(),
-            Value<int> customerId = const Value.absent(),
+            Value<int?> customerId = const Value.absent(),
+            Value<String?> customCustomerName = const Value.absent(),
             Value<DateTime> tripDate = const Value.absent(),
             Value<int> agreedFarePaisa = const Value.absent(),
             Value<int> advancePaisa = const Value.absent(),
@@ -7420,6 +7485,7 @@ class $$TripsTableTableManager extends RootTableManager<
             vehicleId: vehicleId,
             driverId: driverId,
             customerId: customerId,
+            customCustomerName: customCustomerName,
             tripDate: tripDate,
             agreedFarePaisa: agreedFarePaisa,
             advancePaisa: advancePaisa,
@@ -7434,7 +7500,8 @@ class $$TripsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             required int vehicleId,
             required int driverId,
-            required int customerId,
+            Value<int?> customerId = const Value.absent(),
+            Value<String?> customCustomerName = const Value.absent(),
             required DateTime tripDate,
             required int agreedFarePaisa,
             Value<int> advancePaisa = const Value.absent(),
@@ -7450,6 +7517,7 @@ class $$TripsTableTableManager extends RootTableManager<
             vehicleId: vehicleId,
             driverId: driverId,
             customerId: customerId,
+            customCustomerName: customCustomerName,
             tripDate: tripDate,
             agreedFarePaisa: agreedFarePaisa,
             advancePaisa: advancePaisa,
@@ -7573,7 +7641,7 @@ typedef $$CustomerPaymentsTableCreateCompanionBuilder
     = CustomerPaymentsCompanion Function({
   Value<int> id,
   required int tripId,
-  required int customerId,
+  Value<int?> customerId,
   required int amountPaisa,
   required DateTime paymentDate,
   Value<String?> note,
@@ -7585,7 +7653,7 @@ typedef $$CustomerPaymentsTableUpdateCompanionBuilder
     = CustomerPaymentsCompanion Function({
   Value<int> id,
   Value<int> tripId,
-  Value<int> customerId,
+  Value<int?> customerId,
   Value<int> amountPaisa,
   Value<DateTime> paymentDate,
   Value<String?> note,
@@ -7615,9 +7683,10 @@ final class $$CustomerPaymentsTableReferences extends BaseReferences<
       db.customers.createAlias($_aliasNameGenerator(
           db.customerPayments.customerId, db.customers.id));
 
-  $$CustomersTableProcessedTableManager get customerId {
+  $$CustomersTableProcessedTableManager? get customerId {
+    if ($_item.customerId == null) return null;
     final manager = $$CustomersTableTableManager($_db, $_db.customers)
-        .filter((f) => f.id($_item.customerId));
+        .filter((f) => f.id($_item.customerId!));
     final item = $_typedResult.readTableOrNull(_customerIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
@@ -7864,7 +7933,7 @@ class $$CustomerPaymentsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<int> tripId = const Value.absent(),
-            Value<int> customerId = const Value.absent(),
+            Value<int?> customerId = const Value.absent(),
             Value<int> amountPaisa = const Value.absent(),
             Value<DateTime> paymentDate = const Value.absent(),
             Value<String?> note = const Value.absent(),
@@ -7886,7 +7955,7 @@ class $$CustomerPaymentsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required int tripId,
-            required int customerId,
+            Value<int?> customerId = const Value.absent(),
             required int amountPaisa,
             required DateTime paymentDate,
             Value<String?> note = const Value.absent(),

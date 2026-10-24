@@ -27,7 +27,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> with SingleTick
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -46,8 +46,9 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> with SingleTick
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: l10n.categoryLabel), // Reuse "Category" as "Expenses"
-            Tab(text: l10n.addFuelTitle), // Reuse "New Fuel" as "Fuel"
+            Tab(text: l10n.generalExpenseOption),
+            Tab(text: l10n.tripExpenseOption),
+            Tab(text: l10n.fuelExpenseOption),
           ],
         ),
         actions: [
@@ -61,29 +62,37 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> with SingleTick
       body: TabBarView(
         controller: _tabController,
         children: [
-          _ExpensesTab(filter: _expenseFilter, onFilterChanged: (f) => setState(() => _expenseFilter = f)),
+          _ExpensesTab(
+            filter: _expenseFilter,
+            mode: ExpenseEntryMode.general,
+            onFilterChanged: (f) => setState(() => _expenseFilter = f),
+          ),
+          _ExpensesTab(
+            filter: _expenseFilter,
+            mode: ExpenseEntryMode.trip,
+            onFilterChanged: (f) => setState(() => _expenseFilter = f),
+          ),
           _FuelTab(filter: _fuelFilter, onFilterChanged: (f) => setState(() => _fuelFilter = f)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          if (_tabController.index == 0) {
-            _showExpenseForm(context);
-          } else {
-            _showFuelForm(context);
-          }
+          final mode = _tabController.index == 0
+              ? ExpenseEntryMode.general
+              : (_tabController.index == 1 ? ExpenseEntryMode.trip : ExpenseEntryMode.fuel);
+          _showExpenseForm(context, initialMode: mode);
         },
         icon: const Icon(Icons.add),
-        label: Text(_tabController.index == 0 ? l10n.addExpenseTitle : l10n.addFuelTitle),
+        label: Text(l10n.add),
       ),
     );
   }
 
-  void _showExpenseForm(BuildContext context, {Expense? expense}) {
+  void _showExpenseForm(BuildContext context, {Expense? expense, FuelRecord? fuel, ExpenseEntryMode initialMode = ExpenseEntryMode.general}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => ExpenseForm(expense: expense),
+      builder: (context) => ExpenseForm(expense: expense, fuel: fuel, initialMode: initialMode),
     );
   }
 
@@ -91,7 +100,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> with SingleTick
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => FuelForm(fuel: fuel),
+      builder: (context) => ExpenseForm(fuel: fuel, initialMode: ExpenseEntryMode.fuel),
     );
   }
 
@@ -110,9 +119,14 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> with SingleTick
 
 class _ExpensesTab extends ConsumerWidget {
   final ExpenseFilter filter;
+  final ExpenseEntryMode mode;
   final ValueChanged<ExpenseFilter> onFilterChanged;
 
-  const _ExpensesTab({required this.filter, required this.onFilterChanged});
+  const _ExpensesTab({
+    required this.filter,
+    required this.mode,
+    required this.onFilterChanged,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -121,14 +135,18 @@ class _ExpensesTab extends ConsumerWidget {
 
     return expensesAsync.when(
       data: (expenses) {
-        if (expenses.isEmpty) {
+        final filtered = mode == ExpenseEntryMode.trip
+            ? expenses.where((e) => e.tripId != null).toList()
+            : expenses.where((e) => e.tripId == null && e.category != 'diesel').toList();
+
+        if (filtered.isEmpty) {
           return _emptyState(context, l10n);
         }
         return ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: expenses.length,
+          itemCount: filtered.length,
           itemBuilder: (context, index) {
-            final expense = expenses[index];
+            final expense = filtered[index];
             return _ExpenseCard(expense: expense);
           },
         );
@@ -186,7 +204,7 @@ class _ExpensesTab extends ConsumerWidget {
             Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () => ref.invalidate(expensesProvider(ExpenseFilter())),
+              onPressed: () => ref.invalidate(expensesProvider(filter)),
               child: Text(l10n.save),
             ),
           ],
@@ -199,7 +217,7 @@ class _ExpensesTab extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => ExpenseForm(expense: expense),
+      builder: (context) => ExpenseForm(expense: expense, initialMode: mode),
     );
   }
 }
@@ -295,7 +313,7 @@ class _FuelTab extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => FuelForm(fuel: fuel),
+      builder: (context) => ExpenseForm(fuel: fuel, initialMode: ExpenseEntryMode.fuel),
     );
   }
 }

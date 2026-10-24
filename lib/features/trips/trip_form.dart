@@ -24,12 +24,14 @@ class _TripFormState extends ConsumerState<TripForm> {
   final _fareController = TextEditingController();
   final _advanceController = TextEditingController();
   final _distanceController = TextEditingController();
+  final _customCustomerController = TextEditingController();
 
+  bool _useCustomCustomer = false;
   int? _customerId;
   int? _vehicleId;
   int? _driverId;
   DateTime _tripDate = DateTime.now();
-  String _status = 'completed';
+  String _status = 'pending';
   bool _isSaving = false;
 
   @override
@@ -37,6 +39,10 @@ class _TripFormState extends ConsumerState<TripForm> {
     super.initState();
     if (widget.trip != null) {
       _customerId = widget.trip!.customerId;
+      if (widget.trip!.customCustomerName != null && widget.trip!.customCustomerName!.isNotEmpty) {
+        _useCustomCustomer = true;
+        _customCustomerController.text = widget.trip!.customCustomerName!;
+      }
       _vehicleId = widget.trip!.vehicleId;
       _driverId = widget.trip!.driverId;
       _tripDate = widget.trip!.tripDate;
@@ -47,6 +53,8 @@ class _TripFormState extends ConsumerState<TripForm> {
         _distanceController.text = dist.toString();
       }
       _status = widget.trip!.status;
+    } else {
+      _status = 'pending';
     }
   }
 
@@ -55,6 +63,7 @@ class _TripFormState extends ConsumerState<TripForm> {
     _fareController.dispose();
     _advanceController.dispose();
     _distanceController.dispose();
+    _customCustomerController.dispose();
     super.dispose();
   }
 
@@ -86,15 +95,74 @@ class _TripFormState extends ConsumerState<TripForm> {
               ),
               const SizedBox(height: 16),
 
-              // Customer Picker
-              _PickerField<Customer>(
-                label: l10n.customerLabel,
-                value: _customerId,
-                asyncValue: customersAsync,
-                getLabel: (c) => c.name,
-                onChanged: (id) => setState(() => _customerId = id),
-                validator: (id) => id == null ? l10n.errorRequired : null,
+              // Customer Mode Selection (Existing vs Custom)
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment<bool>(
+                    value: false,
+                    icon: const Icon(Icons.people_outline),
+                    label: Text(l10n.customerLabel),
+                  ),
+                  ButtonSegment<bool>(
+                    value: true,
+                    icon: const Icon(Icons.edit_note),
+                    label: Text(l10n.customCustomerNameLabel),
+                  ),
+                ],
+                selected: {_useCustomCustomer},
+                onSelectionChanged: (set) {
+                  setState(() {
+                    _useCustomCustomer = set.first;
+                    if (_useCustomCustomer) {
+                      _customerId = null;
+                    } else {
+                      _customCustomerController.clear();
+                    }
+                  });
+                },
               ),
+              const SizedBox(height: 12),
+
+              if (!_useCustomCustomer) ...[
+                // Registered Customer Picker (Optional)
+                customersAsync.when(
+                  data: (customers) {
+                    return DropdownButtonFormField<int?>(
+                      value: _customerId,
+                      decoration: InputDecoration(
+                        labelText: l10n.selectCustomerOrCustom,
+                        prefixIcon: const Icon(Icons.person_outline),
+                      ),
+                      items: [
+                        DropdownMenuItem<int?>(
+                          value: null,
+                          child: Text(
+                            l10n.noCustomer,
+                            style: TextStyle(color: Theme.of(context).colorScheme.outline),
+                          ),
+                        ),
+                        ...customers.map((c) => DropdownMenuItem<int?>(
+                          value: c.id,
+                          child: Text(c.name),
+                        )),
+                      ],
+                      onChanged: (id) => setState(() => _customerId = id),
+                    );
+                  },
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (_, __) => Text(l10n.errorLoadingItems(l10n.customerLabel)),
+                ),
+              ] else ...[
+                // Custom Customer Name Input
+                TextFormField(
+                  controller: _customCustomerController,
+                  decoration: InputDecoration(
+                    labelText: l10n.customCustomerNameLabel,
+                    hintText: l10n.selectCustomerOrCustom,
+                    prefixIcon: const Icon(Icons.person_add_outlined),
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
 
               // Vehicle Picker
@@ -125,8 +193,8 @@ class _TripFormState extends ConsumerState<TripForm> {
                   final picked = await showDatePicker(
                     context: context,
                     initialDate: _tripDate,
-                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                    lastDate: DateTime.now().add(const Duration(days: 30)),
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2100),
                   );
                   if (picked != null) setState(() => _tripDate = picked);
                 },
@@ -199,12 +267,13 @@ class _TripFormState extends ConsumerState<TripForm> {
               ),
               const SizedBox(height: 16),
 
-              // Status
+              // Status (pending, completed, cancelled)
               DropdownButtonFormField<String>(
                 value: _status,
                 decoration: InputDecoration(labelText: l10n.statusLabel),
                 items: [
-                  DropdownMenuItem(value: 'completed', child: Text(l10n.statusActive)),
+                  DropdownMenuItem(value: 'pending', child: Text(l10n.statusPending)),
+                  DropdownMenuItem(value: 'completed', child: Text(l10n.statusCompleted)),
                   DropdownMenuItem(value: 'cancelled', child: Text(l10n.statusCancelled)),
                 ],
                 onChanged: (value) => setState(() => _status = value!),
@@ -212,7 +281,7 @@ class _TripFormState extends ConsumerState<TripForm> {
               const SizedBox(height: 16),
 
               // Outstanding preview
-              if (_customerId != null && _fareController.text.isNotEmpty)
+              if (_fareController.text.isNotEmpty)
                 _OutstandingPreview(
                   fareText: _fareController.text,
                   advanceText: _advanceController.text,
@@ -249,7 +318,7 @@ class _TripFormState extends ConsumerState<TripForm> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
-    if (_customerId == null || _vehicleId == null || _driverId == null) return;
+    if (_vehicleId == null || _driverId == null) return;
 
     setState(() => _isSaving = true);
 
@@ -268,9 +337,14 @@ class _TripFormState extends ConsumerState<TripForm> {
         distanceKm = int.tryParse(toEnDigits(_distanceController.text.trim()));
       }
 
+      final customCustomer = _useCustomCustomer && _customCustomerController.text.trim().isNotEmpty
+          ? _customCustomerController.text.trim()
+          : null;
+
       final dao = ref.read(tripDaoProvider);
       final companion = TripsCompanion(
-        customerId: Value(_customerId!),
+        customerId: Value(_customerId),
+        customCustomerName: Value(customCustomer),
         vehicleId: Value(_vehicleId!),
         driverId: Value(_driverId!),
         tripDate: Value(_tripDate),
@@ -312,8 +386,8 @@ class _TripFormState extends ConsumerState<TripForm> {
 class _PickerField<T> extends StatelessWidget {
   final String label;
   final int? value;
-  final AsyncValue<List<T>> asyncValue;
-  final String Function(T) getLabel;
+  final AsyncValue<List<dynamic>> asyncValue;
+  final String Function(dynamic) getLabel;
   final ValueChanged<int?> onChanged;
   final String? Function(int?)? validator;
 
@@ -346,8 +420,8 @@ class _PickerField<T> extends StatelessWidget {
         return DropdownButtonFormField<int>(
           value: value,
           decoration: InputDecoration(labelText: label),
-          items: items.map((item) => DropdownMenuItem(
-            value: (item as dynamic).id as int,
+          items: items.map((item) => DropdownMenuItem<int>(
+            value: item.id,
             child: Text(getLabel(item)),
           )).toList(),
           onChanged: onChanged,
@@ -364,34 +438,38 @@ class _OutstandingPreview extends StatelessWidget {
   final String fareText;
   final String advanceText;
 
-  const _OutstandingPreview({required this.fareText, required this.advanceText});
+  const _OutstandingPreview({
+    required this.fareText,
+    required this.advanceText,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final fareRes = parseMoneyInput(fareText);
-    final advRes = parseMoneyInput(advanceText.isEmpty ? '0' : advanceText);
+    final advRes = parseMoneyInput(advanceText);
 
     final farePaisa = fareRes is Success ? fareRes.value.paisa : 0;
     final advPaisa = advRes is Success ? advRes.value.paisa : 0;
-    final outstandingPaisa = farePaisa - advPaisa;
+    final outstanding = farePaisa - advPaisa;
+
+    if (outstanding < 0) return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(l10n.outstandingLabel, style: theme.textTheme.titleMedium),
+          Text(l10n.outstandingLabel, style: Theme.of(context).textTheme.bodyMedium),
           Text(
-            formatMoney(Money.paisa(outstandingPaisa), context: context),
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: outstandingPaisa >= 0 ? theme.extension<AppSemanticColors>()!.danger : theme.extension<AppSemanticColors>()!.success,
+            formatMoney(Money.paisa(outstanding), context: context),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: outstanding > 0 ? Theme.of(context).extension<AppSemanticColors>()!.danger : null,
             ),
           ),
         ],

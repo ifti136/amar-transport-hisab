@@ -11,7 +11,7 @@ class VehicleDao extends BaseDao<Vehicles, VehiclesCompanion> {
   TableInfo get table => db.vehicles;
 
   @override
-  Map<String, dynamic> _companionToMap(VehiclesCompanion companion) {
+  Map<String, dynamic> companionToMap(VehiclesCompanion companion) {
     return {
       'reg_no': companion.regNo.valueOrNull,
       'type': companion.type.valueOrNull,
@@ -26,7 +26,7 @@ class VehicleDao extends BaseDao<Vehicles, VehiclesCompanion> {
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'reg_no': row.regNo,

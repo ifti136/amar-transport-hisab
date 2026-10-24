@@ -11,7 +11,7 @@ class CustomerPaymentDao extends BaseDao<CustomerPayments, CustomerPaymentsCompa
   TableInfo get table => db.customerPayments;
 
   @override
-  Map<String, dynamic> _companionToMap(CustomerPaymentsCompanion companion) {
+  Map<String, dynamic> companionToMap(CustomerPaymentsCompanion companion) {
     return {
       'trip_id': companion.tripId.valueOrNull,
       'customer_id': companion.customerId.valueOrNull,
@@ -25,7 +25,7 @@ class CustomerPaymentDao extends BaseDao<CustomerPayments, CustomerPaymentsCompa
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'trip_id': row.tripId,

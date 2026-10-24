@@ -13,7 +13,7 @@ class CustomerDao extends BaseDao<Customers, CustomersCompanion> {
   TableInfo get table => db.customers;
 
   @override
-  Map<String, dynamic> _companionToMap(CustomersCompanion companion) {
+  Map<String, dynamic> companionToMap(CustomersCompanion companion) {
     return {
       'name': companion.name.valueOrNull,
       'phone': companion.phone.valueOrNull,
@@ -25,7 +25,7 @@ class CustomerDao extends BaseDao<Customers, CustomersCompanion> {
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'name': row.name,

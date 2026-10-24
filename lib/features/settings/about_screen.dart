@@ -51,7 +51,7 @@ class AboutScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'Version v0.2.0 (Build 3)', // i18n-ignore
+                    'Version v0.2.1 (Build 4)', // i18n-ignore
                     style: TextStyle(
                       color: theme.colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
@@ -74,15 +74,6 @@ class AboutScreen extends ConsumerWidget {
                   Text(l10n.aboutTitle, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text(l10n.appAboutDesc, style: theme.textTheme.bodyMedium),
-                  const Divider(height: 24),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.help_outline),
-                    title: const Text('App Feature Walkthrough'), // i18n-ignore
-                    subtitle: const Text('View intro guide and onboarding tutorial'), // i18n-ignore
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.push('/onboarding'),
-                  ),
                 ],
               ),
             ),
@@ -118,7 +109,23 @@ class AboutScreen extends ConsumerWidget {
                   Text('Version History & Updates', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)), // i18n-ignore
                   const SizedBox(height: 12),
                   _ChangelogItem(
-                    version: 'v0.2.0 (Latest)', // i18n-ignore
+                    version: 'v0.2.1 (Latest)', // i18n-ignore
+                    date: 'October 2026', // i18n-ignore
+                    changes: const [
+                      'Fixed dashboard profit card UI overflow and layout constraints',
+                      'Display vehicle registration number in document expiry alerts',
+                      'Optional customer selection & custom customer names on trips',
+                      'Separate trip recording from completion with Pending/Completed actions',
+                      'Fixed DAO runtime error on BaseDao and Comparison operator',
+                      'Consolidated Fuel form into unified Expense section with 3 categories',
+                      'Multi-item trip expenses with "Save & Add Another"',
+                      'Future calendar date picker support up to 2100',
+                      'Moved App Feature Walkthrough directly to Settings section',
+                    ],
+                  ),
+                  const Divider(height: 20),
+                  _ChangelogItem(
+                    version: 'v0.2.0', // i18n-ignore
                     date: 'October 2026', // i18n-ignore
                     changes: const [
                       'Distance input (km) in place of start/end odometer for trips',

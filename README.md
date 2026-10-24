@@ -2,28 +2,30 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v0.2.0-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.0)
+[![Release](https://img.shields.io/badge/Release-v0.2.1-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.1)
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://developer.android.com)
 
 **Amar Transport Hisab** is an offline-first, privacy-respecting Android accounting app tailored specifically for transport and covered van fleet owners in Bangladesh. Built from the ground up to replace paper notebooks (*খাতা*), it guarantees 100% offline data storage, strict double-entry ledger arithmetic, native Bengali typography, and accurate per-vehicle Profit & Loss reporting.
 
 ---
 
-## 🚀 What's New in v0.2.0 (ভার্সন ০.২.০ প্যাচ আপডেট ও ফিক্স)
+## 🚀 What's New in v0.2.1 (ভার্সন ০.২.১ প্যাচ আপডেট ও ফিক্স)
 
-- 🛣️ **Trip Distance Recording (দূরত্ব হিসাব):** Removed start and end odometer requirements when recording trips. Added optional distance (km) entry instead.
-- 💸 **Dual Expense Modes (ট্রিপ খরচ ও সাধারণ খরচ):** Categorized expense logging into **Trip Expense** (linked to a specific trip with toll, chanda, police tips, labour) and **Vehicle Expense** (maintenance, repairs, tax token, insurance, etc.).
-- 🏷️ **Customizable Expense Categories (খরচের খাত ব্যবস্থাপনা):** Full management in Settings to add, view, or remove custom expense categories. Removed redundant duplicate category selector.
-- ⛽ **Streamlined Fuel Form (সহজ জ্বালানি হিসাব):** Removed odometer requirement from fuel entry and fixed SQLite foreign key linking between fuel entries and expenses.
-- 🛡️ **Anti-Duplicate Form Guards & Notices (নিশ্চিতকরণ নোটিস):** Multi-click protection and confirmation notices when saving vehicles, drivers, customers, trips, and expenses.
-- 🔄 **Fixed Report Loading (রিপোর্ট লোডিং ফিক্স):** Solved continuous loading spinner on Trip Register, Expense Register, and Fuel Register reports by ensuring filter equality and stable date range queries.
-- 🎨 **App Logo Integration (অফিসিয়াল অ্যাপ লোগো):** Integrated `logo.png` (covered van with ledger) across app bar, launcher icon, onboarding, and about sections.
-- ℹ️ **Clean About Section (অ্যাপ ও ডেভেলপার পরিচিতি):** Grouped app details, developer information (Iftekharul Islam - `ifti136`), and patch changelog in a clean dedicated subsection in Settings.
+- 📊 **Dashboard Profit Card Layout (ড্যাশবোর্ড প্রফিট কার্ড ফিক্স):** Fixed profit label and value overflow in the 3-column metric grid and van summary cards. Values now scale dynamically using `FittedBox` without extending outside card boundaries.
+- 🚗 **Vehicle Number in Expiry Alerts (মেয়াদ সতর্কতায় গাড়ির নম্বর):** Document expiration alerts now explicitly display the vehicle registration number directly in alert strips, list items, and banners.
+- 👥 **Optional Customer & Custom Names (ঐচ্ছিক কাস্টমার ও কাস্টম নাম):** Trips can now be recorded without requiring a registered customer, with full support for selecting an existing customer, entering a custom customer name directly, or recording with no customer.
+- ⏳ **Trip Status & Explicit Completion (ট্রিপ সম্পন্ন ও পেন্ডিং অ্যাকশন):** Newly recorded trips now default to 'Pending' (চলমান). Dedicated "Mark as Completed" / "Mark as Pending" actions toggle status with immediate database persistence.
+- ⚡ **DAO Runtime & Comparison Fix (ডাটাবেস সংরক্ষণ ও ট্রিপ ডিটেইল ফিক্স):** Resolved NoSuchMethodError on `BaseDao` companion mapping and Drift comparison operator error (`Class 'Comparison' has no instance method '&'`), ensuring rock-solid data persistence across all entities.
+- ⛽ **Consolidated 3-in-1 Expense Section (একীভূত খরচ ও জ্বালানি সেকশন):** Unified General Expenses, Trip Expenses, and Fuel Expenses into a single 3-tab screen and unified category selector. Fuel records automatically maintain single-ledger diesel expenses without requiring odometer entry.
+- ➕ **Multi-Item Trip Expenses (একাধিক ট্রিপ খরচ):** Added "Save & Add Another" action for trip expenses, enabling rapid consecutive entry of multiple trip expenses (tolls, tips, bridge fees, chanda) without re-selecting the trip.
+- 📅 **Future Date Range Picker (ভবিষ্যতের তারিখ নির্বাচন):** Calendar date pickers now allow selecting future dates up to year 2100 across report filters and alert views.
+- 💡 **Settings App Walkthrough (সেটিংসে অ্যাপ পরিচিতি):** Moved App Feature Walkthrough directly to Settings, providing a clean guide while keeping About focused on developer & patch notes.
 
 ---
 
 ## 📜 Version History (ভার্সন ইতিহাস)
 
+- **v0.2.1:** Profit card UI fix, vehicle numbers in alerts, optional customers & custom names, explicit trip completion actions, BaseDao comparison & saving fixes, consolidated 3-in-1 expense section with "Save & Add Another", future date picker support up to 2100, and Settings walkthrough.
 - **v0.2.0:** Trip distance tracking, dual trip/vehicle expense logging, customizable categories, streamlined fuel logging, report loading fixes, logo branding, and form anti-duplicate guards.
 - **v0.1.0:** Persistent bottom navigation, dedicated settings screen, biometric/PIN app lock, document expiry warnings, financial reports suite with PDF/Excel export, reliable local backup/restore.
 - **v0.0.1:** Initial stable scaffold, offline SQLite database, pure Dart accounting engine, and Bengali/English localization.
@@ -61,7 +63,7 @@
 
 ## 📲 Installation Guide (ইনস্টলেশন গাইড)
 
-1. **Download APK:** Download `Amar-Transport-Hisab-v0.2.0.apk` from the [Latest Release](https://github.com/ifti136/amar-transport-hisab/releases).
+1. **Download APK:** Download `Amar-Transport-Hisab-v0.2.1.apk` from the [Latest Release](https://github.com/ifti136/amar-transport-hisab/releases).
 2. **Transfer to Device:** Copy the file to your Android phone via USB cable, Telegram/WhatsApp document, Google Drive, or directly in your mobile browser.
 3. **Allow Installation:** Tap the downloaded APK file. When prompted by Android to allow installing apps from this source ("Install unknown apps"), grant permission.
 4. **Play Protect Prompt:** If Google Play Protect displays a message regarding an unknown developer, tap **"More details"** and select **"Install anyway"**.

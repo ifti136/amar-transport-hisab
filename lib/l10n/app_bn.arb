@@ -1619,5 +1619,45 @@
   "deleteCategoryConfirm": "এই খাতটি মুছে ফেলতে চান?",
   "@deleteCategoryConfirm": {
     "description": "Delete category confirmation"
+  },
+  "statusPending": "চলমান",
+  "@statusPending": {
+    "description": "Status pending"
+  },
+  "markCompletedAction": "সম্পন্ন চিহ্নিত করুন",
+  "@markCompletedAction": {
+    "description": "Mark as completed action"
+  },
+  "markPendingAction": "চলমান চিহ্নিত করুন",
+  "@markPendingAction": {
+    "description": "Mark as pending action"
+  },
+  "customCustomerNameLabel": "কাস্টম গ্রাহকের নাম",
+  "@customCustomerNameLabel": {
+    "description": "Custom customer name field label"
+  },
+  "selectCustomerOrCustom": "গ্রাহক নির্বাচন করুন (ঐচ্ছিক)",
+  "@selectCustomerOrCustom": {
+    "description": "Customer selection prompt optional"
+  },
+  "noCustomer": "কোন গ্রাহক নেই",
+  "@noCustomer": {
+    "description": "No customer text"
+  },
+  "saveAndAddAnother": "সংরক্ষণ করুন এবং আরেকটি যোগ করুন",
+  "@saveAndAddAnother": {
+    "description": "Save and add another expense button"
+  },
+  "fuelExpenseOption": "জ্বালানি খরচ",
+  "@fuelExpenseOption": {
+    "description": "Fuel expense option"
+  },
+  "walkthroughTitle": "অ্যাপ পরিচিতি ও গাইড",
+  "@walkthroughTitle": {
+    "description": "Walkthrough title"
+  },
+  "walkthroughDesc": "অ্যাপ ব্যবহারের নির্দেশিকা ও টিউটোরিয়াল দেখুন",
+  "@walkthroughDesc": {
+    "description": "Walkthrough description"
   }
 }

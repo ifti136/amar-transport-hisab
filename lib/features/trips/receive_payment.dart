@@ -217,7 +217,7 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
     final dao = ref.read(customerPaymentDaoProvider);
     await dao.insertWithAudit(CustomerPaymentsCompanion.insert(
       tripId: _selectedTripId!,
-      customerId: _selectedCustomerId!,
+      customerId: Value(_selectedCustomerId),
       amountPaisa: amountPaisa,
       paymentDate: DateTime.now(),
       note: Value(_noteController.text.trim().isEmpty ? null : _noteController.text.trim()),

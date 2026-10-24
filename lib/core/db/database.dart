@@ -38,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -61,8 +61,10 @@ class AppDatabase extends _$AppDatabase {
       await customStatement('PRAGMA foreign_keys = ON');
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // Future migrations go here
-      // Never edit migration v1 after shipping
+      if (from < 2) {
+        await m.alterTable(TableMigration(trips));
+        await m.alterTable(TableMigration(customerPayments));
+      }
     },
   );
 }

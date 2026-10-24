@@ -12,7 +12,7 @@ class ExpenseDao extends BaseDao<Expenses, ExpensesCompanion> {
   TableInfo get table => db.expenses;
 
   @override
-  Map<String, dynamic> _companionToMap(ExpensesCompanion companion) {
+  Map<String, dynamic> companionToMap(ExpensesCompanion companion) {
     return {
       'vehicle_id': companion.vehicleId.valueOrNull,
       'trip_id': companion.tripId.valueOrNull,
@@ -28,7 +28,7 @@ class ExpenseDao extends BaseDao<Expenses, ExpensesCompanion> {
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'vehicle_id': row.vehicleId,
@@ -153,7 +153,7 @@ class FuelDao extends BaseDao<FuelRecords, FuelRecordsCompanion> {
   TableInfo get table => db.fuelRecords;
 
   @override
-  Map<String, dynamic> _companionToMap(FuelRecordsCompanion companion) {
+  Map<String, dynamic> companionToMap(FuelRecordsCompanion companion) {
     return {
       'vehicle_id': companion.vehicleId.valueOrNull,
       'expense_id': companion.expenseId.valueOrNull,
@@ -168,7 +168,7 @@ class FuelDao extends BaseDao<FuelRecords, FuelRecordsCompanion> {
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'vehicle_id': row.vehicleId,

@@ -13,7 +13,7 @@ class DriverTransactionDao extends BaseDao<DriverTransactions, DriverTransaction
   TableInfo get table => db.driverTransactions;
 
   @override
-  Map<String, dynamic> _companionToMap(DriverTransactionsCompanion companion) {
+  Map<String, dynamic> companionToMap(DriverTransactionsCompanion companion) {
     return {
       'driver_id': companion.driverId.valueOrNull,
       'type': companion.type.valueOrNull,
@@ -27,7 +27,7 @@ class DriverTransactionDao extends BaseDao<DriverTransactions, DriverTransaction
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'driver_id': row.driverId,
@@ -184,7 +184,7 @@ class VehicleLoanDao extends BaseDao<VehicleLoans, VehicleLoansCompanion> {
   TableInfo get table => db.vehicleLoans;
 
   @override
-  Map<String, dynamic> _companionToMap(VehicleLoansCompanion companion) {
+  Map<String, dynamic> companionToMap(VehicleLoansCompanion companion) {
     return {
       'vehicle_id': companion.vehicleId.valueOrNull,
       'principal_paisa': companion.principalPaisa.valueOrNull,
@@ -197,7 +197,7 @@ class VehicleLoanDao extends BaseDao<VehicleLoans, VehicleLoansCompanion> {
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'vehicle_id': row.vehicleId,
@@ -264,7 +264,7 @@ class LoanInstallmentDao extends BaseDao<LoanInstallments, LoanInstallmentsCompa
   TableInfo get table => db.loanInstallments;
 
   @override
-  Map<String, dynamic> _companionToMap(LoanInstallmentsCompanion companion) {
+  Map<String, dynamic> companionToMap(LoanInstallmentsCompanion companion) {
     return {
       'loan_id': companion.loanId.valueOrNull,
       'installment_date': companion.installmentDate.valueOrNull?.toIso8601String(),
@@ -279,7 +279,7 @@ class LoanInstallmentDao extends BaseDao<LoanInstallments, LoanInstallmentsCompa
   }
 
   @override
-  Map<String, dynamic> _rowToMap(dynamic row) {
+  Map<String, dynamic> rowToMap(dynamic row) {
     return {
       'id': row.id,
       'loan_id': row.loanId,

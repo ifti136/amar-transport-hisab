@@ -141,9 +141,9 @@ class _DashboardContent extends ConsumerWidget {
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                childAspectRatio: 1.2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+                childAspectRatio: 0.95,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -240,38 +240,35 @@ class _FigureCard extends StatelessWidget {
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
+            Icon(icon, color: color, size: 22),
+            const SizedBox(height: 4),
             Text(
               label,
-              style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 11,
+              ),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
-            Text(
-              value,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: isProfit ? semantic.success : (isLoss ? semantic.danger : color),
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (isProfitLoss) ...[
-              const SizedBox(height: 2),
-              Text(
-                isProfit ? 'Profit' : (isLoss ? 'Loss' : 'Cash'),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: isProfit ? semantic.success : (isLoss ? semantic.danger : theme.colorScheme.onSurfaceVariant),
-                  fontWeight: FontWeight.w500,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                value,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: isProfit ? semantic.success : (isLoss ? semantic.danger : color),
+                  fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
-            ],
+            ),
           ],
         ),
       ),
@@ -444,10 +441,10 @@ class _ExpiryAlertStrip extends StatelessWidget {
             String label;
             if (alert.daysLeft <= 0) {
               color = semantic.danger;
-              label = '${alert.type.toUpperCase()}: ${l10n.expiryExpired}';
+              label = '${alert.vehicleRegNo} • ${alert.type.toUpperCase()}: ${l10n.expiryExpired}';
             } else {
               color = semantic.danger;
-              label = '${alert.type.toUpperCase()}: ${l10n.expiryDaysLeft(alert.daysLeft)}';
+              label = '${alert.vehicleRegNo} • ${alert.type.toUpperCase()}: ${l10n.expiryDaysLeft(alert.daysLeft)}';
             }
             return Container(
               margin: const EdgeInsets.only(right: 8),
@@ -494,10 +491,25 @@ class _InfoChip extends StatelessWidget {
           children: [
             Icon(icon, size: 14, color: theme.colorScheme.onSurfaceVariant),
             const SizedBox(width: 4),
-            Text(label, style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
-        Text(value, style: theme.textTheme.bodyMedium?.copyWith(color: color, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 2),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(color: color, fontWeight: FontWeight.w600),
+          ),
+        ),
       ],
     );
   }
