@@ -2,27 +2,27 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v0.2.3-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.3)
+[![Release](https://img.shields.io/badge/Release-v0.3.0-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.3.0)
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://developer.android.com)
 
 **Amar Transport Hisab** is an offline-first, privacy-respecting Android accounting app tailored specifically for transport and covered van fleet owners in Bangladesh. Built from the ground up to replace paper notebooks (*খাতা*), it guarantees 100% offline data storage, strict double-entry ledger arithmetic, native Bengali typography, and accurate per-vehicle Profit & Loss reporting.
 
 ---
 
-## 🚀 What's New in v0.2.3 (ভার্সন ০.২.৩ ফার্স্ট-রান ওয়াকথ্রু ও কাস্টম টপ বার নাম)
+## 🚀 What's New in v0.3.0 (ভার্সন ০.৩.০ অরিজিনাল ডাটাবেস স্কিমা অডিট ও মাইগ্রেশন রেজোলিউশন)
 
-- 🚀 **First-Run Interactive Walkthrough (প্রথমবার ব্যবহারে পরিচিতি ওয়াকথ্রু):** Automatically launches a 5-slide guided onboarding flow when the user opens the app for the very first time, introducing Bengali-first localization, 100% offline privacy, and accounting integrity.
-- 🏷️ **Business / Fleet Owner Name Setup (ব্যবসা বা মালিকের নাম সেটআপ):** At the end of the initial walkthrough, users can configure their business or fleet name (e.g., *আল-মদিনা ট্রান্সপোর্ট* or *M/S Karim Transport*).
-- 📱 **Dynamic Top Bar Branding (লাইভ টপ বার টাইটেল):** Displays the entered business name directly on the home screen top bar (AppBar) in place of the generic app name, with automatic fallback if not provided.
-- ⚙️ **Persistent & Editable in Settings (সেটিংস থেকে পরিবর্তনযোগ্য):** Users can edit their business name at any time from Settings > Business Profile, with instant reactive updates across the app and full local SQLite persistence.
-- 🚛 **Dynamic Vehicle Filtering in Reports (রিপোর্টে গাড়িভিত্তিক ফিল্টার):** Full vehicle dropdown selector across Trip Register, Expense Register, Fuel Register, and Vehicle P&L reports with instant filtered calculations and exports.
-- 💳 **Vehicle Loan Editing (গাড়ির লোন এডিট সুবিধা):** Direct editing capability for existing vehicle loans from loan cards and details, complete with audit trail tracking and balance recalculation.
-- 🔍 **Database Audit & Robust Form Lifecycles:** Carried over full database audit validations, centralized `AppToast` alerts, double-submission guards (`_isSaving`), Bengali numeral support, and cascading fuel-diesel deletions.
+- 🔍 **Original vs Current Database Schema Audit (সম্পূর্ণ ডাটাবেস স্কিমা অডিট):** Audited the original SQLite schema (v1, commit `915f41d`) against current definitions across all 12 tables (`docs/DATABASE_AUDIT.md`), verifying nullability, constraints, indexes, and foreign keys.
+- 🛠️ **Resolved `custom_customer_name` Drift Migration Failure:** Identified and resolved the root cause of Drift's `tmp_for_copy_trips` failure by configuring `newColumns: [trips.customCustomerName]` with explicit `CustomExpression('NULL')` column transformation, eliminating missing-column exceptions during table rebuilds.
+- 🛡️ **100% Data Preservation Verified:** Added automated tests verifying flawless migration from v1 to v2 with zero data loss on existing trips, customer payments, driver ledgers, and vehicle loans.
+- 🚛 **Dynamic Vehicle Filtering in Reports (রিপোর্টে গাড়িভিত্তিক ফিল্টার):** Complete vehicle dropdown filter across Trip Register, Expense Register, Fuel Register, and Vehicle P&L reports with instant filtered calculations and PDF/Excel exports.
+- 💳 **Vehicle Loan Editing Support (গাড়ির ঋণ এডিট সুবিধা):** Direct editing capability for existing vehicle loans from loan cards and details, complete with audit trail tracking and balance recalculation.
+- 🚀 **First-Run Interactive Walkthrough & Dynamic Branding:** Automatic 5-slide guided onboarding flow with custom business name entry and live top bar branding.
 
 ---
 
 ## 📜 Version History (ভার্সন ইতিহাস)
 
+- **v0.3.0:** Original database schema audit across 12 tables, resolved Drift TableMigration failure on `custom_customer_name`, verified data-preservation migration test suite, dynamic report vehicle filters, and vehicle loan editing.
 - **v0.2.3:** Automatic first-run walkthrough, business/owner name onboarding prompt, dynamic top bar branding, settings business name editor with SQLite backup persistence.
 - **v0.2.2:** Full database call audit, centralized AppToast feedback system, duplicate click prevention (_isSaving), form dismissal & reset lifecycle, Bengali numeral parsing across all modal dialogs, and cascade soft-delete integrity.
 - **v0.2.1:** Profit card UI fix, vehicle numbers in alerts, optional customers & custom names, explicit trip completion actions, BaseDao comparison & saving fixes, consolidated 3-in-1 expense section with "Save & Add Another", future date picker support up to 2100, and Settings walkthrough.

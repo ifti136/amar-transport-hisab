@@ -51,7 +51,7 @@ class AboutScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'Version v0.2.3 (Build 6)', // i18n-ignore
+                    'Version v0.3.0 (Build 7)', // i18n-ignore
                     style: TextStyle(
                       color: theme.colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
@@ -109,7 +109,21 @@ class AboutScreen extends ConsumerWidget {
                   Text('Version History & Updates', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)), // i18n-ignore
                   const SizedBox(height: 12),
                   _ChangelogItem(
-                    version: 'v0.2.3 (Latest)', // i18n-ignore
+                    version: 'v0.3.0 (Latest)', // i18n-ignore
+                    date: 'October 2026', // i18n-ignore
+                    changes: const [
+                      'Original database schema audit and migration validation across all 12 tables',
+                      'Resolved Drift TableMigration temporary copy failure on custom_customer_name',
+                      'Verified schema upgrade from v1 to v2 with 100% existing data preservation',
+                      'Full dynamic vehicle filter across Trip, Expense, Fuel, and P&L reports',
+                      'Vehicle loan editing and management from loan details and cards',
+                      'First-run interactive onboarding walkthrough with custom top-bar branding',
+                      'Persistent business/owner profile in Settings with backup synchronization',
+                    ],
+                  ),
+                  const Divider(height: 20),
+                  _ChangelogItem(
+                    version: 'v0.2.3', // i18n-ignore
                     date: 'October 2026', // i18n-ignore
                     changes: const [
                       'Automatic first-run interactive walkthrough on initial app launch',

@@ -62,7 +62,20 @@ class AppDatabase extends _$AppDatabase {
     },
     onUpgrade: (Migrator m, int from, int to) async {
       if (from < 2) {
-        await m.alterTable(TableMigration(trips));
+        final tripCols = await customSelect('PRAGMA table_info(trips)').get();
+        final hasCustomName = tripCols.any((row) => row.data['name'] == 'custom_customer_name');
+
+        if (!hasCustomName) {
+          await m.alterTable(TableMigration(
+            trips,
+            newColumns: [trips.customCustomerName],
+            columnTransformer: {
+              trips.customCustomerName: const CustomExpression<String>('NULL'),
+            },
+          ));
+        } else {
+          await m.alterTable(TableMigration(trips));
+        }
         await m.alterTable(TableMigration(customerPayments));
       }
     },
