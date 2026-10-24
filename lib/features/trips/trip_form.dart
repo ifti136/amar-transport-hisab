@@ -5,6 +5,8 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_provider.dart';
@@ -363,17 +365,15 @@ class _TripFormState extends ConsumerState<TripForm> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.tripAddedSuccess)),
-        );
+        AppToast.showSuccess(context, l10n.tripAddedSuccess);
         Navigator.pop(context);
         ref.invalidate(tripsProvider(const TripFilter()));
+        ref.invalidate(activeCustomersProvider);
+        ref.invalidate(dashboardProvider);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')), // i18n-ignore
-        );
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
       }
     } finally {
       if (mounted) {

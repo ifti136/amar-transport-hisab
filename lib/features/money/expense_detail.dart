@@ -5,6 +5,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/money/money_provider.dart';
 import 'package:transport_hisab/features/money/expense_form.dart';
 
@@ -123,12 +125,28 @@ class ExpenseDetail extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () async {
-              final dao = ref.read(expenseDaoProvider);
-              await dao.softDeleteWithAudit(expense.id, userNote: 'Expense deleted');
-              if (context.mounted) {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                ref.invalidate(expensesProvider(const ExpenseFilter()));
+              try {
+                final dao = ref.read(expenseDaoProvider);
+                final fuelDao = ref.read(fuelDaoProvider);
+                if (expense.category == 'diesel') {
+                  final fuelRecord = await fuelDao.getFuelRecordByExpenseId(expense.id);
+                  if (fuelRecord != null) {
+                    await fuelDao.softDeleteWithAudit(fuelRecord.id, userNote: 'Linked fuel record deleted');
+                  }
+                }
+                await dao.softDeleteWithAudit(expense.id, userNote: 'Expense deleted');
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ref.invalidate(expensesProvider(const ExpenseFilter()));
+                  ref.invalidate(fuelRecordsProvider(const FuelFilter()));
+                  ref.invalidate(dashboardProvider);
+                  AppToast.showSuccess(context, l10n.deleteSuccess);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  AppToast.showError(context, l10n.operationFailed(e.toString()));
+                }
               }
             },
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),

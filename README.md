@@ -2,29 +2,27 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v0.2.1-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.1)
+[![Release](https://img.shields.io/badge/Release-v0.2.2-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.2.2)
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://developer.android.com)
 
 **Amar Transport Hisab** is an offline-first, privacy-respecting Android accounting app tailored specifically for transport and covered van fleet owners in Bangladesh. Built from the ground up to replace paper notebooks (*খাতা*), it guarantees 100% offline data storage, strict double-entry ledger arithmetic, native Bengali typography, and accurate per-vehicle Profit & Loss reporting.
 
 ---
 
-## 🚀 What's New in v0.2.1 (ভার্সন ০.২.১ প্যাচ আপডেট ও ফিক্স)
+## 🚀 What's New in v0.2.2 (ভার্সন ০.২.২ ডাটাবেস অডিট, টোস্ট ও সাবমিশন ফিডব্যাক)
 
-- 📊 **Dashboard Profit Card Layout (ড্যাশবোর্ড প্রফিট কার্ড ফিক্স):** Fixed profit label and value overflow in the 3-column metric grid and van summary cards. Values now scale dynamically using `FittedBox` without extending outside card boundaries.
-- 🚗 **Vehicle Number in Expiry Alerts (মেয়াদ সতর্কতায় গাড়ির নম্বর):** Document expiration alerts now explicitly display the vehicle registration number directly in alert strips, list items, and banners.
-- 👥 **Optional Customer & Custom Names (ঐচ্ছিক কাস্টমার ও কাস্টম নাম):** Trips can now be recorded without requiring a registered customer, with full support for selecting an existing customer, entering a custom customer name directly, or recording with no customer.
-- ⏳ **Trip Status & Explicit Completion (ট্রিপ সম্পন্ন ও পেন্ডিং অ্যাকশন):** Newly recorded trips now default to 'Pending' (চলমান). Dedicated "Mark as Completed" / "Mark as Pending" actions toggle status with immediate database persistence.
-- ⚡ **DAO Runtime & Comparison Fix (ডাটাবেস সংরক্ষণ ও ট্রিপ ডিটেইল ফিক্স):** Resolved NoSuchMethodError on `BaseDao` companion mapping and Drift comparison operator error (`Class 'Comparison' has no instance method '&'`), ensuring rock-solid data persistence across all entities.
-- ⛽ **Consolidated 3-in-1 Expense Section (একীভূত খরচ ও জ্বালানি সেকশন):** Unified General Expenses, Trip Expenses, and Fuel Expenses into a single 3-tab screen and unified category selector. Fuel records automatically maintain single-ledger diesel expenses without requiring odometer entry.
-- ➕ **Multi-Item Trip Expenses (একাধিক ট্রিপ খরচ):** Added "Save & Add Another" action for trip expenses, enabling rapid consecutive entry of multiple trip expenses (tolls, tips, bridge fees, chanda) without re-selecting the trip.
-- 📅 **Future Date Range Picker (ভবিষ্যতের তারিখ নির্বাচন):** Calendar date pickers now allow selecting future dates up to year 2100 across report filters and alert views.
-- 💡 **Settings App Walkthrough (সেটিংসে অ্যাপ পরিচিতি):** Moved App Feature Walkthrough directly to Settings, providing a clean guide while keeping About focused on developer & patch notes.
+- 🔍 **Full Database Operation Audit (সম্পূর্ণ ডাটাবেস অডিট):** Audited 100% of database interactions across all screens, DAOs, repositories, and backup services (`docs/DATABASE_AUDIT.md`). Ensured schema, nullability, foreign key, and indexing integrity across all 12 SQLite tables.
+- 🍞 **Centralized Toast Feedback (ইউনিফাইড টোস্ট নোটিফিকেশন):** Introduced `AppToast` with distinct floating semantic styling (success in deep green with checkmark, error in red, warning in amber) across vehicle, driver, trip, expense, fuel, customer, payment, loan, and settings workflows.
+- 🛡️ **Duplicate Click Prevention (_isSaving ও প্রগ্রেস স্পিনার):** Guarded all form and modal dialog submit buttons (`_isSaving`) with active loading spinners to completely eliminate double submissions or duplicate records.
+- 🧹 **Form Dismissal & Reset Lifecycle (ফর্ম স্বয়ংক্রিয় বন্ধ ও রিসেট):** Verified that forms dismiss automatically upon confirmed SQLite persistence and preserve user input if validation or persistence fails. Supported clean input resets for "Save & Add Another" consecutive trip expense logging.
+- 🔢 **Bengali Numeral Parsing in Financial Forms (বাংলা সংখ্যা ইনপুট ফিক্স):** Enhanced input parsing (`parseMoneyInput` & `toEnDigits`) across vehicle loans, installments, driver salaries, advances, and payments to reliably accept Bengali numerals (১, ২, ৩...).
+- 🔗 **Cascade Soft-Delete Integrity (ক্যাসকেড সফট ডিলিট):** Deleting fuel records now cleanly cascades to soft-delete the linked diesel expense entry, and vice-versa, avoiding orphan records and guaranteeing single-source-of-truth P&L ledgers.
 
 ---
 
 ## 📜 Version History (ভার্সন ইতিহাস)
 
+- **v0.2.2:** Full database call audit, centralized AppToast feedback system, duplicate click prevention (_isSaving), form dismissal & reset lifecycle, Bengali numeral parsing across all modal dialogs, and cascade soft-delete integrity.
 - **v0.2.1:** Profit card UI fix, vehicle numbers in alerts, optional customers & custom names, explicit trip completion actions, BaseDao comparison & saving fixes, consolidated 3-in-1 expense section with "Save & Add Another", future date picker support up to 2100, and Settings walkthrough.
 - **v0.2.0:** Trip distance tracking, dual trip/vehicle expense logging, customizable categories, streamlined fuel logging, report loading fixes, logo branding, and form anti-duplicate guards.
 - **v0.1.0:** Persistent bottom navigation, dedicated settings screen, biometric/PIN app lock, document expiry warnings, financial reports suite with PDF/Excel export, reliable local backup/restore.

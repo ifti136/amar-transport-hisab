@@ -5,6 +5,8 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_loan_provider.dart';
 
 class AddInstallmentSheet extends ConsumerStatefulWidget {
@@ -27,6 +29,7 @@ class _AddInstallmentSheetState extends ConsumerState<AddInstallmentSheet> {
   DateTime _installmentDate = DateTime.now();
   int _outstanding = 0;
   bool _loading = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -215,15 +218,17 @@ class _AddInstallmentSheetState extends ConsumerState<AddInstallmentSheet> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: _isSaving ? null : () => Navigator.pop(context),
                       child: Text(l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton(
-                      onPressed: _save,
-                      child: Text(l10n.addInstallmentTitle),
+                      onPressed: _isSaving ? null : _save,
+                      child: _isSaving
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : Text(l10n.addInstallmentTitle),
                     ),
                   ),
                 ],
@@ -239,41 +244,61 @@ class _AddInstallmentSheetState extends ConsumerState<AddInstallmentSheet> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
 
-    final totalPaid = (double.parse(_totalPaidController.text) * 100).round();
-    final principal = (double.parse(_principalController.text) * 100).round();
-    final interest = (double.parse(_interestController.text) * 100).round();
+    final totRes = parseMoneyInput(_totalPaidController.text);
+    final totalPaid = totRes is Success ? totRes.value.paisa : 0;
+    final prinRes = parseMoneyInput(_principalController.text);
+    final principal = prinRes is Success ? prinRes.value.paisa : 0;
+    final intRes = parseMoneyInput(_interestController.text);
+    final interest = intRes is Success ? intRes.value.paisa : 0;
 
     // Validate principal + interest = total
     if (principal + interest != totalPaid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Principal + Interest must equal Total Paid')), // i18n-ignore
+      AppToast.showWarning(
+        context,
+        l10n.validationWarning(
+          formatMoney(Money.paisa(principal + interest), context: context),
+          formatMoney(Money.paisa(totalPaid), context: context),
+        ),
       );
       return;
     }
 
     // Validate principal <= outstanding
     if (principal > _outstanding) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.principalExceedsOutstanding)),
-      );
+      AppToast.showWarning(context, l10n.principalExceedsOutstanding);
       return;
     }
 
-    final dao = ref.read(loanInstallmentDaoProvider);
-    await dao.insertWithAudit(LoanInstallmentsCompanion.insert(
-      loanId: widget.loan.id,
-      installmentDate: _installmentDate,
-      totalPaidPaisa: totalPaid,
-      principalPortionPaisa: principal,
-      interestPortionPaisa: interest,
-      note: Value(_noteController.text.trim().isEmpty ? null : _noteController.text.trim()),
-    ), userNote: 'Loan installment added');
+    setState(() => _isSaving = true);
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(loanInstallmentsProvider(widget.loan.id));
-      ref.invalidate(vehicleLoansProvider(widget.vehicle.id));
+    try {
+      final dao = ref.read(loanInstallmentDaoProvider);
+      await dao.insertWithAudit(LoanInstallmentsCompanion.insert(
+        loanId: widget.loan.id,
+        installmentDate: _installmentDate,
+        totalPaidPaisa: totalPaid,
+        principalPortionPaisa: principal,
+        interestPortionPaisa: interest,
+        note: Value(_noteController.text.trim().isEmpty ? null : _noteController.text.trim()),
+      ), userNote: 'Loan installment added');
+
+      if (mounted) {
+        AppToast.showSuccess(context, l10n.installmentAddedSuccess);
+        Navigator.pop(context);
+        ref.invalidate(loanInstallmentsProvider(widget.loan.id));
+        ref.invalidate(vehicleLoansProvider(widget.vehicle.id));
+        ref.invalidate(dashboardProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

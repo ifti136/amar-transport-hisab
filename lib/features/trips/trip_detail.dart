@@ -5,6 +5,8 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/core/db/daos/trip_dao.dart';
 import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/trips/trip_form.dart';
@@ -94,12 +96,20 @@ class TripDetailScreen extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () async {
-              final dao = ref.read(tripDaoProvider);
-              await dao.softDeleteWithAudit(trip.id, userNote: 'Trip deleted');
-              if (context.mounted) {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                ref.invalidate(tripsProvider(const TripFilter()));
+              try {
+                final dao = ref.read(tripDaoProvider);
+                await dao.softDeleteWithAudit(trip.id, userNote: 'Trip deleted');
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ref.invalidate(tripsProvider(const TripFilter()));
+                  ref.invalidate(dashboardProvider);
+                  AppToast.showSuccess(context, l10n.deleteSuccess);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  AppToast.showError(context, l10n.operationFailed(e.toString()));
+                }
               }
             },
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
@@ -445,17 +455,29 @@ class _TripDetailContent extends ConsumerWidget {
   }
 
   Future<void> _toggleStatus(BuildContext context, WidgetRef ref, String newStatus) async {
-    final dao = ref.read(tripDaoProvider);
-    await dao.updateWithAudit(
-      TripsCompanion(
-        status: Value(newStatus),
-        updatedAt: Value(DateTime.now()),
-      ),
-      id: trip.id,
-      userNote: 'Trip marked as $newStatus',
-    );
-    ref.invalidate(tripWithOutstandingProvider(trip.id));
-    ref.invalidate(tripsProvider(const TripFilter()));
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final dao = ref.read(tripDaoProvider);
+      await dao.updateWithAudit(
+        TripsCompanion(
+          status: Value(newStatus),
+          updatedAt: Value(DateTime.now()),
+        ),
+        id: trip.id,
+        userNote: 'Trip marked as $newStatus',
+      );
+      ref.invalidate(tripWithOutstandingProvider(trip.id));
+      ref.invalidate(tripsProvider(const TripFilter()));
+      ref.invalidate(dashboardProvider);
+      if (context.mounted) {
+        final label = newStatus == 'completed' ? l10n.statusCompleted : l10n.statusPending;
+        AppToast.showSuccess(context, '$label: #${trip.id}');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
+      }
+    }
   }
 }
 

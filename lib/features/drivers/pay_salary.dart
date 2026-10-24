@@ -5,6 +5,8 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_account_provider.dart';
 
 class PaySalarySheet extends ConsumerStatefulWidget {
@@ -26,6 +28,7 @@ class _PaySalarySheetState extends ConsumerState<PaySalarySheet> {
   int _outstandingAdvance = 0;
   int _autoDeductAdvance = 0;
   bool _loading = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -161,15 +164,17 @@ class _PaySalarySheetState extends ConsumerState<PaySalarySheet> {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: _isSaving ? null : () => Navigator.pop(context),
                         child: Text(l10n.cancel),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: FilledButton(
-                        onPressed: _save,
-                        child: Text(l10n.paySalaryTitle),
+                        onPressed: _isSaving ? null : _save,
+                        child: _isSaving
+                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : Text(l10n.paySalaryTitle),
                       ),
                     ),
                   ],
@@ -183,38 +188,57 @@ class _PaySalarySheetState extends ConsumerState<PaySalarySheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
 
-    final amountPaisa = (double.parse(_amountController.text) * 100).round();
+    final amtRes = parseMoneyInput(_amountController.text);
+    final amountPaisa = amtRes is Success ? amtRes.value.paisa : 0;
+    if (amountPaisa <= 0) return;
+
     final advanceDeducted = _autoDeductAdvance;
 
-    final dao = ref.read(driverTransactionDaoProvider);
+    setState(() => _isSaving = true);
 
-    // Create salary_paid transaction
-    await dao.insertWithAudit(DriverTransactionsCompanion(
-      driverId: Value(widget.driver.id),
-      type: const Value('salary_paid'),
-      amountPaisa: Value(amountPaisa),
-      transactionDate: Value(DateTime.now()),
-      note: Value(_noteController.text.trim().isEmpty ? 'Salary payment' : _noteController.text.trim()),
-    ), userNote: 'Salary paid');
+    try {
+      final dao = ref.read(driverTransactionDaoProvider);
 
-    // Create advance_deducted transaction if advance deducted
-    if (advanceDeducted > 0) {
+      // Create salary_paid transaction
       await dao.insertWithAudit(DriverTransactionsCompanion(
         driverId: Value(widget.driver.id),
-        type: const Value('advance_deducted'),
-        amountPaisa: Value(advanceDeducted),
+        type: const Value('salary_paid'),
+        amountPaisa: Value(amountPaisa),
         transactionDate: Value(DateTime.now()),
-        note: const Value('Advance deducted from salary'),
-      ), userNote: 'Advance deducted from salary');
-    }
+        note: Value(_noteController.text.trim().isEmpty ? 'Salary payment' : _noteController.text.trim()),
+      ), userNote: 'Salary paid');
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(driverTransactionsProvider(widget.driver.id));
-      ref.invalidate(driverBalanceProvider(DriverBalanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
-      ref.invalidate(outstandingAdvanceProvider(OutstandingAdvanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
+      // Create advance_deducted transaction if advance deducted
+      if (advanceDeducted > 0) {
+        await dao.insertWithAudit(DriverTransactionsCompanion(
+          driverId: Value(widget.driver.id),
+          type: const Value('advance_deducted'),
+          amountPaisa: Value(advanceDeducted),
+          transactionDate: Value(DateTime.now()),
+          note: const Value('Advance deducted from salary'),
+        ), userNote: 'Advance deducted from salary');
+      }
+
+      if (mounted) {
+        AppToast.showSuccess(context, l10n.salaryPaidSuccess);
+        Navigator.pop(context);
+        ref.invalidate(driverTransactionsProvider(widget.driver.id));
+        ref.invalidate(driverBalanceProvider(DriverBalanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
+        ref.invalidate(outstandingAdvanceProvider(OutstandingAdvanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
+        ref.invalidate(dashboardProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

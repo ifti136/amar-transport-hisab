@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/settings/opening_balances_provider.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_provider.dart';
@@ -252,12 +254,20 @@ class OpeningBalancesScreen extends ConsumerWidget {
                       return;
                   }
                 }
-                final dao = ref.read(openingBalancesDaoProvider);
-                await dao.setOpeningCash(paisa);
-                ref.invalidate(allOpeningBalancesProvider);
-                ref.invalidate(openingCashProvider);
-                if (dialogCtx.mounted) {
-                  Navigator.pop(dialogCtx);
+                try {
+                  final dao = ref.read(openingBalancesDaoProvider);
+                  await dao.setOpeningCash(paisa);
+                  ref.invalidate(allOpeningBalancesProvider);
+                  ref.invalidate(openingCashProvider);
+                  ref.invalidate(dashboardProvider);
+                  if (dialogCtx.mounted) {
+                    Navigator.pop(dialogCtx);
+                    AppToast.showSuccess(context, l10n.openingCashUpdatedSuccess);
+                  }
+                } catch (e) {
+                  if (dialogCtx.mounted) {
+                    AppToast.showError(context, l10n.operationFailed(e.toString()));
+                  }
                 }
               },
               child: Text(l10n.save),
@@ -315,13 +325,21 @@ class OpeningBalancesScreen extends ConsumerWidget {
                       return;
                   }
                 }
-                final dao = ref.read(openingBalancesDaoProvider);
-                await dao.setCustomerOpeningBalance(customerId, paisa);
-                ref.invalidate(allOpeningBalancesProvider);
-                ref.invalidate(customerOpeningBalancesProvider);
-                ref.invalidate(activeCustomersProvider);
-                if (dialogCtx.mounted) {
-                  Navigator.pop(dialogCtx);
+                try {
+                  final dao = ref.read(openingBalancesDaoProvider);
+                  await dao.setCustomerOpeningBalance(customerId, paisa);
+                  ref.invalidate(allOpeningBalancesProvider);
+                  ref.invalidate(customerOpeningBalancesProvider);
+                  ref.invalidate(activeCustomersProvider);
+                  ref.invalidate(dashboardProvider);
+                  if (dialogCtx.mounted) {
+                    Navigator.pop(dialogCtx);
+                    AppToast.showSuccess(context, l10n.customerBalanceUpdatedSuccess);
+                  }
+                } catch (e) {
+                  if (dialogCtx.mounted) {
+                    AppToast.showError(context, l10n.operationFailed(e.toString()));
+                  }
                 }
               },
               child: Text(l10n.save),
@@ -379,13 +397,21 @@ class OpeningBalancesScreen extends ConsumerWidget {
                       return;
                   }
                 }
-                final dao = ref.read(openingBalancesDaoProvider);
-                await dao.setDriverOpeningBalance(driverId, paisa);
-                ref.invalidate(allOpeningBalancesProvider);
-                ref.invalidate(driverOpeningBalancesProvider);
-                ref.invalidate(activeDriversProvider);
-                if (dialogCtx.mounted) {
-                  Navigator.pop(dialogCtx);
+                try {
+                  final dao = ref.read(openingBalancesDaoProvider);
+                  await dao.setDriverOpeningBalance(driverId, paisa);
+                  ref.invalidate(allOpeningBalancesProvider);
+                  ref.invalidate(driverOpeningBalancesProvider);
+                  ref.invalidate(activeDriversProvider);
+                  ref.invalidate(dashboardProvider);
+                  if (dialogCtx.mounted) {
+                    Navigator.pop(dialogCtx);
+                    AppToast.showSuccess(context, l10n.driverBalanceUpdatedSuccess);
+                  }
+                } catch (e) {
+                  if (dialogCtx.mounted) {
+                    AppToast.showError(context, l10n.operationFailed(e.toString()));
+                  }
                 }
               },
               child: Text(l10n.save),

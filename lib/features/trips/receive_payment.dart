@@ -6,6 +6,8 @@ import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/db/daos/trip_dao.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
 
@@ -28,6 +30,7 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
   int? _selectedTripId;
   List<TripWithOutstanding> _availableTrips = [];
   bool _loadingTrips = false;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -168,15 +171,17 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
                     child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton(
-                    onPressed: _save,
-                    child: Text(l10n.save),
+                    onPressed: _isSaving ? null : _save,
+                    child: _isSaving
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Text(l10n.save),
                   ),
                 ),
               ],
@@ -191,12 +196,16 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
     if (_selectedTripId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.selectTripError)));
+      AppToast.showWarning(context, l10n.selectTripError);
       return;
     }
 
-    final amountPaisa = (double.parse(_amountController.text) * 100).round();
+    final amtRes = parseMoneyInput(_amountController.text);
+    final amountPaisa = amtRes is Success ? amtRes.value.paisa : 0;
+    if (amountPaisa <= 0) return;
+
     final selectedTrip = _availableTrips.firstWhere((t) => t.trip.id == _selectedTripId);
 
     if (amountPaisa > selectedTrip.outstanding) {
@@ -214,19 +223,34 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
       if (confirm != true) return;
     }
 
-    final dao = ref.read(customerPaymentDaoProvider);
-    await dao.insertWithAudit(CustomerPaymentsCompanion.insert(
-      tripId: _selectedTripId!,
-      customerId: Value(_selectedCustomerId),
-      amountPaisa: amountPaisa,
-      paymentDate: DateTime.now(),
-      note: Value(_noteController.text.trim().isEmpty ? null : _noteController.text.trim()),
-    ), userNote: 'Payment received');
+    setState(() => _isSaving = true);
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(tripsProvider(const TripFilter()));
-      ref.invalidate(activeCustomersProvider);
+    try {
+      final dao = ref.read(customerPaymentDaoProvider);
+      await dao.insertWithAudit(CustomerPaymentsCompanion.insert(
+        tripId: _selectedTripId!,
+        customerId: Value(_selectedCustomerId),
+        amountPaisa: amountPaisa,
+        paymentDate: DateTime.now(),
+        note: Value(_noteController.text.trim().isEmpty ? null : _noteController.text.trim()),
+      ), userNote: 'Payment received');
+
+      if (mounted) {
+        AppToast.showSuccess(context, l10n.paymentReceivedSuccess);
+        Navigator.pop(context);
+        ref.invalidate(tripsProvider(const TripFilter()));
+        ref.invalidate(activeCustomersProvider);
+        ref.invalidate(tripWithOutstandingProvider(_selectedTripId!));
+        ref.invalidate(dashboardProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

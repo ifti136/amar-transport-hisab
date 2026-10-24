@@ -328,7 +328,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               title: Text(l10n.aboutTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: const Text('Amar Transport Hisab v0.2.1 • Iftekharul Islam'), // i18n-ignore
+              subtitle: const Text('Amar Transport Hisab v0.2.2 • Iftekharul Islam'), // i18n-ignore
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/settings/about'),
             ),

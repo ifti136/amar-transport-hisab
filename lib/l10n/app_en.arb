@@ -1667,5 +1667,59 @@
   "walkthroughDesc": "View intro guide and onboarding tutorial",
   "@walkthroughDesc": {
     "description": "Walkthrough description"
+  },
+  "customerAddedSuccess": "Customer saved successfully",
+  "@customerAddedSuccess": {
+    "description": "Customer saved confirmation"
+  },
+  "loanAddedSuccess": "Vehicle loan saved successfully",
+  "@loanAddedSuccess": {
+    "description": "Loan saved confirmation"
+  },
+  "installmentAddedSuccess": "Loan installment saved successfully",
+  "@installmentAddedSuccess": {
+    "description": "Installment saved confirmation"
+  },
+  "salaryPaidSuccess": "Salary payment recorded successfully",
+  "@salaryPaidSuccess": {
+    "description": "Salary paid confirmation"
+  },
+  "advanceGivenSuccess": "Driver advance recorded successfully",
+  "@advanceGivenSuccess": {
+    "description": "Driver advance recorded confirmation"
+  },
+  "driverLoanSuccess": "Driver loan transaction recorded successfully",
+  "@driverLoanSuccess": {
+    "description": "Driver loan recorded confirmation"
+  },
+  "paymentReceivedSuccess": "Customer payment received successfully",
+  "@paymentReceivedSuccess": {
+    "description": "Payment received confirmation"
+  },
+  "openingCashUpdatedSuccess": "Opening cash balance updated",
+  "@openingCashUpdatedSuccess": {
+    "description": "Opening cash updated confirmation"
+  },
+  "customerBalanceUpdatedSuccess": "Customer opening balance updated",
+  "@customerBalanceUpdatedSuccess": {
+    "description": "Customer opening balance updated confirmation"
+  },
+  "driverBalanceUpdatedSuccess": "Driver opening balance updated",
+  "@driverBalanceUpdatedSuccess": {
+    "description": "Driver opening balance updated confirmation"
+  },
+  "deleteSuccess": "Record deleted successfully",
+  "@deleteSuccess": {
+    "description": "Record deleted confirmation"
+  },
+  "operationFailed": "Operation failed: {error}",
+  "@operationFailed": {
+    "description": "Operation failed error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error details"
+      }
+    }
   }
 }

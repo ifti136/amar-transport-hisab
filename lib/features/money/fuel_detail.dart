@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/money/money_provider.dart';
 import 'package:transport_hisab/features/money/fuel_form.dart';
 
@@ -105,12 +107,23 @@ class FuelDetail extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () async {
-              final dao = ref.read(fuelDaoProvider);
-              await dao.softDeleteWithAudit(record.id, userNote: 'Fuel record deleted');
-              if (context.mounted) {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                ref.invalidate(fuelRecordsProvider(const FuelFilter()));
+              try {
+                final dao = ref.read(fuelDaoProvider);
+                final expenseDao = ref.read(expenseDaoProvider);
+                await dao.softDeleteWithAudit(record.id, userNote: 'Fuel record deleted');
+                await expenseDao.softDeleteWithAudit(record.expenseId, userNote: 'Linked fuel expense deleted');
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ref.invalidate(fuelRecordsProvider(const FuelFilter()));
+                  ref.invalidate(expensesProvider(const ExpenseFilter()));
+                  ref.invalidate(dashboardProvider);
+                  AppToast.showSuccess(context, l10n.deleteSuccess);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  AppToast.showError(context, l10n.operationFailed(e.toString()));
+                }
               }
             },
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),

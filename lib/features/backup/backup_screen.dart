@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:transport_hisab/core/db/database.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
 import 'package:transport_hisab/features/backup/backup_service.dart';
 import 'package:transport_hisab/features/backup/restore_service.dart';
 import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
@@ -102,9 +103,7 @@ class BackupScreen extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.backupSuccess(file.path))),
-        );
+        AppToast.showSuccess(context, l10n.backupSuccess(file.path));
         // Prompt user to share or save outside device
         await Share.shareXFiles(
           [XFile(file.path)],
@@ -115,9 +114,7 @@ class BackupScreen extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup failed: $e')), // i18n-ignore
-        );
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
       }
     }
   }
@@ -151,9 +148,7 @@ class BackupScreen extends ConsumerWidget {
 
       if (!restoreResult.success) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Restore validation failed: ${restoreResult.error}')), // i18n-ignore
-          );
+          AppToast.showError(context, 'Restore validation failed: ${restoreResult.error}'); // i18n-ignore
         }
         return;
       }
@@ -209,16 +204,12 @@ class BackupScreen extends ConsumerWidget {
         ref.invalidate(activeVehiclesProvider);
         ref.invalidate(activeDriversProvider);
         ref.invalidate(activeCustomersProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.restoreSuccess)),
-        );
+        AppToast.showSuccess(context, l10n.restoreSuccess);
       }
     } catch (e) {
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Restore failed: $e')), // i18n-ignore
-        );
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
       }
     }
   }

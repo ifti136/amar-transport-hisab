@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_form.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_loans_screen.dart';
@@ -162,13 +164,21 @@ class VehicleDetail extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () async {
-              final dao = ref.read(vehicleDaoProvider);
-              await dao.softDeleteWithAudit(vehicle.id, userNote: 'Vehicle deleted');
-              if (context.mounted) {
-                Navigator.pop(context); // Close dialog
-                Navigator.pop(context); // Close detail screen
-                ref.invalidate(activeVehiclesProvider);
-                ref.invalidate(allVehiclesProvider);
+              try {
+                final dao = ref.read(vehicleDaoProvider);
+                await dao.softDeleteWithAudit(vehicle.id, userNote: 'Vehicle deleted');
+                if (context.mounted) {
+                  Navigator.pop(context); // Close dialog
+                  Navigator.pop(context); // Close detail screen
+                  ref.invalidate(activeVehiclesProvider);
+                  ref.invalidate(allVehiclesProvider);
+                  ref.invalidate(dashboardProvider);
+                  AppToast.showSuccess(context, l10n.deleteSuccess);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  AppToast.showError(context, l10n.operationFailed(e.toString()));
+                }
               }
             },
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),

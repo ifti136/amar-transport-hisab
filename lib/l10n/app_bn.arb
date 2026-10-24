@@ -1659,5 +1659,59 @@
   "walkthroughDesc": "অ্যাপ ব্যবহারের নির্দেশিকা ও টিউটোরিয়াল দেখুন",
   "@walkthroughDesc": {
     "description": "Walkthrough description"
+  },
+  "customerAddedSuccess": "কাস্টমার সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@customerAddedSuccess": {
+    "description": "Customer saved confirmation"
+  },
+  "loanAddedSuccess": "গাড়ির ঋণ সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@loanAddedSuccess": {
+    "description": "Loan saved confirmation"
+  },
+  "installmentAddedSuccess": "ঋণের কিস্তি সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@installmentAddedSuccess": {
+    "description": "Installment saved confirmation"
+  },
+  "salaryPaidSuccess": "বেতন পরিশোধ সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@salaryPaidSuccess": {
+    "description": "Salary paid confirmation"
+  },
+  "advanceGivenSuccess": "ড্রাইভারের অগ্রিম সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@advanceGivenSuccess": {
+    "description": "Driver advance recorded confirmation"
+  },
+  "driverLoanSuccess": "ড্রাইভার ঋণ লেনদেন সফলভাবে সংরক্ষণ করা হয়েছে",
+  "@driverLoanSuccess": {
+    "description": "Driver loan recorded confirmation"
+  },
+  "paymentReceivedSuccess": "কাস্টমার পেমেন্ট সফলভাবে গ্রহণ করা হয়েছে",
+  "@paymentReceivedSuccess": {
+    "description": "Payment received confirmation"
+  },
+  "openingCashUpdatedSuccess": "শুরুর নগদ উদ্বৃত্ত আপডেট করা হয়েছে",
+  "@openingCashUpdatedSuccess": {
+    "description": "Opening cash updated confirmation"
+  },
+  "customerBalanceUpdatedSuccess": "কাস্টমার উদ্বৃত্ত আপডেট করা হয়েছে",
+  "@customerBalanceUpdatedSuccess": {
+    "description": "Customer opening balance updated confirmation"
+  },
+  "driverBalanceUpdatedSuccess": "ড্রাইভার উদ্বৃত্ত আপডেট করা হয়েছে",
+  "@driverBalanceUpdatedSuccess": {
+    "description": "Driver opening balance updated confirmation"
+  },
+  "deleteSuccess": "রেকর্ড সফলভাবে মুছে ফেলা হয়েছে",
+  "@deleteSuccess": {
+    "description": "Record deleted confirmation"
+  },
+  "operationFailed": "অপারেশন ব্যর্থ হয়েছে: {error}",
+  "@operationFailed": {
+    "description": "Operation failed error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Error details"
+      }
+    }
   }
 }

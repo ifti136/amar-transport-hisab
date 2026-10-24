@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
 
 class CustomerForm extends ConsumerStatefulWidget {
@@ -151,17 +153,14 @@ class _CustomerFormState extends ConsumerState<CustomerForm> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${_nameController.text.trim()} saved successfully')), // i18n-ignore
-        );
+        AppToast.showSuccess(context, l10n.customerAddedSuccess);
         Navigator.pop(context);
         ref.invalidate(activeCustomersProvider);
+        ref.invalidate(dashboardProvider);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')), // i18n-ignore
-        );
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
       }
     } finally {
       if (mounted) {

@@ -51,7 +51,7 @@ class AboutScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'Version v0.2.1 (Build 4)', // i18n-ignore
+                    'Version v0.2.2 (Build 5)', // i18n-ignore
                     style: TextStyle(
                       color: theme.colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
@@ -109,7 +109,20 @@ class AboutScreen extends ConsumerWidget {
                   Text('Version History & Updates', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)), // i18n-ignore
                   const SizedBox(height: 12),
                   _ChangelogItem(
-                    version: 'v0.2.1 (Latest)', // i18n-ignore
+                    version: 'v0.2.2 (Latest)', // i18n-ignore
+                    date: 'October 2026', // i18n-ignore
+                    changes: const [
+                      'Comprehensive database call audit across the entire application',
+                      'Centralized AppToast with semantic styling, icons, and queue clearing',
+                      'Double-click prevention (_isSaving) and loading spinners on all forms',
+                      'Robust Bengali digit parsing for loans, installments, and salary entries',
+                      'Cascade soft-delete consistency between diesel expenses and fuel records',
+                      'Confirmed form dismissal and clean reset on "Save & Add Another"',
+                    ],
+                  ),
+                  const Divider(height: 20),
+                  _ChangelogItem(
+                    version: 'v0.2.1', // i18n-ignore
                     date: 'October 2026', // i18n-ignore
                     changes: const [
                       'Fixed dashboard profit card UI overflow and layout constraints',

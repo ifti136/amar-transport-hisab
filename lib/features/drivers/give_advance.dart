@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_account_provider.dart';
 
 class GiveAdvanceSheet extends ConsumerStatefulWidget {
@@ -19,6 +21,7 @@ class _GiveAdvanceSheetState extends ConsumerState<GiveAdvanceSheet> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -112,15 +115,17 @@ class _GiveAdvanceSheetState extends ConsumerState<GiveAdvanceSheet> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
                     child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton(
-                    onPressed: _save,
-                    child: Text(l10n.save),
+                    onPressed: _isSaving ? null : _save,
+                    child: _isSaving
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Text(l10n.save),
                   ),
                 ),
               ],
@@ -133,24 +138,42 @@ class _GiveAdvanceSheetState extends ConsumerState<GiveAdvanceSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
 
-    final amountPaisa = (double.parse(_amountController.text) * 100).round();
+    final amtRes = parseMoneyInput(_amountController.text);
+    final amountPaisa = amtRes is Success ? amtRes.value.paisa : 0;
+    if (amountPaisa <= 0) return;
 
-    final dao = ref.read(driverTransactionDaoProvider);
-    await dao.insertWithAudit(DriverTransactionsCompanion.insert(
-      driverId: widget.driver.id,
-      type: 'advance_given',
-      amountPaisa: amountPaisa,
-      transactionDate: DateTime.now(),
-      note: Value(_noteController.text.trim().isEmpty ? 'Advance given' : _noteController.text.trim()),
-    ), userNote: 'Advance given to driver');
+    setState(() => _isSaving = true);
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(driverTransactionsProvider(widget.driver.id));
-      ref.invalidate(driverBalanceProvider(DriverBalanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
-      ref.invalidate(outstandingAdvanceProvider(OutstandingAdvanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
+    try {
+      final dao = ref.read(driverTransactionDaoProvider);
+      await dao.insertWithAudit(DriverTransactionsCompanion.insert(
+        driverId: widget.driver.id,
+        type: 'advance_given',
+        amountPaisa: amountPaisa,
+        transactionDate: DateTime.now(),
+        note: Value(_noteController.text.trim().isEmpty ? 'Advance given' : _noteController.text.trim()),
+      ), userNote: 'Advance given to driver');
+
+      if (mounted) {
+        AppToast.showSuccess(context, l10n.advanceGivenSuccess);
+        Navigator.pop(context);
+        ref.invalidate(driverTransactionsProvider(widget.driver.id));
+        ref.invalidate(driverBalanceProvider(DriverBalanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
+        ref.invalidate(outstandingAdvanceProvider(OutstandingAdvanceFilter(driverId: widget.driver.id, upTo: DateTime.now())));
+        ref.invalidate(dashboardProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
 import 'package:transport_hisab/features/money/expense_categories_provider.dart';
 
 class ExpenseCategoriesScreen extends ConsumerWidget {
@@ -81,8 +82,11 @@ class _CategorySection extends ConsumerWidget {
                 } else {
                   ref.read(vehicleCategoriesProvider.notifier).addCategory(text);
                 }
+                Navigator.pop(context);
+                AppToast.showSuccess(context, '$text added');
+              } else {
+                Navigator.pop(context);
               }
-              Navigator.pop(context);
             },
             child: Text(l10n.add),
           ),
@@ -152,6 +156,7 @@ class _CategorySection extends ConsumerWidget {
                                 ref.read(vehicleCategoriesProvider.notifier).removeCategory(cat);
                               }
                               Navigator.pop(ctx);
+                              AppToast.showSuccess(context, l10n.deleteSuccess);
                             },
                             child: Text(l10n.delete),
                           ),

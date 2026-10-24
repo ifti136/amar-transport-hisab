@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
 
 class VehicleForm extends ConsumerStatefulWidget {
@@ -172,18 +174,15 @@ class _VehicleFormState extends ConsumerState<VehicleForm> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.vehicleAddedSuccess)),
-        );
+        AppToast.showSuccess(context, l10n.vehicleAddedSuccess);
         Navigator.pop(context);
         ref.invalidate(activeVehiclesProvider);
         ref.invalidate(allVehiclesProvider);
+        ref.invalidate(dashboardProvider);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')), // i18n-ignore
-        );
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
       }
     } finally {
       if (mounted) {

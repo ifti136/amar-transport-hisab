@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_loan_provider.dart';
 
 class AddLoanSheet extends ConsumerStatefulWidget {
@@ -22,6 +24,7 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
   final _noteController = TextEditingController();
 
   DateTime _startDate = DateTime.now();
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -146,15 +149,17 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
                     child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton(
-                    onPressed: _save,
-                    child: Text(l10n.add),
+                    onPressed: _isSaving ? null : _save,
+                    child: _isSaving
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Text(l10n.add),
                   ),
                 ),
               ],
@@ -167,22 +172,42 @@ class _AddLoanSheetState extends ConsumerState<AddLoanSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
 
-    final principalPaisa = (double.parse(_principalController.text) * 100).round();
-    final interestRateBps = (double.parse(_interestRateController.text) * 100).round(); // Convert % to basis points
+    setState(() => _isSaving = true);
 
-    final dao = ref.read(vehicleLoanDaoProvider);
-    await dao.insertWithAudit(VehicleLoansCompanion.insert(
-      vehicleId: widget.vehicle.id,
-      principalPaisa: principalPaisa,
-      annualInterestRateBps: interestRateBps,
-      startDate: _startDate,
-    ), userNote: 'Vehicle loan added');
+    try {
+      final pRes = parseMoneyInput(_principalController.text);
+      final principalPaisa = pRes is Success ? pRes.value.paisa : 0;
+      final rateEn = toEnDigits(_interestRateController.text.trim());
+      final rateDouble = double.tryParse(rateEn) ?? 0.0;
+      final interestRateBps = (rateDouble * 100).round(); // Convert % to basis points
 
-    if (mounted) {
-      Navigator.pop(context);
-      ref.invalidate(vehicleLoansProvider(widget.vehicle.id));
+      final dao = ref.read(vehicleLoanDaoProvider);
+      await dao.insertWithAudit(VehicleLoansCompanion.insert(
+        vehicleId: widget.vehicle.id,
+        principalPaisa: principalPaisa,
+        annualInterestRateBps: interestRateBps,
+        startDate: _startDate,
+      ), userNote: 'Vehicle loan added');
+
+      if (mounted) {
+        AppToast.showSuccess(context, l10n.loanAddedSuccess);
+        Navigator.pop(context);
+        ref.invalidate(vehicleLoansProvider(widget.vehicle.id));
+        ref.invalidate(allLoansProvider);
+        ref.invalidate(dashboardProvider);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

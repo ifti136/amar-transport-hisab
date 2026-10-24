@@ -7,6 +7,8 @@ import 'package:collection/collection.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/money/money_provider.dart';
 import 'package:transport_hisab/features/money/expense_categories_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
@@ -492,13 +494,15 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
 
       ref.invalidate(expensesProvider(const ExpenseFilter()));
       ref.invalidate(fuelRecordsProvider(const FuelFilter()));
+      ref.invalidate(dashboardProvider);
       if (_tripId != null) {
         ref.invalidate(tripWithOutstandingProvider(_tripId!));
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.expenseAddedSuccess)),
+        AppToast.showSuccess(
+          context,
+          _mode == ExpenseEntryMode.fuel ? l10n.fuelAddedSuccess : l10n.expenseAddedSuccess,
         );
 
         if (addAnother) {
@@ -513,9 +517,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')), // i18n-ignore
-        );
+        AppToast.showError(context, l10n.operationFailed(e.toString()));
       }
     } finally {
       if (mounted && !addAnother) {

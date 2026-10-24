@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/formatters.dart';
+import 'package:transport_hisab/core/widgets/app_toast.dart';
+import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_form.dart';
 import 'package:transport_hisab/features/drivers/driver_ledger.dart';
@@ -165,13 +167,21 @@ class DriverDetail extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () async {
-              final dao = ref.read(driverDaoProvider);
-              await dao.softDeleteWithAudit(driver.id, userNote: 'Driver deleted');
-              if (context.mounted) {
-                Navigator.pop(context); // Close dialog
-                Navigator.pop(context); // Close detail screen
-                ref.invalidate(activeDriversProvider);
-                ref.invalidate(allDriversProvider);
+              try {
+                final dao = ref.read(driverDaoProvider);
+                await dao.softDeleteWithAudit(driver.id, userNote: 'Driver deleted');
+                if (context.mounted) {
+                  Navigator.pop(context); // Close dialog
+                  Navigator.pop(context); // Close detail screen
+                  ref.invalidate(activeDriversProvider);
+                  ref.invalidate(allDriversProvider);
+                  ref.invalidate(dashboardProvider);
+                  AppToast.showSuccess(context, l10n.deleteSuccess);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  AppToast.showError(context, l10n.operationFailed(e.toString()));
+                }
               }
             },
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
