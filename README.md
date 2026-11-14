@@ -72,7 +72,7 @@
 
 ## 📲 Installation Guide (ইনস্টলেশন গাইড)
 
-1. **Download APK:** Download `Amar-Transport-Hisab-v0.2.1.apk` from the [Latest Release](https://github.com/ifti136/amar-transport-hisab/releases).
+1. **Download APK:** Download `Amar-Transport-Hisab-v0.3.1.apk` from the [Latest Release](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.3.1).
 2. **Transfer to Device:** Copy the file to your Android phone via USB cable, Telegram/WhatsApp document, Google Drive, or directly in your mobile browser.
 3. **Allow Installation:** Tap the downloaded APK file. When prompted by Android to allow installing apps from this source ("Install unknown apps"), grant permission.
 4. **Play Protect Prompt:** If Google Play Protect displays a message regarding an unknown developer, tap **"More details"** and select **"Install anyway"**.
