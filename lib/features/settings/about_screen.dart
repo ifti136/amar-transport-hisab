@@ -51,7 +51,7 @@ class AboutScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'Version v0.3.0 (Build 7)', // i18n-ignore
+                    'Version v0.3.1 (Build 8)', // i18n-ignore
                     style: TextStyle(
                       color: theme.colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
@@ -109,7 +109,21 @@ class AboutScreen extends ConsumerWidget {
                   Text('Version History & Updates', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)), // i18n-ignore
                   const SizedBox(height: 12),
                   _ChangelogItem(
-                    version: 'v0.3.0 (Latest)', // i18n-ignore
+                    version: 'v0.3.1 (Latest)', // i18n-ignore
+                    date: 'November 2026', // i18n-ignore
+                    changes: const [
+                      'Fixed Receive Payment crash when opened from a trip detail',
+                      'Monthly salary accrual now runs atomically at startup/resume with audit trail',
+                      'Pay Salary now handles Taka/paisa conversion, Bengali digits, and deduction clamping correctly',
+                      'Added per-van Net cash (all time) and Trip outstanding (all time) metrics',
+                      'Standardized Add controls, empty states, and shared vehicle cards with expiry badges',
+                      'Text scale clamped to 1.3x and expiry strip now shows alerts up to 30 days',
+                      'Localized remaining hardcoded status, category, date, and expiry labels',
+                    ],
+                  ),
+                  const Divider(height: 20),
+                  _ChangelogItem(
+                    version: 'v0.3.0', // i18n-ignore
                     date: 'October 2026', // i18n-ignore
                     changes: const [
                       'Original database schema audit and migration validation across all 12 tables',
