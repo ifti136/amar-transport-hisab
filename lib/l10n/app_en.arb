@@ -1793,5 +1793,74 @@
   "skip": "Skip",
   "@skip": {
     "description": "Skip button label"
-  }
+  },
+  "emptyVehiclesTitle": "No vehicles yet",
+  "emptyVehiclesMessage": "Add your first vehicle to start tracking trips and expenses.",
+  "emptyDriversTitle": "No drivers yet",
+  "emptyDriversMessage": "Add a driver to assign trips and track salary.",
+  "addDriverTitle": "Add Driver",
+  "emptyCustomersTitle": "No customers yet",
+  "emptyCustomersMessage": "Add a customer to track fares and dues.",
+  "addCustomerTitle": "Add Customer",
+  "emptyTripsTitle": "No trips yet",
+  "emptyTripsMessage": "Add a trip to record a fare and start tracking payments.",
+  "emptyExpensesTitle": "No expenses yet",
+  "emptyExpensesMessage": "Record van expenses like repairs, tolls and other costs.",
+  "emptyFuelTitle": "No fuel entries yet",
+  "emptyFuelMessage": "Add a fuel purchase to track consumption and cost.",
+  "emptyLoansTitle": "No vehicle loans yet",
+  "emptyLoansMessage": "Add a loan to track installments and interest.",
+  "emptyTripExpensesTitle": "No trip expenses yet",
+  "emptyTripExpensesMessage": "Add an expense to a trip to keep its cost in one place.",
+  "noTripsForExpenseTitle": "No trips to attach expenses to",
+  "noTripsForExpenseMessage": "Add a trip first, then you can record its expenses.",
+  "addTripExpenseButton": "Add Trip Expense",
+  "tripExpensesTotalLabel": "Total trip expenses",
+  "quickActionsTitle": "Quick actions",
+  "emptyReceivePaymentCustomersTitle": "No customers to receive from",
+  "emptyReceivePaymentCustomersMessage": "Add a customer first, then receive a payment against their trips.",
+  "emptyPaySalaryDriversTitle": "No active drivers",
+  "emptyPaySalaryDriversMessage": "Add or activate a driver to pay salary.",
+  "driverSalaryPerMonth": "Salary: {amount}/month",
+  "@driverSalaryPerMonth": {
+    "description": "Driver list salary label",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsThisMonthLabel": "Trips (this month)",
+  "profitThisMonthLabel": "Profit (this month)",
+  "netCashAllTimeLabel": "Net cash (all time)",
+  "tripOutstandingAllTimeLabel": "Trip outstanding (all time)",
+  "expiryInsuranceShort": "Insurance",
+  "expiryFitnessShort": "Fitness",
+  "expiryTaxShort": "Tax",
+  "errorExceedsPayable": "Amount exceeds payable salary",
+  "salaryEarnedLabel": "Salary earned",
+  "salaryPaidLabel": "Salary paid",
+  "netPayableLabel": "Net payable",
+  "advanceDeductionLabel": "Advance deduction",
+  "maxDeductionHint": "Max {amount}",
+  "@maxDeductionHint": {
+    "description": "Maximum advance deduction hint",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelledTripCannotReceivePayment": "Cancelled trips cannot receive payments" ,
+  "noTripsMatchFilter": "No trips match this filter",
+  "noTripsMatchFilterMessage": "Change or clear the filter to see trips.",
+  "noExpensesMatchFilter": "No expenses match this filter",
+  "noExpensesMatchFilterMessage": "Change or clear the filter to see expenses.",
+  "noFuelMatchFilter": "No fuel entries match this filter",
+  "noFuelMatchFilterMessage": "Change or clear the filter to see fuel entries.",
+  "outstandingAdvanceShort": "Outstanding advance",
+  "settingsTab": "Settings",
+  "createdAtLabel": "Created at",
+  "notSetLabel": "Not set",
+  "errorTitle": "Error"
 }

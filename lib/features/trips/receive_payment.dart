@@ -13,9 +13,9 @@ import 'package:transport_hisab/features/customers/customer_provider.dart';
 
 class ReceivePaymentSheet extends ConsumerStatefulWidget {
   final Customer? customer;
-  final Trip? trip;
+  final TripWithOutstanding? tripData;
 
-  const ReceivePaymentSheet({super.key, this.customer, this.trip});
+  const ReceivePaymentSheet({super.key, this.customer, this.tripData});
 
   @override
   ConsumerState<ReceivePaymentSheet> createState() => _ReceivePaymentSheetState();
@@ -38,10 +38,24 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
     if (widget.customer != null) {
       _selectedCustomerId = widget.customer!.id;
       _loadTripsForCustomer(widget.customer!.id);
-    } else if (widget.trip != null) {
-      _selectedTripId = widget.trip!.id;
-      _selectedCustomerId = widget.trip!.customerId;
+    } else if (widget.tripData != null) {
+      _selectedTripId = widget.tripData!.trip.id;
+      _selectedCustomerId = widget.tripData!.trip.customerId;
+      _availableTrips = [widget.tripData!];
     }
+  }
+
+  TripWithOutstanding? get _selectedTrip {
+    for (final trip in _availableTrips) {
+      if (trip.trip.id == _selectedTripId) return trip;
+    }
+    return null;
+  }
+
+  bool get _tripIsInvalid {
+    if (_selectedTripId == null) return false;
+    final trip = _selectedTrip?.trip;
+    return trip == null || trip.deletedAt != null || trip.status == 'cancelled';
   }
 
   Future<void> _loadTripsForCustomer(int customerId) async {
@@ -67,24 +81,25 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
     final l10n = AppLocalizations.of(context)!;
     final customersAsync = ref.watch(activeCustomersProvider);
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 16,
-        right: 16,
-        top: 16,
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
+    final selectedTrip = _selectedTrip;
+    final selectedCustomerName = _selectedCustomerName(customersAsync.asData?.value);
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l10n.add, style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.receivePaymentAction, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
 
             // Customer Picker (if not pre-selected)
-            if (widget.customer == null && widget.trip == null) ...[
+            if (widget.customer == null && widget.tripData == null) ...[
               customersAsync.when(
                 data: (customers) => DropdownButtonFormField<int>(
                   value: _selectedCustomerId,
@@ -112,7 +127,7 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
               _ReadOnlyField(label: l10n.customerLabel, value: widget.customer!.name),
 
             // Trip Picker (if customer selected)
-            if (_selectedCustomerId != null && widget.trip == null) ...[
+            if (_selectedCustomerId != null && widget.tripData == null) ...[
               const SizedBox(height: 16),
               _loadingTrips
                   ? const Center(child: CircularProgressIndicator())
@@ -142,8 +157,10 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) return l10n.errorRequired;
-                final parsed = double.tryParse(value);
-                if (parsed == null || parsed <= 0) return l10n.errorPositiveAmount;
+                final parsed = parseMoneyInput(value);
+                if (parsed is Failure || parsed.value.paisa <= 0) {
+                  return l10n.errorPositiveAmount;
+                }
                 return null;
               },
             ),
@@ -160,10 +177,19 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
             ),
             const SizedBox(height: 16),
 
-            // Outstanding Preview
-            if (_selectedTripId != null)
+            // Customer / trip / outstanding summary
+            if (selectedTrip != null)
               _OutstandingPreview(
-                trip: _availableTrips.firstWhere((t) => t.trip.id == _selectedTripId),
+                trip: selectedTrip,
+                customerName: selectedCustomerName,
+              ),
+            if (_tripIsInvalid)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  l10n.cancelledTripCannotReceivePayment,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               ),
 
             const SizedBox(height: 24),
@@ -186,27 +212,46 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-          ],
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  String? _selectedCustomerName(List<Customer>? customers) {
+    if (widget.customer != null) return widget.customer!.name;
+    final trip = _selectedTrip?.trip;
+    if (trip?.customCustomerName != null && trip!.customCustomerName!.isNotEmpty) {
+      return trip.customCustomerName;
+    }
+    if (trip?.customerId != null && customers != null) {
+      for (final customer in customers) {
+        if (customer.id == trip!.customerId) return customer.name;
+      }
+    }
+    return null;
   }
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (_isSaving) return;
-    if (_selectedTripId == null) {
+    final selectedTrip = _selectedTrip;
+    if (selectedTrip == null) {
       AppToast.showWarning(context, l10n.selectTripError);
+      return;
+    }
+    if (selectedTrip.trip.status == 'cancelled' || selectedTrip.trip.deletedAt != null) {
+      AppToast.showWarning(context, l10n.cancelledTripCannotReceivePayment);
       return;
     }
 
     final amtRes = parseMoneyInput(_amountController.text);
     final amountPaisa = amtRes is Success ? amtRes.value.paisa : 0;
     if (amountPaisa <= 0) return;
-
-    final selectedTrip = _availableTrips.firstWhere((t) => t.trip.id == _selectedTripId);
 
     if (amountPaisa > selectedTrip.outstanding) {
       final confirm = await showDialog<bool>(
@@ -240,6 +285,7 @@ class _ReceivePaymentSheetState extends ConsumerState<ReceivePaymentSheet> {
         Navigator.pop(context);
         ref.invalidate(tripsProvider(const TripFilter()));
         ref.invalidate(activeCustomersProvider);
+        ref.invalidate(customerLedgerProvider);
         ref.invalidate(tripWithOutstandingProvider(_selectedTripId!));
         ref.invalidate(dashboardProvider);
       }
@@ -277,8 +323,9 @@ class _ReadOnlyField extends StatelessWidget {
 
 class _OutstandingPreview extends StatelessWidget {
   final TripWithOutstanding trip;
+  final String? customerName;
 
-  const _OutstandingPreview({required this.trip});
+  const _OutstandingPreview({required this.trip, this.customerName});
 
   @override
   Widget build(BuildContext context) {
@@ -296,6 +343,13 @@ class _OutstandingPreview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (customerName != null) ...[
+            Text(
+              '${l10n.customerLabel}: $customerName',
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 4),
+          ],
           Text(l10n.outstandingLabel, style: theme.textTheme.labelMedium),
           const SizedBox(height: 4),
           Row(

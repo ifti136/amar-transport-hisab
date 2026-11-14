@@ -7,10 +7,14 @@ import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/money/money_provider.dart';
 import 'package:transport_hisab/features/money/expense_form.dart';
-import 'package:transport_hisab/features/money/fuel_form.dart';
 import 'package:transport_hisab/features/money/expense_detail.dart';
 import 'package:transport_hisab/features/money/fuel_detail.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
+import 'package:transport_hisab/features/trips/trip_provider.dart';
+import 'package:transport_hisab/features/trips/trip_form.dart';
+import 'package:transport_hisab/features/money/expense_categories_provider.dart';
+import 'package:transport_hisab/core/widgets/add_action.dart';
+import 'package:transport_hisab/core/widgets/empty_state_view.dart';
 
 class ExpensesScreen extends ConsumerStatefulWidget {
   const ExpensesScreen({super.key});
@@ -67,24 +71,14 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> with SingleTick
             mode: ExpenseEntryMode.general,
             onFilterChanged: (f) => setState(() => _expenseFilter = f),
           ),
-          _ExpensesTab(
+          _TripExpensesTab(
             filter: _expenseFilter,
-            mode: ExpenseEntryMode.trip,
             onFilterChanged: (f) => setState(() => _expenseFilter = f),
           ),
           _FuelTab(filter: _fuelFilter, onFilterChanged: (f) => setState(() => _fuelFilter = f)),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          final mode = _tabController.index == 0
-              ? ExpenseEntryMode.general
-              : (_tabController.index == 1 ? ExpenseEntryMode.trip : ExpenseEntryMode.fuel);
-          _showExpenseForm(context, initialMode: mode);
-        },
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
-      ),
+
     );
   }
 
@@ -132,60 +126,55 @@ class _ExpensesTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final expensesAsync = ref.watch(expensesProvider(filter));
+    final filtered = (expensesAsync.asData?.value ?? const <Expense>[])
+        .where((e) => e.tripId == null && e.category != 'diesel')
+        .toList();
+    final hasFilter = filter.from != null ||
+        filter.to != null ||
+        filter.vehicleId != null ||
+        filter.category != null;
 
-    return expensesAsync.when(
-      data: (expenses) {
-        final filtered = mode == ExpenseEntryMode.trip
-            ? expenses.where((e) => e.tripId != null).toList()
-            : expenses.where((e) => e.tripId == null && e.category != 'diesel').toList();
-
-        if (filtered.isEmpty) {
-          return _emptyState(context, l10n);
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: filtered.length,
-          itemBuilder: (context, index) {
-            final expense = filtered[index];
-            return _ExpenseCard(expense: expense);
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => _errorState(context, ref, l10n, error.toString()),
+    return Scaffold(
+      body: expensesAsync.when(
+        data: (expenses) {
+          if (filtered.isEmpty) {
+            return _emptyState(context, l10n, hasFilter: hasFilter);
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: filtered.length,
+            itemBuilder: (context, index) {
+              final expense = filtered[index];
+              return _ExpenseCard(expense: expense);
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => _errorState(context, ref, l10n, error.toString()),
+      ),
+      floatingActionButton: filtered.isNotEmpty
+          ? AddIconFab(
+              onPressed: () => _showExpenseForm(context),
+              tooltip: l10n.addExpenseTitle,
+            )
+          : null,
     );
   }
 
-  Widget _emptyState(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.receipt_long_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              'No expenses yet',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add your first expense to get started',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _showExpenseForm(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addExpenseTitle),
-            ),
-          ],
-        ),
+  Widget _emptyState(
+    BuildContext context,
+    AppLocalizations l10n, {
+    required bool hasFilter,
+  }) {
+    return EmptyStateView(
+      icon: Icons.receipt_long_outlined,
+      title: hasFilter ? l10n.noExpensesMatchFilter : l10n.emptyExpensesTitle,
+      message: hasFilter
+          ? l10n.noExpensesMatchFilterMessage
+          : l10n.emptyExpensesMessage,
+      action: AddActionButton(
+        onPressed: () => _showExpenseForm(context),
+        label: l10n.addExpenseTitle,
       ),
     );
   }
@@ -199,7 +188,7 @@ class _ExpensesTab extends ConsumerWidget {
           children: [
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 16),
@@ -222,6 +211,285 @@ class _ExpensesTab extends ConsumerWidget {
   }
 }
 
+class _TripExpensesTab extends ConsumerWidget {
+  final ExpenseFilter filter;
+  final ValueChanged<ExpenseFilter> onFilterChanged;
+
+  const _TripExpensesTab({
+    required this.filter,
+    required this.onFilterChanged,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final expensesAsync = ref.watch(expensesProvider(filter));
+    final tripsAsync = ref.watch(tripsProvider(const TripFilter()));
+    final vehicles = ref.watch(activeVehiclesProvider).asData?.value ?? const <Vehicle>[];
+
+    final expenses = expensesAsync.asData?.value ?? const <Expense>[];
+    final trips = (tripsAsync.asData?.value ?? const <Trip>[])
+        .where((t) => t.status != 'cancelled')
+        .toList();
+
+    final groups = <_TripExpenseGroup>[];
+    for (final trip in trips) {
+      final tripExpenses = expenses
+          .where((e) => e.tripId == trip.id && e.tripId != null)
+          .toList();
+      if (tripExpenses.isEmpty) continue;
+      groups.add(_TripExpenseGroup(
+        trip: trip,
+        expenses: tripExpenses,
+        totalPaisa: tripExpenses.fold<int>(0, (sum, e) => sum + e.amountPaisa),
+      ));
+    }
+    groups.sort((a, b) => b.trip.tripDate.compareTo(a.trip.tripDate));
+
+    final hasFilter = filter.from != null ||
+        filter.to != null ||
+        filter.vehicleId != null ||
+        filter.category != null;
+
+    return Scaffold(
+      body: () {
+        if (expensesAsync.isLoading || tripsAsync.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final error = expensesAsync.error ?? tripsAsync.error;
+        if (error != null) {
+          return _errorState(context, ref, l10n, error.toString());
+        }
+        if (trips.isEmpty) {
+          return EmptyStateView(
+            icon: Icons.local_shipping_outlined,
+            title: l10n.noTripsForExpenseTitle,
+            message: l10n.noTripsForExpenseMessage,
+            action: AddActionButton(
+              onPressed: () => _showTripForm(context),
+              label: l10n.addTripTitle,
+            ),
+          );
+        }
+        if (groups.isEmpty) {
+          return EmptyStateView(
+            icon: Icons.receipt_long_outlined,
+            title: hasFilter
+                ? l10n.noExpensesMatchFilter
+                : l10n.emptyTripExpensesTitle,
+            message: hasFilter
+                ? l10n.noExpensesMatchFilterMessage
+                : l10n.emptyTripExpensesMessage,
+            action: AddActionButton(
+              onPressed: () => _showTripExpenseForm(context),
+              label: l10n.addTripExpenseButton,
+            ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: groups.length,
+          itemBuilder: (context, index) {
+            final group = groups[index];
+            final vehicle = vehicles.where((v) => v.id == group.trip.vehicleId).firstOrNull;
+            final vehicleDisplay = vehicle?.regNo ?? '${l10n.vehicleLabel} #${group.trip.vehicleId}';
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                title: Text(l10n.tripDetailTitle(group.trip.id)),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(formatDate(group.trip.tripDate, context: context)),
+                    Text(
+                      vehicleDisplay,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                    ),
+                  ],
+                ),
+                trailing: Text(
+                  formatMoney(Money.paisa(group.totalPaisa), context: context),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                onTap: () => _showTripExpensesSheet(
+                  context,
+                  group,
+                  vehicleDisplay,
+                ),
+              ),
+            );
+          },
+        );
+      }(),
+      floatingActionButton: groups.isNotEmpty
+          ? AddIconFab(
+              onPressed: () => _showTripExpenseForm(context),
+              tooltip: l10n.addTripExpenseButton,
+            )
+          : null,
+    );
+  }
+
+  Widget _errorState(BuildContext context, WidgetRef ref, AppLocalizations l10n, String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
+            const SizedBox(height: 16),
+            Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 8),
+            Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () {
+                ref.invalidate(expensesProvider(filter));
+                ref.invalidate(tripsProvider(const TripFilter()));
+              },
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTripForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const TripForm(),
+    );
+  }
+
+  void _showTripExpenseForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const ExpenseForm(initialMode: ExpenseEntryMode.trip),
+    );
+  }
+
+  void _showTripExpensesSheet(
+    BuildContext context,
+    _TripExpenseGroup group,
+    String vehicleDisplay,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => Consumer(
+        builder: (context, sheetRef, _) {
+          final l10n = AppLocalizations.of(context)!;
+          // The list tab may be filtered; the detail sheet always shows every
+          // expense for the selected trip so its total is unambiguous.
+          final allExpenses = sheetRef
+                  .watch(expensesProvider(const ExpenseFilter()))
+                  .asData
+                  ?.value
+                  .where((e) => e.tripId == group.trip.id)
+                  .toList() ??
+              group.expenses;
+          final totalPaisa =
+              allExpenses.fold<int>(0, (sum, e) => sum + e.amountPaisa);
+
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.tripDetailTitle(group.trip.id),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(formatDate(group.trip.tripDate, context: context)),
+                  Text(
+                    vehicleDisplay,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for (final expense in allExpenses)
+                            ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                getCategoryDisplayName(
+                                  expense.category,
+                                  context,
+                                ),
+                              ),
+                              subtitle: expense.note == null || expense.note!.isEmpty
+                                  ? null
+                                  : Text(expense.note!),
+                              trailing: Text(
+                                formatMoney(
+                                  Money.paisa(expense.amountPaisa),
+                                  context: context,
+                                ),
+                              ),
+                            ),
+                          const Divider(),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  l10n.tripExpensesTotalLabel,
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ),
+                              Text(
+                                formatMoney(
+                                  Money.paisa(totalPaisa),
+                                  context: context,
+                                ),
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _TripExpenseGroup {
+  final Trip trip;
+  final List<Expense> expenses;
+  final int totalPaisa;
+
+  const _TripExpenseGroup({
+    required this.trip,
+    required this.expenses,
+    required this.totalPaisa,
+  });
+}
+
 class _FuelTab extends ConsumerWidget {
   final FuelFilter filter;
   final ValueChanged<FuelFilter> onFilterChanged;
@@ -233,55 +501,52 @@ class _FuelTab extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final fuelAsync = ref.watch(fuelRecordsProvider(filter));
 
-    return fuelAsync.when(
-      data: (records) {
-        if (records.isEmpty) {
-          return _emptyState(context, l10n);
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: records.length,
-          itemBuilder: (context, index) {
-            final record = records[index];
-            return _FuelCard(record: record);
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => _errorState(context, ref, l10n, error.toString()),
+    final records = fuelAsync.asData?.value ?? const <FuelRecord>[];
+    final hasFilter = filter.from != null ||
+        filter.to != null ||
+        filter.vehicleId != null;
+
+    return Scaffold(
+      body: fuelAsync.when(
+        data: (records) {
+          if (records.isEmpty) {
+            return _emptyState(context, l10n, hasFilter: hasFilter);
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: records.length,
+            itemBuilder: (context, index) {
+              final record = records[index];
+              return _FuelCard(record: record);
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => _errorState(context, ref, l10n, error.toString()),
+      ),
+      floatingActionButton: records.isNotEmpty
+          ? AddIconFab(
+              onPressed: () => _showFuelForm(context),
+              tooltip: l10n.addFuelTitle,
+            )
+          : null,
     );
   }
 
-  Widget _emptyState(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.local_gas_station_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              'No fuel records yet',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add your first fuel purchase to get started',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _showFuelForm(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addFuelTitle),
-            ),
-          ],
-        ),
+  Widget _emptyState(
+    BuildContext context,
+    AppLocalizations l10n, {
+    required bool hasFilter,
+  }) {
+    return EmptyStateView(
+      icon: Icons.local_gas_station_outlined,
+      title: hasFilter ? l10n.noFuelMatchFilter : l10n.emptyFuelTitle,
+      message: hasFilter
+          ? l10n.noFuelMatchFilterMessage
+          : l10n.emptyFuelMessage,
+      action: AddActionButton(
+        onPressed: () => _showFuelForm(context),
+        label: l10n.addFuelTitle,
       ),
     );
   }
@@ -295,7 +560,7 @@ class _FuelTab extends ConsumerWidget {
           children: [
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 16),
@@ -391,7 +656,7 @@ class _ExpenseCard extends ConsumerWidget {
                     child: _InfoItem(
                       icon: Icons.category,
                       label: l10n.categoryLabel,
-                      value: _getCategoryLabel(expense.category),
+                      value: _getCategoryLabel(l10n, expense.category),
                     ),
                   ),
                 ],
@@ -403,16 +668,16 @@ class _ExpenseCard extends ConsumerWidget {
     );
   }
 
-  String _getCategoryLabel(String category) {
+  String _getCategoryLabel(AppLocalizations l10n, String category) {
     switch (category) {
-      case 'diesel': return 'Diesel';
-      case 'toll': return 'Toll';
-      case 'repair': return 'Repair';
-      case 'maintenance': return 'Maintenance';
-      case 'insurance': return 'Insurance';
-      case 'fitness': return 'Fitness';
-      case 'tax_token': return 'Tax Token';
-      default: return 'Other';
+      case 'diesel': return l10n.category_diesel;
+      case 'toll': return l10n.category_toll;
+      case 'repair': return l10n.category_repair;
+      case 'maintenance': return l10n.category_maintenance;
+      case 'insurance': return l10n.category_insurance;
+      case 'fitness': return l10n.category_fitness;
+      case 'tax_token': return l10n.category_tax_token;
+      default: return l10n.category_other;
     }
   }
 }

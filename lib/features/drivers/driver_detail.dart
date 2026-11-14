@@ -89,7 +89,7 @@ class DriverDetail extends ConsumerWidget {
                   _DetailRow(label: l10n.monthlySalaryLabel, value: formatMoney(Money.paisa(driver.monthlySalaryPaisa), context: context)),
                   _DetailRow(label: l10n.joinedDateLabel, value: formatDate(driver.joinedDate, context: context)),
                   _DetailRow(label: l10n.driverStatusLabel, value: driver.status == 'active' ? l10n.driverStatusActive : l10n.driverStatusInactive),
-                  _DetailRow(label: 'Created', value: formatDate(driver.createdAt, context: context)),
+                  _DetailRow(label: l10n.createdAtLabel, value: formatDate(driver.createdAt, context: context)),
                 ],
               ),
             ),

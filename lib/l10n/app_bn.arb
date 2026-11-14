@@ -1785,5 +1785,74 @@
   "skip": "এড়িয়ে যান",
   "@skip": {
     "description": "Skip button label"
-  }
+  },
+  "emptyVehiclesTitle": "এখনো কোনো গাড়ি নেই",
+  "emptyVehiclesMessage": "ট্রিপ ও খরচ ট্র্যাক করতে প্রথম গাড়ি যোগ করুন।",
+  "emptyDriversTitle": "এখনো কোনো ড্রাইভার নেই",
+  "emptyDriversMessage": "ট্রিপ অ্যাসাইন ও বেতন ট্র্যাক করতে ড্রাইভার যোগ করুন।",
+  "addDriverTitle": "ড্রাইভার যোগ করুন",
+  "emptyCustomersTitle": "এখনো কোনো কাস্টমার নেই",
+  "emptyCustomersMessage": "ভাড়া ও বাকি ট্র্যাক করতে কাস্টমার যোগ করুন।",
+  "addCustomerTitle": "কাস্টমার যোগ করুন",
+  "emptyTripsTitle": "এখনো কোনো ট্রিপ নেই",
+  "emptyTripsMessage": "ভাড়া রেকর্ড করতে ও পেমেন্ট ট্র্যাক শুরু করতে ট্রিপ যোগ করুন।",
+  "emptyExpensesTitle": "এখনো কোনো খরচ নেই",
+  "emptyExpensesMessage": "মেরামত, টোল ও অন্যান্য খরচ রেকর্ড করুন।",
+  "emptyFuelTitle": "এখনো কোনো জ্বালানি এন্ট্রি নেই",
+  "emptyFuelMessage": "খরচ ও ব্যবহার ট্র্যাক করতে জ্বালানি কেনা যোগ করুন।",
+  "emptyLoansTitle": "এখনো কোনো গাড়ির ঋণ নেই",
+  "emptyLoansMessage": "কিস্তি ও সুদ ট্র্যাক করতে ঋণ যোগ করুন।",
+  "emptyTripExpensesTitle": "এখনো কোনো ট্রিপ খরচ নেই",
+  "emptyTripExpensesMessage": "ট্রিপের খরচ এক জায়গায় রাখতে ট্রিপে খরচ যোগ করুন।",
+  "noTripsForExpenseTitle": "খরচ যোগ করার মতো কোনো ট্রিপ নেই",
+  "noTripsForExpenseMessage": "আগে একটি ট্রিপ যোগ করুন, তারপর তার খরচ রেকর্ড করুন।",
+  "addTripExpenseButton": "ট্রিপ খরচ যোগ করুন",
+  "tripExpensesTotalLabel": "মোট ট্রিপ খরচ",
+  "quickActionsTitle": "দ্রুত কার্য",
+  "emptyReceivePaymentCustomersTitle": "পেমেন্ট নেওয়ার কোনো কাস্টমার নেই",
+  "emptyReceivePaymentCustomersMessage": "আগে কাস্টমার যোগ করুন, তারপর তার ট্রিপের বিপরীতে পেমেন্ট নিন।",
+  "emptyPaySalaryDriversTitle": "কোনো সক্রিয় ড্রাইভার নেই",
+  "emptyPaySalaryDriversMessage": "বেতন দিতে ড্রাইভার যোগ করুন বা সক্রিয় করুন।",
+  "driverSalaryPerMonth": "বেতন: {amount}/মাস",
+  "@driverSalaryPerMonth": {
+    "description": "Driver list salary label",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsThisMonthLabel": "ট্রিপ (এই মাস)",
+  "profitThisMonthLabel": "লাভ (এই মাস)",
+  "netCashAllTimeLabel": "নেট ক্যাশ (সর্বকালীন)",
+  "tripOutstandingAllTimeLabel": "ট্রিপ বাকি (সর্বকালীন)",
+  "expiryInsuranceShort": "বীমা",
+  "expiryFitnessShort": "ফিটনেস",
+  "expiryTaxShort": "ট্যাক্স",
+  "errorExceedsPayable": "পরিশোধ্য বেতনের চেয়ে বেশি",
+  "salaryEarnedLabel": "অর্জিত বেতন",
+  "salaryPaidLabel": "প্রদত্ত বেতন",
+  "netPayableLabel": "নিট পরিশোধ্য",
+  "advanceDeductionLabel": "অগ্রিম কর্তন",
+  "maxDeductionHint": "সর্বোচ্চ {amount}",
+  "@maxDeductionHint": {
+    "description": "Maximum advance deduction hint",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelledTripCannotReceivePayment": "বাতিল ট্রিপে পেমেন্ট নেওয়া যায় না" ,
+  "noTripsMatchFilter": "এই ফিল্টারে কোনো ট্রিপ নেই",
+  "noTripsMatchFilterMessage": "ট্রিপ দেখতে ফিল্টার বদলান বা মুছুন।",
+  "noExpensesMatchFilter": "এই ফিল্টারে কোনো খরচ নেই",
+  "noExpensesMatchFilterMessage": "খরচ দেখতে ফিল্টার বদলান বা মুছুন।",
+  "noFuelMatchFilter": "এই ফিল্টারে কোনো জ্বালানি নেই",
+  "noFuelMatchFilterMessage": "জ্বালানি দেখতে ফিল্টার বদলান বা মুছুন।",
+  "outstandingAdvanceShort": "বকেয়া অগ্রিম",
+  "settingsTab": "সেটিংস",
+  "createdAtLabel": "তৈরির তারিখ",
+  "notSetLabel": "সেট করা নেই",
+  "errorTitle": "ত্রুটি"
 }

@@ -63,7 +63,7 @@ class TripDetailScreen extends ConsumerWidget {
         children: [
           Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
           const SizedBox(height: 16),
-          Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+          Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: () => Navigator.pop(context),
@@ -276,14 +276,15 @@ class _TripDetailContent extends ConsumerWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showPaymentHistory(context, ref),
                 ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.add_circle_outline),
-                  title: Text(l10n.add),
-                  subtitle: Text(l10n.receivePaymentAction),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showReceivePayment(context),
-                ),
+                if (trip.status != 'cancelled') ...[
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.payments_outlined),
+                    title: Text(l10n.receivePaymentAction),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showReceivePayment(context),
+                  ),
+                ],
               ],
             ),
           ),
@@ -439,7 +440,7 @@ class _TripDetailContent extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => ReceivePaymentSheet(trip: trip),
+      builder: (context) => ReceivePaymentSheet(tripData: tripData),
     );
   }
 

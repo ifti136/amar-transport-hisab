@@ -54,7 +54,7 @@ class VehicleDetail extends ConsumerWidget {
                   _DetailRow(label: l10n.vehicleTypeLabel, value: vehicle.type),
                   _DetailRow(label: l10n.statusLabel, value: vehicle.status),
                   _DetailRow(
-                    label: 'Created',
+                    label: l10n.createdAtLabel,
                     value: formatDate(vehicle.createdAt, context: context),
                   ),
                 ],
@@ -226,12 +226,13 @@ class _ExpiryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final semantic = theme.extension<AppSemanticColors>()!;
+    final l10n = AppLocalizations.of(context)!;
 
     Color color;
     String text;
     if (days == null) {
       color = theme.colorScheme.onSurfaceVariant;
-      text = 'Not set';
+      text = l10n.notSetLabel;
     } else if (days! <= 0) {
       color = semantic.danger;
       text = '${AppLocalizations.of(context)!.expiryExpired} (${days!.abs()} days ago)';

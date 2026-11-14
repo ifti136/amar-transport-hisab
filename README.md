@@ -2,12 +2,20 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/Release-v0.3.0-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.3.0)
+[![Release](https://img.shields.io/badge/Release-v0.3.1-green.svg)](https://github.com/ifti136/amar-transport-hisab/releases/tag/v0.3.1)
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://developer.android.com)
 
 **Amar Transport Hisab** is an offline-first, privacy-respecting Android accounting app tailored specifically for transport and covered van fleet owners in Bangladesh. Built from the ground up to replace paper notebooks (*খাতা*), it guarantees 100% offline data storage, strict double-entry ledger arithmetic, native Bengali typography, and accurate per-vehicle Profit & Loss reporting.
 
 ---
+
+## 🚀 What's New in v0.3.1 (ভার্সন ০.৩.১ পলিশ ও বাগ ফিক্স)
+
+- 🐛 **Receive Payment Crash Fix:** Fixed `StateError` crash when opening Receive Payment from a trip detail; trip path now resolves `TripWithOutstanding` directly and guards cancelled/deleted trips.
+- 💰 **Salary Accrual & Pay Fix:** Monthly salary accrual now runs atomically at app start/resume with audit trail; Pay Salary now correctly handles Taka/paisa conversion, Bengali digit parsing, advance deduction clamping, and transactional save.
+- 🚛 **Per-Van Metrics:** Added real "Net cash (all time)" and "Trip outstanding (all time)" per vehicle on the Home dashboard and Vehicles list.
+- 🎨 **UI Polish:** Standardized Add controls (centre action when empty, icon-only FAB when populated), localized empty states, shared vehicle cards with expiry badges, text scale clamped to 1.3×, expiry strip shows ≤30 days, and all hardcoded English strings localized.
+- 🧪 **Tests:** Added regression/unit tests for van metrics, salary payable, accrual idempotency/audit, Receive Payment, and vehicle-card overflow at 360×640 / 1.3× font scale.
 
 ## 🚀 What's New in v0.3.0 (ভার্সন ০.৩.০ অরিজিনাল ডাটাবেস স্কিমা অডিট ও মাইগ্রেশন রেজোলিউশন)
 
@@ -22,6 +30,7 @@
 
 ## 📜 Version History (ভার্সন ইতিহাস)
 
+- **v0.3.1:** Polish and bugfix batch: Receive Payment crash fix, salary accrual + Pay Salary Taka/paisa fix, per-van net cash/trip outstanding metrics, UI standardization (Add controls, empty states, vehicle cards), text-scale clamp, expiry strip ≤30 days, full localization, and regression tests.
 - **v0.3.0:** Original database schema audit across 12 tables, resolved Drift TableMigration failure on `custom_customer_name`, verified data-preservation migration test suite, dynamic report vehicle filters, and vehicle loan editing.
 - **v0.2.3:** Automatic first-run walkthrough, business/owner name onboarding prompt, dynamic top bar branding, settings business name editor with SQLite backup persistence.
 - **v0.2.2:** Full database call audit, centralized AppToast feedback system, duplicate click prevention (_isSaving), form dismissal & reset lifecycle, Bengali numeral parsing across all modal dialogs, and cascade soft-delete integrity.

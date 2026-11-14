@@ -68,7 +68,7 @@ class ExpenseDetail extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  _DetailRow(label: l10n.categoryLabel, value: _getCategoryLabel(expense.category)),
+                  _DetailRow(label: l10n.categoryLabel, value: _getCategoryLabel(l10n, expense.category)),
                   _DetailRow(label: l10n.vehicleLabel, value: 'Vehicle #${expense.vehicleId}'),
                   if (expense.tripId != null)
                     _DetailRow(label: l10n.tripLabel, value: 'Trip #${expense.tripId}'),
@@ -157,16 +157,16 @@ class ExpenseDetail extends ConsumerWidget {
     );
   }
 
-  String _getCategoryLabel(String category) {
+  String _getCategoryLabel(AppLocalizations l10n, String category) {
     switch (category) {
-      case 'diesel': return 'Diesel';
-      case 'toll': return 'Toll';
-      case 'repair': return 'Repair';
-      case 'maintenance': return 'Maintenance';
-      case 'insurance': return 'Insurance';
-      case 'fitness': return 'Fitness';
-      case 'tax_token': return 'Tax Token';
-      default: return 'Other';
+      case 'diesel': return l10n.category_diesel;
+      case 'toll': return l10n.category_toll;
+      case 'repair': return l10n.category_repair;
+      case 'maintenance': return l10n.category_maintenance;
+      case 'insurance': return l10n.category_insurance;
+      case 'fitness': return l10n.category_fitness;
+      case 'tax_token': return l10n.category_tax_token;
+      default: return l10n.category_other;
     }
   }
 }

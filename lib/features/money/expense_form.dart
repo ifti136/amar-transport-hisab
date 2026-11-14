@@ -183,22 +183,52 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
               if (_mode == ExpenseEntryMode.trip) ...[
                 tripsAsync.when(
                   data: (trips) {
-                    if (trips.isEmpty) {
+                    final selectableTrips = trips
+                        .where((t) => t.status != 'cancelled')
+                        .toList();
+                    if (selectableTrips.isEmpty) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          l10n.noTransactionsYet,
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.noTripsForExpenseMessage,
+                              style: TextStyle(color: Theme.of(context).colorScheme.error),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.selectTripError,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                            ),
+                          ],
                         ),
                       );
                     }
+
+                    // Keep the vehicle in sync with the selected trip. This is
+                    // important when the form is opened from Trip Detail with
+                    // a preselected trip but no explicit vehicle.
+                    final selectedTrip =
+                        selectableTrips.where((t) => t.id == _tripId).firstOrNull;
+                    if (selectedTrip != null &&
+                        _vehicleId != selectedTrip.vehicleId) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted && _mode == ExpenseEntryMode.trip) {
+                          setState(() => _vehicleId = selectedTrip.vehicleId);
+                        }
+                      });
+                    }
+
                     return DropdownButtonFormField<int>(
                       value: _tripId,
                       decoration: InputDecoration(
                         labelText: l10n.tripLabel,
                         prefixIcon: const Icon(Icons.local_shipping),
                       ),
-                      items: trips.map((t) {
+                      items: selectableTrips.map((t) {
                         final custName = t.customCustomerName != null && t.customCustomerName!.isNotEmpty
                             ? ' • ${t.customCustomerName}'
                             : (t.customerId != null ? ' • #${t.customerId}' : '');
@@ -210,7 +240,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                       onChanged: (id) {
                         setState(() {
                           _tripId = id;
-                          final selectedTrip = trips.firstWhereOrNull((t) => t.id == id);
+                          final selectedTrip = selectableTrips.firstWhereOrNull((t) => t.id == id);
                           if (selectedTrip != null) {
                             _vehicleId = selectedTrip.vehicleId;
                           }
@@ -410,8 +440,28 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
   Future<void> _save({bool addAnother = false}) async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
-    if (_vehicleId == null) return;
-    if (_mode == ExpenseEntryMode.trip && _tripId == null) return;
+
+    if (_mode == ExpenseEntryMode.trip) {
+      if (_tripId == null) {
+        AppToast.showWarning(context, l10n.selectTripError);
+        return;
+      }
+      final trips = ref.read(tripsProvider(const TripFilter())).asData?.value ??
+          const <Trip>[];
+      final selectedTrip =
+          trips.where((t) => t.id == _tripId).firstOrNull;
+      if (selectedTrip == null || selectedTrip.status == 'cancelled') {
+        AppToast.showWarning(context, l10n.selectTripError);
+        return;
+      }
+      _vehicleId ??= selectedTrip.vehicleId;
+    }
+
+    final vehicleId = _vehicleId;
+    if (vehicleId == null) {
+      AppToast.showWarning(context, l10n.errorRequired);
+      return;
+    }
 
     setState(() => _isSaving = true);
 
@@ -429,7 +479,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
         if (widget.fuel != null) {
           // Update linked diesel expense
           final expenseCompanion = ExpensesCompanion(
-            vehicleId: Value(_vehicleId!),
+            vehicleId: Value(vehicleId),
             category: const Value('diesel'),
             amountPaisa: Value(amountPaisa),
             expenseDate: Value(_expenseDate),
@@ -440,7 +490,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
 
           // Update fuel record
           final fuelCompanion = FuelRecordsCompanion(
-            vehicleId: Value(_vehicleId!),
+            vehicleId: Value(vehicleId),
             litres: Value(litres),
             ratePerLitrePaisa: Value(ratePaisa),
             odometer: const Value(0),
@@ -451,7 +501,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
         } else {
           // Insert linked diesel expense first
           final expenseCompanion = ExpensesCompanion(
-            vehicleId: Value(_vehicleId!),
+            vehicleId: Value(vehicleId),
             category: const Value('diesel'),
             amountPaisa: Value(amountPaisa),
             expenseDate: Value(_expenseDate),
@@ -462,7 +512,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
 
           // Insert fuel record linked to expense
           final fuelCompanion = FuelRecordsCompanion(
-            vehicleId: Value(_vehicleId!),
+            vehicleId: Value(vehicleId),
             expenseId: Value(expenseId),
             litres: Value(litres),
             ratePerLitrePaisa: Value(ratePaisa),
@@ -475,7 +525,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
       } else {
         // General or Trip Expense
         final companion = ExpensesCompanion(
-          vehicleId: Value(_vehicleId!),
+          vehicleId: Value(vehicleId),
           tripId: Value(_mode == ExpenseEntryMode.trip ? _tripId : null),
           category: Value(_category),
           amountPaisa: Value(amountPaisa),

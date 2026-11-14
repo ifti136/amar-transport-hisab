@@ -35,7 +35,7 @@ class AccessibilityUtils {
       case 2:
         return l10n.moneyTab; // "খরচ" / "Money"
       case 3:
-        return l10n.moreTab; // "আরও" / "More"
+        return l10n.settingsTab; // "সেটিংস" / "Settings"
       default:
         return '';
     }

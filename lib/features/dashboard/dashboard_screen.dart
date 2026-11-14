@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
 import 'package:transport_hisab/core/localization/locale_provider.dart';
@@ -9,6 +10,19 @@ import 'package:transport_hisab/core/theme/theme_provider.dart';
 import 'package:transport_hisab/domain/accounting/accounting.dart';
 import 'package:transport_hisab/features/dashboard/dashboard_provider.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_provider.dart';
+import 'package:transport_hisab/features/vehicles/vehicles_screen.dart';
+import 'package:transport_hisab/features/vehicles/widgets/vehicle_summary_card.dart';
+import 'package:transport_hisab/features/trips/trip_provider.dart';
+import 'package:transport_hisab/features/trips/trip_form.dart';
+import 'package:transport_hisab/features/trips/receive_payment.dart';
+import 'package:transport_hisab/features/money/expense_form.dart';
+import 'package:transport_hisab/features/customers/customer_provider.dart';
+import 'package:transport_hisab/features/customers/customer_form.dart';
+import 'package:transport_hisab/features/drivers/driver_provider.dart';
+import 'package:transport_hisab/features/drivers/driver_form.dart';
+import 'package:transport_hisab/features/drivers/pay_salary.dart';
+import 'package:transport_hisab/core/widgets/add_action.dart';
+import 'package:transport_hisab/core/widgets/empty_state_view.dart';
 import 'package:transport_hisab/core/services/business_name_provider.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -62,13 +76,9 @@ class DashboardScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')), // i18n-ignore
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Show quick actions menu
-          _showQuickActions(context);
-        },
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
+      floatingActionButton: AddIconFab(
+        onPressed: () => _showQuickActions(context),
+        tooltip: l10n.quickActionsTitle,
       ),
     );
   }
@@ -77,44 +87,121 @@ class DashboardScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (bottomSheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.local_shipping),
-              title: Text(l10n.addTripTitle),
-              onTap: () {
-                Navigator.pop(bottomSheetContext);
-                context.push('/trips/add');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.receipt_long),
-              title: Text(l10n.addExpenseTitle),
-              onTap: () {
-                Navigator.pop(bottomSheetContext);
-                context.push('/expenses/add');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.local_gas_station),
-              title: Text(l10n.addFuelTitle),
-              onTap: () {
-                Navigator.pop(bottomSheetContext);
-                context.push('/fuel/add');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.people_outline),
-              title: Text(l10n.customersNavLabel),
-              onTap: () {
-                Navigator.pop(bottomSheetContext);
-                context.push('/customers');
-              },
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.local_shipping),
+                title: Text(l10n.addTripTitle),
+                onTap: () {
+                  Navigator.pop(bottomSheetContext);
+                  _showTripForm(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.receipt_long),
+                title: Text(l10n.addExpenseTitle),
+                onTap: () {
+                  Navigator.pop(bottomSheetContext);
+                  _showExpenseForm(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.local_gas_station),
+                title: Text(l10n.addFuelTitle),
+                onTap: () {
+                  Navigator.pop(bottomSheetContext);
+                  _showFuelForm(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.payments_outlined),
+                title: Text(l10n.receivePaymentAction),
+                onTap: () {
+                  Navigator.pop(bottomSheetContext);
+                  _showCustomerPicker(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.account_balance_wallet_outlined),
+                title: Text(l10n.paySalaryTitle),
+                onTap: () {
+                  Navigator.pop(bottomSheetContext);
+                  _showDriverPicker(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.people_outline),
+                title: Text(l10n.customersNavLabel),
+                onTap: () {
+                  Navigator.pop(bottomSheetContext);
+                  context.push('/customers');
+                },
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  void _showTripForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const TripForm(),
+    );
+  }
+
+  void _showExpenseForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const ExpenseForm(),
+    );
+  }
+
+  void _showFuelForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const ExpenseForm(initialMode: ExpenseEntryMode.fuel),
+    );
+  }
+
+  void _showCustomerPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => _CustomerPickerSheet(
+        onSelected: (customer) {
+          Navigator.pop(sheetContext);
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => ReceivePaymentSheet(customer: customer),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showDriverPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => _DriverPickerSheet(
+        onSelected: (driver) {
+          Navigator.pop(sheetContext);
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => PaySalarySheet(driver: driver),
+          );
+        },
       ),
     );
   }
@@ -189,17 +276,19 @@ class _DashboardContent extends ConsumerWidget {
                 children: [
                   Text(l10n.vanSummaryTitle, style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 12),
-                  SizedBox(
-                    height: 180,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: dashboard.vanSummaries.length,
-                      itemBuilder: (context, index) {
-                        final van = dashboard.vanSummaries[index];
-                        return _VanSummaryCard(van: van);
-                      },
-                    ),
-                  ),
+                  if (dashboard.vanSummaries.isEmpty)
+                    EmptyStateView(
+                      icon: Icons.directions_bus_outlined,
+                      title: l10n.emptyVehiclesTitle,
+                      message: l10n.emptyVehiclesMessage,
+                      action: AddActionButton(
+                        onPressed: () => context.push('/vehicles'),
+                        label: l10n.addVehicleTitle,
+                      ),
+                    )
+                  else
+                    for (final van in dashboard.vanSummaries)
+                      _DashboardVanCard(van: van),
                 ],
               ),
             ),
@@ -284,141 +373,183 @@ class _FigureCard extends StatelessWidget {
   }
 }
 
-class _VanSummaryCard extends StatelessWidget {
+class _DashboardVanCard extends ConsumerWidget {
   final VanSummaryData van;
 
-  const _VanSummaryCard({required this.van});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final semantic = theme.extension<AppSemanticColors>()!;
-
-    return Card(
-      margin: const EdgeInsets.only(right: 12),
-      child: Container(
-        width: 280,
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.directions_bus, color: theme.colorScheme.primary, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        van.regNo,
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        van.type,
-                        style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ),
-                ),
-                _ExpiryBadges(vehicleId: van.vehicleId),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _InfoChip(
-                    icon: Icons.route,
-                    label: l10n.vanTrips(van.tripCount),
-                    value: van.tripCount.toString(),
-                  ),
-                ),
-                Expanded(
-                  child: _InfoChip(
-                    icon: Icons.trending_up,
-                    label: l10n.profit,
-                    value: formatMoney(Money.paisa(van.profitPaisa), context: context),
-                    color: van.profitPaisa >= 0 ? semantic.success : semantic.danger,
-                  ),
-                ),
-                Expanded(
-                  child: _InfoChip(
-                    icon: Icons.account_balance_wallet,
-                    label: l10n.cashBalance,
-                    value: formatMoney(Money.paisa(van.cashBalancePaisa), context: context),
-                    color: van.cashBalancePaisa >= 0 ? semantic.success : semantic.danger,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            _InfoChip(
-              icon: Icons.people,
-              label: l10n.totalOutstanding,
-              value: formatMoney(Money.paisa(van.outstandingPaisa), context: context),
-              color: semantic.warning,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ExpiryBadges extends ConsumerWidget {
-  final int vehicleId;
-
-  const _ExpiryBadges({required this.vehicleId});
+  const _DashboardVanCard({required this.van});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final semantic = theme.extension<AppSemanticColors>()!;
-    final expiryAsync = ref.watch(vehicleExpiryProvider(vehicleId));
+    final expiry = ref.watch(vehicleExpiryProvider(van.vehicleId)).asData?.value ?? const {};
 
-    return expiryAsync.when(
-      data: (expiry) {
-        final badges = <Widget>[];
-        expiry.forEach((type, days) {
-          if (days == null) return;
-          Color color;
-          String label;
-          if (days <= 0) {
-            color = semantic.danger;
-            label = '${type.toUpperCase()}: ${l10n.expiryExpired}';
-          } else if (days <= 7) {
-            color = semantic.danger;
-            label = '${type.toUpperCase()}: ${l10n.expiryDaysLeft(days)}';
-          } else if (days <= 30) {
-            color = semantic.warning;
-            label = '${type.toUpperCase()}: ${l10n.expiryDaysLeft(days)}';
-          } else {
-            color = semantic.success;
-            label = '${type.toUpperCase()}: ${l10n.expiryDaysLeft(days)}';
+    return VehicleSummaryCard(
+      regNo: van.regNo,
+      type: van.type,
+      icon: Icons.directions_bus,
+      expiry: expiry,
+      onTap: () => context.push('/vehicles'),
+      metrics: [
+        VehicleSummaryMetric(
+          label: l10n.tripsThisMonthLabel,
+          value: '${van.tripCount}',
+        ),
+        VehicleSummaryMetric(
+          label: l10n.profitThisMonthLabel,
+          value: formatMoney(Money.paisa(van.profitPaisa), context: context),
+          valueColor: van.profitPaisa >= 0 ? semantic.success : semantic.danger,
+        ),
+        VehicleSummaryMetric(
+          label: l10n.netCashAllTimeLabel,
+          value: formatMoney(Money.paisa(van.cashBalancePaisa), context: context),
+          valueColor: van.cashBalancePaisa >= 0 ? semantic.success : semantic.danger,
+        ),
+        VehicleSummaryMetric(
+          label: l10n.tripOutstandingAllTimeLabel,
+          value: formatMoney(Money.paisa(van.outstandingPaisa), context: context),
+          valueColor: semantic.warning,
+        ),
+      ],
+    );
+  }
+}
+
+class _CustomerPickerSheet extends ConsumerWidget {
+  final ValueChanged<Customer> onSelected;
+
+  const _CustomerPickerSheet({required this.onSelected});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final customersAsync = ref.watch(activeCustomersProvider);
+
+    return SafeArea(
+      child: customersAsync.when(
+        data: (customers) {
+          if (customers.isEmpty) {
+            return EmptyStateView(
+              icon: Icons.people_outline,
+              title: l10n.emptyReceivePaymentCustomersTitle,
+              message: l10n.emptyReceivePaymentCustomersMessage,
+              action: AddActionButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => const CustomerForm(),
+                  );
+                },
+                label: l10n.addCustomerTitle,
+              ),
+            );
           }
-          badges.add(
-            Container(
-              margin: const EdgeInsets.only(right: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: color),
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l10n.receivePaymentAction, style: Theme.of(context).textTheme.titleMedium),
               ),
-              child: Text(
-                label,
-                style: theme.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w500),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: customers.length,
+                  itemBuilder: (context, index) {
+                    final customer = customers[index];
+                    return ListTile(
+                      leading: const Icon(Icons.person_outline),
+                      title: Text(customer.name),
+                      subtitle: customer.phone == null ? null : Text(customer.phone!),
+                      onTap: () => onSelected(customer),
+                    );
+                  },
+                ),
               ),
-            ),
+            ],
           );
-        });
-        return Wrap(spacing: 4, runSpacing: 4, children: badges);
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+        },
+        loading: () => const Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (error, stack) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(l10n.errorInvalidNumber),
+        ),
+      ),
+    );
+  }
+}
+
+class _DriverPickerSheet extends ConsumerWidget {
+  final ValueChanged<Driver> onSelected;
+
+  const _DriverPickerSheet({required this.onSelected});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final driversAsync = ref.watch(activeDriversProvider);
+
+    return SafeArea(
+      child: driversAsync.when(
+        data: (drivers) {
+          if (drivers.isEmpty) {
+            return EmptyStateView(
+              icon: Icons.person_outline,
+              title: l10n.emptyPaySalaryDriversTitle,
+              message: l10n.emptyPaySalaryDriversMessage,
+              action: AddActionButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => const DriverForm(),
+                  );
+                },
+                label: l10n.addDriverTitle,
+              ),
+            );
+          }
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l10n.paySalaryTitle, style: Theme.of(context).textTheme.titleMedium),
+              ),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: drivers.length,
+                  itemBuilder: (context, index) {
+                    final driver = drivers[index];
+                    return ListTile(
+                      leading: const Icon(Icons.person_outline),
+                      title: Text(driver.name),
+                      subtitle: driver.phone == null ? null : Text(driver.phone!),
+                      onTap: () => onSelected(driver),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+        loading: () => const Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (error, stack) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(l10n.errorInvalidNumber),
+        ),
+      ),
     );
   }
 }
@@ -434,24 +565,28 @@ class _ExpiryAlertStrip extends StatelessWidget {
     final theme = Theme.of(context);
     final semantic = theme.extension<AppSemanticColors>()!;
 
-    final criticalAlerts = alerts.where((a) => a.daysLeft <= 7).toList();
-    if (criticalAlerts.isEmpty) return const SizedBox.shrink();
+    // Show all alerts up to 30 days (DESIGN.md §14): red ≤7d, amber 8-30d
+    final activeAlerts = alerts.where((a) => a.daysLeft <= 30).toList();
+    if (activeAlerts.isEmpty) return const SizedBox.shrink();
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: semantic.danger.withValues(alpha: 0.1),
+      color: semantic.warning.withValues(alpha: 0.1),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: criticalAlerts.map((alert) {
+          children: activeAlerts.map((alert) {
             Color color;
             String label;
             if (alert.daysLeft <= 0) {
               color = semantic.danger;
               label = '${alert.vehicleRegNo} • ${alert.type.toUpperCase()}: ${l10n.expiryExpired}';
-            } else {
+            } else if (alert.daysLeft <= 7) {
               color = semantic.danger;
+              label = '${alert.vehicleRegNo} • ${alert.type.toUpperCase()}: ${l10n.expiryDaysLeft(alert.daysLeft)}';
+            } else {
+              color = semantic.warning;
               label = '${alert.vehicleRegNo} • ${alert.type.toUpperCase()}: ${l10n.expiryDaysLeft(alert.daysLeft)}';
             }
             return Container(
@@ -477,48 +612,6 @@ class _ExpiryAlertStrip extends StatelessWidget {
           }).toList(),
         ),
       ),
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color? color;
-
-  const _InfoChip({required this.icon, required this.label, required this.value, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 14, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                label,
-                style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(
-            value,
-            style: theme.textTheme.bodyMedium?.copyWith(color: color, fontWeight: FontWeight.w600),
-          ),
-        ),
-      ],
     );
   }
 }

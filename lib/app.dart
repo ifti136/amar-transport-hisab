@@ -10,10 +10,7 @@ import 'core/services/app_lock_service.dart';
 import 'core/services/business_name_provider.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/trips/trips_screen.dart';
-import 'features/trips/trip_form.dart';
 import 'features/money/expenses_screen.dart';
-import 'features/money/expense_form.dart';
-import 'features/money/fuel_form.dart';
 import 'features/vehicles/vehicles_screen.dart';
 import 'features/vehicles/all_loans_screen.dart';
 import 'features/drivers/drivers_screen.dart';
@@ -25,6 +22,7 @@ import 'features/backup/backup_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/settings/about_screen.dart';
 import 'features/settings/expense_categories_screen.dart';
+import 'features/drivers/driver_provider.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -92,21 +90,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         redirect: (context, state) => '/settings',
       ),
       // Sub-routes pushed on top of root navigator with top back button
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: '/trips/add',
-        builder: (context, state) => const TripForm(),
-      ),
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: '/expenses/add',
-        builder: (context, state) => const ExpenseForm(),
-      ),
-      GoRoute(
-        parentNavigatorKey: rootNavigatorKey,
-        path: '/fuel/add',
-        builder: (context, state) => const FuelForm(),
-      ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
         path: '/vehicles',
@@ -240,7 +223,12 @@ class AmarTransportHisabApp extends ConsumerWidget {
       themeMode: themeMode,
       routerConfig: router,
       builder: (context, child) {
-        return AppLockOverlay(child: child ?? const SizedBox.shrink());
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3),
+          ),
+          child: AppLockOverlay(child: child ?? const SizedBox.shrink()),
+        );
       },
     );
   }
@@ -262,6 +250,7 @@ class _AppLockOverlayState extends ConsumerState<AppLockOverlay> with WidgetsBin
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _runSalaryAccrual();
       _checkAndPromptAuth();
     });
   }
@@ -275,10 +264,20 @@ class _AppLockOverlayState extends ConsumerState<AppLockOverlay> with WidgetsBin
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      ref.invalidate(salaryAccrualTriggerProvider);
+      _runSalaryAccrual();
       final isLockEnabled = ref.read(appLockEnabledProvider);
       if (isLockEnabled) {
         _checkAndPromptAuth();
       }
+    }
+  }
+
+  Future<void> _runSalaryAccrual() async {
+    try {
+      await ref.read(salaryAccrualTriggerProvider.future);
+    } catch (_) {
+      // Never block the app on salary accrual.
     }
   }
 

@@ -5,6 +5,8 @@ import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/db/daos/customer_dao.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/add_action.dart';
+import 'package:transport_hisab/core/widgets/empty_state_view.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
 import 'package:transport_hisab/features/trips/receive_payment.dart';
 
@@ -41,6 +43,8 @@ class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
         to: _to,
       ),
     ));
+
+    final entries = ledgerAsync.asData?.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -79,38 +83,24 @@ class _CustomerLedgerScreenState extends ConsumerState<CustomerLedgerScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text(l10n.errorLoadingLedger)),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showReceivePayment(context),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
-      ),
+      floatingActionButton: (entries != null && entries.isNotEmpty)
+          ? AddIconFab(
+              onPressed: () => _showReceivePayment(context),
+              tooltip: l10n.receivePaymentAction,
+            )
+          : null,
     );
   }
 
   Widget _emptyState(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.receipt_long_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              l10n.noTransactionsYet,
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.addTripOrPaymentToSeeLedger,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+    return EmptyStateView(
+      icon: Icons.receipt_long_outlined,
+      title: l10n.noTransactionsYet,
+      message: l10n.addTripOrPaymentToSeeLedger,
+      action: AddActionButton(
+        onPressed: () => _showReceivePayment(context),
+        label: l10n.receivePaymentAction,
+        icon: Icons.payments_outlined,
       ),
     );
   }

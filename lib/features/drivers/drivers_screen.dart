@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/add_action.dart';
+import 'package:transport_hisab/core/widgets/empty_state_view.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/drivers/driver_provider.dart';
 import 'package:transport_hisab/features/drivers/driver_form.dart';
@@ -17,16 +19,7 @@ class DriversScreen extends ConsumerWidget {
     final driversAsync = ref.watch(activeDriversProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.driverLabel),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showDriverForm(context),
-            tooltip: l10n.add,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.driverLabel)),
       body: driversAsync.when(
         data: (drivers) {
           if (drivers.isEmpty) {
@@ -44,44 +37,23 @@ class DriversScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => _errorState(context, ref, l10n, error.toString()),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showDriverForm(context),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
-      ),
+      floatingActionButton: (driversAsync.asData?.value.isNotEmpty ?? false)
+          ? AddIconFab(
+              onPressed: () => _showDriverForm(context),
+              tooltip: l10n.addDriverTitle,
+            )
+          : null,
     );
   }
 
   Widget _emptyState(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person_outline, size: 64, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              'No drivers yet',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add your first driver to get started',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _showDriverForm(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.add),
-            ),
-          ],
-        ),
+    return EmptyStateView(
+      icon: Icons.person_outline,
+      title: l10n.emptyDriversTitle,
+      message: l10n.emptyDriversMessage,
+      action: AddActionButton(
+        onPressed: () => _showDriverForm(context),
+        label: l10n.addDriverTitle,
       ),
     );
   }
@@ -95,7 +67,7 @@ class DriversScreen extends ConsumerWidget {
           children: [
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 16),
@@ -166,7 +138,9 @@ class _DriverCard extends ConsumerWidget {
                         Icon(Icons.attach_money, size: 16, color: theme.colorScheme.onSurfaceVariant),
                         const SizedBox(width: 4),
                         Text(
-                          '${l10n.vanProfit(formatMoney(Money.paisa(driver.monthlySalaryPaisa), context: context))}/month',
+                          l10n.driverSalaryPerMonth(
+                            formatMoney(Money.paisa(driver.monthlySalaryPaisa), context: context),
+                          ),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -184,8 +158,10 @@ class _DriverCard extends ConsumerWidget {
                       : theme.colorScheme.outlineVariant,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
-                  driver.status == 'active' ? 'Active' : 'Inactive',
+                  child: Text(
+                    driver.status == 'active'
+                        ? l10n.driverStatusActive
+                        : l10n.driverStatusInactive,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: driver.status == 'active'
                         ? theme.extension<AppSemanticColors>()!.success

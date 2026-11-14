@@ -5,6 +5,8 @@ import 'package:collection/collection.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/db/daos/trip_dao.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/add_action.dart';
+import 'package:transport_hisab/core/widgets/empty_state_view.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/trips/trip_provider.dart';
 import 'package:transport_hisab/features/trips/trip_form.dart';
@@ -36,11 +38,6 @@ class _TripsScreenState extends ConsumerState<TripsScreen> {
             onPressed: () => _showFilterDialog(context),
             tooltip: l10n.filter,
           ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showTripForm(context),
-            tooltip: l10n.add,
-          ),
         ],
       ),
       body: tripsAsync.when(
@@ -60,44 +57,29 @@ class _TripsScreenState extends ConsumerState<TripsScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => _errorState(context, l10n, error.toString()),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showTripForm(context),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
-      ),
+      floatingActionButton: (tripsAsync.asData?.value.isNotEmpty ?? false)
+          ? AddIconFab(
+              onPressed: () => _showTripForm(context),
+              tooltip: l10n.addTripTitle,
+            )
+          : null,
     );
   }
 
   Widget _emptyState(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.local_shipping_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              'No trips yet',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add your first trip to get started',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _showTripForm(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.add),
-            ),
-          ],
-        ),
+    final hasFilter = _filter.from != null ||
+        _filter.to != null ||
+        _filter.vehicleId != null ||
+        _filter.customerId != null ||
+        _filter.driverId != null ||
+        _filter.status != null;
+    return EmptyStateView(
+      icon: Icons.local_shipping_outlined,
+      title: hasFilter ? l10n.noTripsMatchFilter : l10n.emptyTripsTitle,
+      message: hasFilter ? l10n.noTripsMatchFilterMessage : l10n.emptyTripsMessage,
+      action: AddActionButton(
+        onPressed: () => _showTripForm(context),
+        label: l10n.addTripTitle,
       ),
     );
   }
@@ -111,7 +93,7 @@ class _TripsScreenState extends ConsumerState<TripsScreen> {
           children: [
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 16),

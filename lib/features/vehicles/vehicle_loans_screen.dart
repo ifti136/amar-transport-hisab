@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/add_action.dart';
+import 'package:transport_hisab/core/widgets/empty_state_view.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/vehicles/vehicle_loan_provider.dart';
 import 'package:transport_hisab/features/vehicles/add_loan.dart';
@@ -20,16 +22,7 @@ class VehicleLoansScreen extends ConsumerWidget {
     final loansAsync = ref.watch(vehicleLoansProvider(vehicle.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.loanOutstanding),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showAddLoan(context),
-            tooltip: l10n.add,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.loanOutstanding)),
       body: loansAsync.when(
         data: (loans) {
           if (loans.isEmpty) {
@@ -47,44 +40,23 @@ class VehicleLoansScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => _errorState(context, ref, l10n, error.toString()),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddLoan(context),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
-      ),
+      floatingActionButton: (loansAsync.asData?.value.isNotEmpty ?? false)
+          ? AddIconFab(
+              onPressed: () => _showAddLoan(context),
+              tooltip: l10n.addLoanTitle,
+            )
+          : null,
     );
   }
 
   Widget _emptyState(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.account_balance_wallet_outlined, size: 64, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              'No loans yet',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add a vehicle loan to track installments',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _showAddLoan(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.add),
-            ),
-          ],
-        ),
+    return EmptyStateView(
+      icon: Icons.account_balance_wallet_outlined,
+      title: l10n.emptyLoansTitle,
+      message: l10n.emptyLoansMessage,
+      action: AddActionButton(
+        onPressed: () => _showAddLoan(context),
+        label: l10n.addLoanTitle,
       ),
     );
   }
@@ -98,7 +70,7 @@ class VehicleLoansScreen extends ConsumerWidget {
           children: [
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 16),

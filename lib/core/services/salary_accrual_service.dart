@@ -2,15 +2,16 @@ import 'package:drift/drift.dart';
 import '../db/database.dart';
 import '../db/tables/driver_transactions.dart';
 import '../db/daos/driver_dao.dart';
-import '../formatters.dart';
+import '../db/daos/driver_loan_dao.dart';
 
 /// Service to handle monthly salary accrual for drivers
 /// Called on app start and when date changes to ensure salaries are accrued
 class SalaryAccrualService {
   final AppDatabase db;
   final DriverDao driverDao;
+  final DriverTransactionDao transactionDao;
 
-  SalaryAccrualService(this.db, this.driverDao);
+  SalaryAccrualService(this.db, this.driverDao, this.transactionDao);
 
   /// Ensure monthly salary is accrued for all active drivers
   /// Called on app start and when date changes
@@ -29,27 +30,31 @@ class SalaryAccrualService {
         continue;
       }
 
-      // Check if salary_earned already exists for current month
-      final exists = await driverDao.hasSalaryEarnedForMonth(driver.id, currentMonth);
-
-      if (!exists) {
-        // Accrue salary for this month
-        await _accrueSalary(driver, currentMonth);
-      }
+      await _accrueIfMissing(driver, currentMonth);
     }
   }
 
-  /// Accrue salary for a specific driver and month
-  Future<void> _accrueSalary(Driver driver, DateTime month) async {
-    await db.into(db.driverTransactions).insert(
-      DriverTransactionsCompanion.insert(
-        driverId: driver.id,
-        type: 'salary_earned',
-        amountPaisa: driver.monthlySalaryPaisa,
-        transactionDate: month,
-        note: Value('Monthly salary accrual for ${formatMonth(month)}'),
-      ),
-    );
+  /// Accrue salary only when the month has no salary_earned row.
+  ///
+  /// The check and insert run in one transaction so two concurrent triggers
+  /// (startup + resume) cannot both insert.
+  Future<void> _accrueIfMissing(Driver driver, DateTime month) async {
+    await db.transaction(() async {
+      final exists =
+          await transactionDao.hasSalaryEarnedForMonth(driver.id, month);
+      if (exists) return;
+
+      await transactionDao.insertWithAudit(
+        DriverTransactionsCompanion.insert(
+          driverId: driver.id,
+          type: 'salary_earned',
+          amountPaisa: driver.monthlySalaryPaisa,
+          transactionDate: month,
+          note: Value('Monthly salary accrual for ${month.year}-${month.month.toString().padLeft(2, '0')}'),
+        ),
+        userNote: 'Monthly salary accrual',
+      );
+    });
   }
 
   /// Accrue salary for a specific driver and month (manual trigger)
@@ -57,10 +62,7 @@ class SalaryAccrualService {
     final driver = await driverDao.getById(driverId);
     if (driver == null) return;
 
-    final exists = await driverDao.hasSalaryEarnedForMonth(driverId, month);
-    if (!exists) {
-      await _accrueSalary(driver, month);
-    }
+    await _accrueIfMissing(driver, month);
   }
 
   /// Get total salary earned for a driver up to a date

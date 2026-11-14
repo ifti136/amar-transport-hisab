@@ -18,6 +18,9 @@ coverage/
 *.ipr
 *.iws
 .vscode/*
+
+# Agent tool artifacts
+.serena/
 !.vscode/settings.json
 .DS_Store
 .metadata

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/core/theme/colors.dart';
+import 'package:transport_hisab/core/widgets/add_action.dart';
+import 'package:transport_hisab/core/widgets/empty_state_view.dart';
 import 'package:transport_hisab/core/formatters.dart';
 import 'package:transport_hisab/features/customers/customer_provider.dart';
 import 'package:transport_hisab/features/customers/customer_form.dart';
@@ -17,16 +19,7 @@ class CustomersScreen extends ConsumerWidget {
     final customersAsync = ref.watch(activeCustomersProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.customerLabel),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showCustomerForm(context),
-            tooltip: l10n.add,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.customerLabel)),
       body: customersAsync.when(
         data: (customers) {
           if (customers.isEmpty) {
@@ -44,44 +37,23 @@ class CustomersScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => _errorState(context, ref, l10n, error.toString()),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCustomerForm(context),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
-      ),
+      floatingActionButton: (customersAsync.asData?.value.isNotEmpty ?? false)
+          ? AddIconFab(
+              onPressed: () => _showCustomerForm(context),
+              tooltip: l10n.addCustomerTitle,
+            )
+          : null,
     );
   }
 
   Widget _emptyState(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person_outline, size: 64, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              'No customers yet',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add your first customer to get started',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _showCustomerForm(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.add),
-            ),
-          ],
-        ),
+    return EmptyStateView(
+      icon: Icons.person_outline,
+      title: l10n.emptyCustomersTitle,
+      message: l10n.emptyCustomersMessage,
+      action: AddActionButton(
+        onPressed: () => _showCustomerForm(context),
+        label: l10n.addCustomerTitle,
       ),
     );
   }
@@ -95,7 +67,7 @@ class CustomersScreen extends ConsumerWidget {
           children: [
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text(l10n.errorInvalidNumber, style: Theme.of(context).textTheme.headlineSmall),
+            Text(l10n.errorTitle, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(error, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 16),
@@ -155,7 +127,7 @@ class _CustomerCard extends ConsumerWidget {
                     ),
                     if (customer.phone != null && customer.phone!.isNotEmpty)
                       Text(
-                        customer.phone!,
+                        '${l10n.phoneLabel}: ${customer.phone!}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
 import 'package:transport_hisab/core/db/database.dart';
 import 'package:transport_hisab/domain/accounting/accounting.dart';
+import 'package:transport_hisab/domain/accounting/van_metrics.dart';
 
 /// Dashboard data model
 class DashboardData {
@@ -131,6 +132,7 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
   // Fetch all-time data for cumulative balances
   final allTrips = await (db.select(db.trips)..where((t) => t.deletedAt.isNull())).get();
   final allPayments = await (db.select(db.customerPayments)..where((t) => t.deletedAt.isNull())).get();
+  final allExpenses = await (db.select(db.expenses)..where((t) => t.deletedAt.isNull())).get();
   final allCustomers = await (db.select(db.customers)..where((t) => t.deletedAt.isNull())).get();
   final allLoans = await (db.select(db.vehicleLoans)..where((t) => t.deletedAt.isNull())).get();
   final allInstallments = await (db.select(db.loanInstallments)..where((t) => t.deletedAt.isNull())).get();
@@ -163,14 +165,23 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
     final vehicleExpenseTotal = vehicleExpensesList.fold<int>(0, (sum, e) => sum + e.amountPaisa);
     final vehicleProfit = vehicleRevenue - vehicleExpenseTotal;
 
+    final vanMetrics = computeVanMetrics(
+      vehicleId: vehicle.id,
+      trips: allTrips,
+      payments: allPayments,
+      expenses: allExpenses,
+      loans: allLoans,
+      installments: allInstallments,
+    );
+
     vanSummaries.add(VanSummaryData(
       vehicleId: vehicle.id,
       regNo: vehicle.regNo,
       type: vehicle.type,
       tripCount: vehicleTrips.length,
       profitPaisa: vehicleProfit,
-      cashBalancePaisa: 0,
-      outstandingPaisa: 0,
+      cashBalancePaisa: vanMetrics.netCashPaisa,
+      outstandingPaisa: vanMetrics.tripOutstandingPaisa,
     ));
   }
 
